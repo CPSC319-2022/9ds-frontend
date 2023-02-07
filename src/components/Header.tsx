@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Grid, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button,Grid, IconButton, Menu, MenuItem, Toolbar, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useState } from "react";
@@ -17,72 +17,84 @@ export const Header = () => {
     setAnchorEl(null);
   };
 
-    return <Typography> 
-              <AppBar position="static" color='transparent'>
-                <Toolbar  sx={{  flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                <Grid container   direction="row"
-                      justifyContent="space-between"
-                      alignItems="center">
-                <Grid item>
-                <img src="9ds_logo.png" alt="logo" />
-                 </Grid>
-                    
-                    <Grid item>
-                      <Box sx={{ gap: 2, color: 'black', flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                          <Button
-                            onClick={() => navigate('/')}
-                            sx={{ my: 2, color: 'black', display: 'block' }}
-                          >
-                            Home
-                          </Button>
-                      
-                      <IconButton
-                        sx={{ color:'black'}}
-                        onClick={handleClick}
-                      >
-                        Blog
-                        <ArrowDropDownIcon />
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                      >
-                        <MenuItem onClick={handleClose}>Menu Item 1</MenuItem>
-                        <MenuItem onClick={handleClose}>Menu Item 2</MenuItem>
-                        <MenuItem onClick={handleClose}>Menu Item 3</MenuItem>
-                      </Menu>
-                      
-                          <Button
-                            onClick={() => navigate('/about')}
-                            sx={{ my: 2, color: 'black', display: 'block' }}
-                          >
-                            About Us
-                          </Button>
-                      </Box>
-                    </Grid>
+  const textTheme = {textTransform: 'capitalize', fontFamily:'roboto', fontSize: 16, px:1};
 
-                    <Grid item>
-                      <Box sx={{ gap: 2, flexGrow: 1, display: { xs: 'none', md: 'flex',align:'right' } }}>
-                          <Button
-                            onClick={() => navigate('/login')}
-                            sx={{ border: 1, my: 2, color: 'black', display: 'block' }}
+    return <Box sx={{py:2, px:2}}>
+              <AppBar position="static" color='transparent' sx={{ borderRadius:2, border:2, py:1}}>
+                <Toolbar>
+                    <Grid container   direction="row"
+                          justifyContent="space-between"
+                          alignItems="center">
+                    <Box
+                        component="img"
+                        sx={{ ml:1 }}
+                        alt="Logo"
+                        src={require('../assets/logo.png')}
+                      />                  
+                        
+                        <Grid item  >
+                          <Box sx={{ gap:8, color: 'black', flexGrow: 1, display:{ xs: 'none', md: 'flex'} }}>
+                            <Button
+                              onClick={() => navigate('/')}
+                              sx={{ color: 'black', display: 'block' }}
+                            >
+                              <Typography sx={textTheme}>
+                                Home
+                              </Typography>
+                            </Button>
+                            <IconButton
+                              sx={{ color:'black'}}
+                              onClick={handleClick}
+                            >
+                              <Typography sx={textTheme}>
+                                Blog
+                              </Typography>
+                              <ArrowDropDownIcon />
+                            </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
                           >
-                            Login
-                          </Button>
-                          <Button
-                            onClick={() => navigate('/signup')}
-                            sx={{ backgroundColor: 'black', border: 1, my: 2, color: 'white', display: 'block'}}
-                          >
-                            Sign Up
-                          </Button>
-                      </Box>
-                    </Grid>
+                            <MenuItem onClick={handleClose}>Menu Item 1</MenuItem>
+                            <MenuItem onClick={handleClose}>Menu Item 2</MenuItem>
+                            <MenuItem onClick={handleClose}>Menu Item 3</MenuItem>
+                          </Menu>
+                            <Button
+                              onClick={() => navigate('/about')}
+                              sx={{color: 'black', display: 'block' }}
+                            >
+                              <Typography sx={textTheme}>
+                                About Us
+                              </Typography>
+                            </Button>
+                          </Box>
+                        </Grid>
 
-                    </Grid>
+                        <Grid item>
+                          <Box sx={{ gap: 2, flexGrow: 1, display:  'flex' }}>
+                            <Button
+                              onClick={() => navigate('/login')}
+                              sx={{ border: 1,color: 'black', display: 'block' }}
+                            >
+                              <Typography sx={textTheme}>
+                                Login
+                              </Typography>
+                              </Button>
+                            <Button
+                              onClick={() => navigate('/signup')}
+                              sx={{ backgroundColor: 'black', border: 1,color: 'white', display: 'block', mr:1}}
+                            >
+                              <Typography sx={textTheme}>
+                                Sign Up
+                              </Typography>
+                            </Button>
+                          </Box>
+                        </Grid>
+                      </Grid>
                 </Toolbar>
               </AppBar>
-            </Typography>
+            </Box>
   }
 
