@@ -1,0 +1,16 @@
+# code from https://www.youtube.com/watch?v=Zd014DjonqE
+# https://cloud.google.com/build/docs/build-config-file-schema
+
+steps:
+# Install
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['add', 'package.json']
+
+# TODO: Uncomment the test step when this repo has tests
+# # Test
+# - name: 'gcr.io/cloud-builders/yarn'
+#   args: ['test']
+
+# Build
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['build']

@@ -1,10 +1,6 @@
-import { Typography } from '@mui/material'
-import { CreateBlogPost } from './createblogpost'
+import ThemeProvider from '@mui/material/styles/ThemeProvider'
+import { theme } from '../theme/Theme'
 
 export const App = () => {
-  return (
-    <>
-      <Typography>App Page</Typography>
-    </>
-  )
+  return <ThemeProvider theme={theme}></ThemeProvider>
 }
