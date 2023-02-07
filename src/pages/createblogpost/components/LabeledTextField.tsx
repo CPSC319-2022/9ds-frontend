@@ -1,21 +1,18 @@
-import { FormLabel, Stack, TextField } from '@mui/material'
+import { FormLabel, Stack, TextField, TextFieldProps } from '@mui/material'
+import { type } from 'os'
 
-interface LabeledTextFieldProps {
+type LabeledTextFieldProps = TextFieldProps & {
   label: string
-  placeholder: string
-  variant: 'filled' | 'standard' | 'outlined' | undefined
-  multiline: boolean
-  rows?: number
-  onChange: React.Dispatch<React.SetStateAction<string>>
+  onTextChange: React.Dispatch<React.SetStateAction<string>>
 }
 
-const LabeledTextField = ({
+export const LabeledTextField = ({
   label,
   placeholder,
   variant,
   multiline,
   rows,
-  onChange,
+  onTextChange,
 }: LabeledTextFieldProps) => {
   return (
     <Stack
@@ -32,11 +29,9 @@ const LabeledTextField = ({
         variant={variant}
         placeholder={placeholder}
         onChange={(event) => {
-          onChange(event.target.value)
+          onTextChange(event.target.value)
         }}
       />
     </Stack>
   )
 }
-
-export default LabeledTextField

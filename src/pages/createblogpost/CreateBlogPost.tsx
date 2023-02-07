@@ -35,7 +35,7 @@ export const CreateBlogPost = () => {
             direction='column'
             justifyContent='flex-start'
             alignItems='flex-start'
-            spacing={5}
+            spacing={40}
           >
             <Button
               variant='contained'
@@ -113,14 +113,14 @@ export const CreateBlogPost = () => {
             </Stack>
             <LabeledTextField
               variant='outlined'
-              onChange={setTitle}
+              onTextChange={setTitle}
               placeholder='60 words or less'
               label='Title'
               multiline={false}
             />
             <LabeledTextField
               variant='outlined'
-              onChange={setTitle}
+              onTextChange={setTitle}
               placeholder='250 words or less'
               label='Body'
               multiline={true}
