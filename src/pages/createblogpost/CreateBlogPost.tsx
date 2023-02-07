@@ -1,6 +1,7 @@
 import { Box, Button, FormLabel, Stack, TextField } from '@mui/material'
 import { Container } from '@mui/system'
 import React from 'react'
+import { LabeledTextField } from './components'
 
 const pictureUrls = [
   'https://via.placeholder.com/150',
@@ -36,13 +37,20 @@ export const CreateBlogPost = () => {
             alignItems='flex-start'
             spacing={5}
           >
-            <FormLabel>Pick an image</FormLabel>
+            <Button
+              variant='contained'
+              style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
+            >
+              SAVE DRAFT
+            </Button>
+            <FormLabel style={{ color: 'black' }}>Pick an image</FormLabel>
             <Stack
               justifyContent={'space-between'}
               alignSelf={'stretch'}
               direction='row'
             >
               <Button
+                style={{ color: 'black' }}
                 onClick={() => {
                   if (pictureIndexStart - 4 < 0) {
                     setPictureIndexStart(
@@ -89,6 +97,7 @@ export const CreateBlogPost = () => {
                   })}
               </Stack>
               <Button
+                style={{ color: 'black' }}
                 onClick={() => {
                   if (pictureIndexStart + 4 >= pictureUrls.length) {
                     setPictureIndexStart(0)
@@ -102,42 +111,27 @@ export const CreateBlogPost = () => {
                 {'>'}
               </Button>
             </Stack>
-            <Stack
-              direction={'row'}
-              alignItems={'flex-start'}
-              justifyContent={'space-between'}
-              alignSelf={'stretch'}
-            >
-              <FormLabel style={{ flex: 0.05 }}>Title</FormLabel>
-              <TextField
-                style={{ flex: 0.95 }}
-                variant='outlined'
-                placeholder='60 words or less'
-                onChange={(event) => {
-                  setTitle(event.target.value)
-                }}
-              />
-            </Stack>
-            <Stack
-              direction={'row'}
-              alignItems={'flex-start'}
-              justifyContent={'space-between'}
-              alignSelf={'stretch'}
-            >
-              <FormLabel style={{ flex: 0.05 }}>Body</FormLabel>
-              <TextField
-                style={{ flex: 0.95 }}
-                multiline
-                rows={7}
-                variant='outlined'
-                placeholder='250 words or less'
-                onChange={(event) => {
-                  setBody(event.target.value)
-                }}
-              />
-            </Stack>
+            <LabeledTextField
+              variant='outlined'
+              onChange={setTitle}
+              placeholder='60 words or less'
+              label='Title'
+              multiline={false}
+            />
+            <LabeledTextField
+              variant='outlined'
+              onChange={setTitle}
+              placeholder='250 words or less'
+              label='Body'
+              multiline={true}
+              rows={7}
+            />
           </Stack>
-          <Button type='submit' variant='contained' style={{ marginTop: 34 }}>
+          <Button
+            type='submit'
+            variant='contained'
+            style={{ marginTop: 34, backgroundColor: 'black' }}
+          >
             CREATE
           </Button>
         </form>
