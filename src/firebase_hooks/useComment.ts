@@ -1,17 +1,81 @@
-import {addDoc, deleteDoc, doc, collection, updateDoc} from "firebase/firestore";
+import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp} from "firebase/firestore";
 import {db} from "../index";
+import {useEffect, useState} from "react";
+import {useUser} from "./useUser";
+import firebase from "firebase/compat";
+import FirestoreErrorCode = firebase.firestore.FirestoreErrorCode;
 
-async function handleCommentCreate(articleID: string, comment: any): Promise<string | boolean> {
-    const docRef = await addDoc(collection(db, `article/${articleID}/comments`), comment);
-    return docRef.id;
+export interface comment {
+    commenter_uid: string,
+    profile_image: string,
+    commenter_username: string,
+    content: string,
 }
 
-async function handleCommentEdit(articleID: string, commentID: string, comment: any) {
-    await updateDoc(doc(db, `article/${articleID}/comments`, commentID), comment);
+function useCommentCreate(articleID: string, comment: any) {
+    const [error, setError] = useState<FirestoreErrorCode>();
+    const [loading, setLoading] = useState(true);
+    const [commentId, setCommentId] = useState<string>();
+
+    useEffect(() => {
+        const {error, loading, queriedUser } = useUser()
+        if (error === null && !loading) {
+            addDoc(collection(db, `article/${articleID}/comments`), {
+                commenter_uid: queriedUser.uid,
+                profile_image: queriedUser.profile_image,
+                commenter_username: queriedUser.username,
+                content: comment,
+            }).then(
+                (doc) => {
+                    setLoading(false);
+                    setCommentId(doc.id)
+                }).catch((err) => {
+                    setError(err.code)
+                })
+        }
+    }, [articleID, comment])
+
+    return {error, loading, commentId};
 }
 
-async function handleCommentDelete(articleID: string, commentID: string) {
-    await deleteDoc(doc(db, `article/${articleID}/comments`, commentID));
+function useCommentEdit(articleID: string, commentID: string, comment: any) {
+    const [error, setError] = useState<FirestoreErrorCode>();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const {error, loading, queriedUser } = useUser()
+        if (error === null && !loading) {
+            updateDoc(doc(db, `article/${articleID}/comments`, commentID),{
+                content: comment,
+            }).then(
+                () => {
+                    setLoading(false);
+                }).catch((err) => {
+                    setError(err.code)
+                })
+        }
+    }, [articleID, commentID, comment])
+
+    return {error, loading};
 }
 
-export {handleCommentCreate, handleCommentDelete, handleCommentEdit}
+function useCommentDelete(articleID: string, commentID: string) {
+    const [error, setError] = useState<FirestoreErrorCode>();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const {error, loading, queriedUser } = useUser()
+        if (error === null && !loading) {
+            deleteDoc(doc(db, `article/${articleID}/comments`, commentID)).then(
+                () => {
+                    setLoading(false);
+                }).catch((err) => {
+                    setError(err.code)
+                })
+        }
+    }, [articleID, commentID])
+
+    return {error, loading};
+}
+
+export {useCommentCreate, useCommentDelete, useCommentEdit}
