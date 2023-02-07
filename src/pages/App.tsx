@@ -4,8 +4,7 @@ import { CreateBlogPost } from './createblogpost'
 export const App = () => {
   return (
     <>
-      {/* <Typography>App Page</Typography> */}
-      <CreateBlogPost />
+      <Typography>App Page</Typography>
     </>
   )
 }
