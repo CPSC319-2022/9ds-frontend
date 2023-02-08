@@ -36,11 +36,7 @@ const SignUpButton = styled(Button)({
     borderColor: 'grey'
 })
 
-const inputTextField = styled(TextField) ({
-    width: '326px',
-    height: '56px',
-    left: '32px',
-})
+
 
 const theme2 = createTheme();
 theme2.typography.body1 = {
@@ -56,8 +52,10 @@ theme2.typography.body1 = {
 export function SignUp(){
     return (
         <Box sx={{
-            Width:"390px",
-            Height:"524px",
+            minWidth:"390px",
+            maxWidth:'390px',
+            minHeight:'524px',
+            maxHeight:"524px",
             backgroundColor: "#F8F8FA",
             borderRadius: "12px"
         }}>
@@ -68,11 +66,15 @@ export function SignUp(){
                     <ThemeProvider theme={theme2}>
                         <Typography variant="body1">Or</Typography>
                     </ThemeProvider>
-                <TextField id="name" label="Name" variant="outlined" />
-                <TextField id="email" label="Email" variant="outlined" />
+                <TextField id="name" label="Name" variant="outlined" style={{ width: '326px',
+                    height: '56px',}}/>
+                <TextField id="email" label="Email" variant="outlined" style={{ width: '326px',
+                    height: '56px',}}/>
                 {/*TODO add input Adornments red eye icon, visibilityOnOff*/}
-                <TextField id="password" label="Password" variant="outlined" />
-                <TextField id="profImgLink" label="Profile Image Link" variant="outlined" />
+                <TextField id="password" label="Password" variant="outlined" style={{ width: '326px',
+                    height: '56px',}}/>
+                <TextField id="profImgLink" label="Profile Image Link" variant="outlined" style={{ width: '326px',
+                    height: '56px',}}/>
                 <SignUpButton variant="contained">SIGN UP</SignUpButton>
                 </Stack>
         </Box>

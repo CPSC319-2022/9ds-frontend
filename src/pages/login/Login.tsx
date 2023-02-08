@@ -4,8 +4,10 @@ import * as React from "react";
 
 const LogInWithEmailButton = styled(Button)({
   boxShadow: 'none',
-  width: '235px',
-  height: '42px',
+  minWidth: '178px',
+  maxWidth:'178px',
+  minHeight:'42px',
+  maxHeight: '42px',
   padding: '6px 22px 6px 16px',
   border: '1px solid',
   borderRadius: '4px',
@@ -34,18 +36,21 @@ const LogInButton = styled(Button)({
 export function Login() {
   return (
       <Box sx={{
-        Width:"390px",
-        Height:"314px",
+        minWidth:"390px",
+        maxWidth:'390px',
+        minHeight:'314px',
+        maxHeight:"314px",
         backgroundColor: "#F8F8FA",
         borderRadius: "12px"
       }}>
         {/*not sure what to put at spacing*/}
         <Stack spacing={3}>
           <LogInWithEmailButton variant="outlined">LOGIN WITH EMAIL</LogInWithEmailButton>
-          <TextField id="email" label="Email" variant="outlined" />
+          <TextField id="email" label="Email" variant="outlined" style={{ width: '326px',
+            height: '56px',}}/>
           {/*TODO add input Adornments red eye icon, visibilityOnOff*/}
-          <TextField id="password" label="Password" variant="outlined" />
-          {/*TODO should align to right*/}
+          <TextField id="password" label="Password" variant="outlined" style={{ width: '326px',
+            height: '56px',}}/>
           <Stack
               direction="row"
               alignItems='flex-end'
