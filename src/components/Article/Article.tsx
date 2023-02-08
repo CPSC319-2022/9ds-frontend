@@ -1,45 +1,63 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import Stack from '@mui/material/Stack'
 import sample from '../../assets/sample.jpg'
 import { Typography } from '@mui/material'
-import { alpha } from '@mui/material/styles'
 import Avatar from '../Avatar/Avatar'
+import ArticleSmall from './ArticleSmall'
 
-const Article = () => {
-  return (
-    <Stack
-      alignItems='flex-start'
-      justifyContent='flex-end'
-      width='100%'
-      height='500px'
-      sx={{
-        backgroundImage: `url(${sample})`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: '100%',
-        backgroundPosition: 'center center',
-      }}
-      p='32px'
-    >
-        <Stack direction="row" >
+type ArticleProps = {
+  size?: 'large' | 'small'
+}
+const Article = ({ size }: ArticleProps) => {
+  if (size && size === 'large') {
+    return (
       <Stack
-        sx={{ background: alpha('#3E3636', 0.3) }}
-        maxWidth='373px'
         alignItems='flex-start'
+        justifyContent='flex-end'
+        width='100%'
+        borderRadius='12px'
+        height='500px'
+        sx={{
+          backgroundImage: `url(${sample})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '100%',
+          backgroundPosition: 'center center',
+        }}
+        p='32px'
+        boxSizing='border-box'
       >
-        <Typography variant='h5' color='white.main'>
-          Featured
-        </Typography>
-        <Typography variant='title' color='white.main'>
-          Article title herer
-        </Typography>
-        <Typography variant='caption' color='white.main'>
-          Article descriptions ble bla lba etc etc ajsdfoiajwoignai
-        </Typography>
+        <Stack
+          direction='row'
+          justifyContent='space-between'
+          alignItems='flex-end'
+          width='100%'
+        >
+          <Stack
+            sx={{ backgroundColor: 'black.transparent' }}
+            maxWidth='fit-content'
+            spacing={10}
+            alignItems='flex-start'
+            justifyContent='flex-end'
+            boxSizing='border-box'
+            p='12px'
+          >
+            <Typography variant='h5' color='white.main'>
+              Featured
+            </Typography>
+            <Typography variant='title' color='white.main'>
+              Article title herer
+            </Typography>
+            <Typography variant='caption' color='white.main'>
+              Article descriptions ble bla lba etc etc ajsdfoiajwoignai
+            </Typography>
+          </Stack>
+          <Avatar />
+        </Stack>
       </Stack>
-      <Avatar />
-      </Stack>
-    </Stack>
-  )
+    )
+  } else {
+    return <ArticleSmall />
+  }
 }
 
 export default Article
