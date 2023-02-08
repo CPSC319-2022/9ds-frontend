@@ -1,9 +1,11 @@
 import ThemeProvider from '@mui/material/styles/ThemeProvider'
-import Article from '../components/Article/Article'
+import Home from '../pages/home/Home'
 import { theme } from '../theme/Theme'
 
 export const App = () => {
-  return <ThemeProvider theme={theme}>
-    <Article/>
-  </ThemeProvider>
+  return (
+    <ThemeProvider theme={theme}>
+      <Home />
+    </ThemeProvider>
+  )
 }

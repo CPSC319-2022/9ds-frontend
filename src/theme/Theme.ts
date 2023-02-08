@@ -59,7 +59,7 @@ declare module '@mui/material/Typography' {
 const paletteObject = {
   primary: {
     main: '#6E46C3',
-    '50%': '#6E46C3',
+    '50%': '#4B8192',
     '30%': '#6E46C3',
     '25%': '#6E46C3',
     transparent: alpha('#6E46C3', 0.3),

@@ -28,11 +28,8 @@ const ArticleSmall = () => {
         boxSizing='border-box'
         width='100%'
       >
-        <Typography variant='h5' color='black.main'>
-          Featured
-        </Typography>
         <Typography variant='title' color='black.main'>
-          Article title herer
+          Article title here
         </Typography>
         <Typography variant='caption' color='black.main'>
           Article descriptions ble bla lba etc etc ajsdfoiajwoignai
