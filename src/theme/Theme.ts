@@ -1,4 +1,3 @@
-import grey from '@mui/material/colors/grey'
 import createTheme from '@mui/material/styles/createTheme'
 import { alpha } from '@mui/material/styles'
 declare module '@mui/material/styles/createPalette' {
@@ -17,7 +16,8 @@ declare module '@mui/material/styles/createPalette' {
     '50%': string
     '30%': string
     '25%': string
-    light: string
+    transparent: string
+    // light: string
   }
 }
 
@@ -62,21 +62,21 @@ const paletteObject = {
     '50%': '#6E46C3',
     '30%': '#6E46C3',
     '25%': '#6E46C3',
-    light: '#6E46C3',
+    transparent: '#6E46C3',
   },
   black: {
     main: '#000000',
     '50%': alpha('#373737', 0.5),
     '30%': alpha('#3E3636', 0.3),
     '25%': alpha('#B2B2B2', 0.25),
-    light: alpha('#646464', 0.3),
+    trarnsparent: alpha('#646464', 0.3),
   },
   white: {
     main: '#FFFFFF',
     '50%': '#FFFFFF',
     '30%': '#FFFFFF',
     '25%': '#FFFFFF',
-    light: '#F8F8FA',
+    transparent: '#F8F8FA',
   },
 }
 
