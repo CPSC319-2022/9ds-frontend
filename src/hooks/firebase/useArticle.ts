@@ -1,5 +1,5 @@
 import {collection, doc, query, where, orderBy, limit, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp} from "firebase/firestore";
-import {db} from '../index'
+import {db} from '../../index'
 import {useState, useEffect} from "react";
 import firebase from "firebase/compat";
 import DocumentData = firebase.firestore.DocumentData;
@@ -29,7 +29,7 @@ export interface article {
 
 const articleRef = collection(db, "article");
 
-function useArticleRecents(n: number) {
+export const useArticleRecents = (n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [articles, setArticles] = useState<articlePreview[]>();
@@ -57,12 +57,12 @@ function useArticleRecents(n: number) {
             })
 
         return () => unsubscribe()
-    })
+    }, [])
 
     return {error, loading, articles};
 }
 
-function useArticleRead(articleID: string) {
+export const useArticleRead = (articleID: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [article, setArticle] = useState<article>();
@@ -87,7 +87,7 @@ function useArticleRead(articleID: string) {
     return {error, loading, article};
 }
 
-function useArticleComments(articleID: string, n: number) {
+export const useArticleComments = (articleID: string, n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [comments, setComments] = useState<comment[]>([]);
@@ -111,7 +111,7 @@ function useArticleComments(articleID: string, n: number) {
     return {error, loading, comments};
 }
 
-function useArticleCreate(title: string, content: string, header_image: string, published: boolean) {
+export const useArticleCreate = (title: string, content: string, header_image: string, published: boolean) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [articleId, setArticleId] = useState<string>();
@@ -142,7 +142,7 @@ function useArticleCreate(title: string, content: string, header_image: string, 
     return {error, loading, articleId};
 }
 
-function useArticleEdit(articleID: string, title: string, content: string, header_image: string, published: boolean ) {
+export const useArticleEdit = (articleID: string, title: string, content: string, header_image: string, published: boolean ) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
@@ -168,7 +168,7 @@ function useArticleEdit(articleID: string, title: string, content: string, heade
     return {error, loading};
 }
 
-function useArticlePost(articleID: string) {
+export const useArticlePost = (articleID: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
@@ -191,7 +191,7 @@ function useArticlePost(articleID: string) {
     return {error, loading};
 }
 
-function useArticleDelete(articleID: string) {
+export const useArticleDelete = (articleID: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
@@ -209,5 +209,3 @@ function useArticleDelete(articleID: string) {
 
     return {error, loading};
 }
-
-export {useArticleRecents, useArticleEdit, useArticleDelete, useArticleRead, useArticlePost, useArticleCreate, useArticleComments};

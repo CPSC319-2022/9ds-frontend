@@ -1,5 +1,5 @@
-import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp} from "firebase/firestore";
-import {db} from "../index";
+import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp, Timestamp} from "firebase/firestore";
+import {db} from "../../index";
 import {useEffect, useState} from "react";
 import {useUser} from "./useUser";
 import firebase from "firebase/compat";
@@ -10,9 +10,10 @@ export interface comment {
     profile_image: string,
     commenter_username: string,
     content: string,
+    post_time: Timestamp
 }
 
-function useCommentCreate(articleID: string, comment: any) {
+export const useCommentCreate = (articleID: string, comment: any)  => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [commentId, setCommentId] = useState<string>();
@@ -25,6 +26,7 @@ function useCommentCreate(articleID: string, comment: any) {
                 profile_image: queriedUser.profile_image,
                 commenter_username: queriedUser.username,
                 content: comment,
+                post_time: serverTimestamp()
             }).then(
                 (doc) => {
                     setLoading(false);
@@ -38,7 +40,7 @@ function useCommentCreate(articleID: string, comment: any) {
     return {error, loading, commentId};
 }
 
-function useCommentEdit(articleID: string, commentID: string, comment: any) {
+export const useCommentEdit = (articleID: string, commentID: string, comment: any) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ function useCommentEdit(articleID: string, commentID: string, comment: any) {
     return {error, loading};
 }
 
-function useCommentDelete(articleID: string, commentID: string) {
+export const useCommentDelete = (articleID: string, commentID: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
@@ -77,5 +79,3 @@ function useCommentDelete(articleID: string, commentID: string) {
 
     return {error, loading};
 }
-
-export {useCommentCreate, useCommentDelete, useCommentEdit}

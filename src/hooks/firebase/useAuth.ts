@@ -1,11 +1,11 @@
 import {useState, useEffect} from "react";
 import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo} from "firebase/auth";
-import {auth} from "../index";
+import {auth} from "../../index";
 import {useNewUser, useUser, UserData} from "./useUser";
 import firebase from "firebase/compat";
 import FirestoreErrorCode = firebase.firestore.FirestoreErrorCode;
 
-function useAuth() {
+export const useAuth = () => {
     const[state, setState] = useState(() => {
         const user = auth.currentUser;
         return {
@@ -14,19 +14,19 @@ function useAuth() {
         }
     })
 
-    function onChange(user: User | null) {
+    const onChange = (user: User | null) => {
         setState({initializing: false, user})
     }
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(onChange)
         return () => unsubscribe()
-    })
+    }, [])
 
     return state
 }
 
-function useCreateUserEmailPassword(email: string, password: string, username: string, profile_image: string) {
+export const useCreateUserEmailPassword = (email: string, password: string, username: string, profile_image: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserData>();
@@ -45,7 +45,7 @@ function useCreateUserEmailPassword(email: string, password: string, username: s
     return {error, loading, user};
 }
 
-function useSignInUserEmailPassword(email:string, password: string) {
+export const useSignInUserEmailPassword = (email:string, password: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserData>();
@@ -64,7 +64,7 @@ function useSignInUserEmailPassword(email:string, password: string) {
     return {error, loading, user};
 }
 
-function useSignInWithGoogle(){
+export const useSignInWithGoogle = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserData>();
@@ -98,7 +98,7 @@ function useSignInWithGoogle(){
     return {error, loading, user};
 }
 
-function useSignOut() {
+export const useSignOut = () => {
     const [error, setError] = useState();
     const [loading, setLoading] = useState(true);
     const [signedOut, setSignedOut] = useState<boolean>();
@@ -114,6 +114,3 @@ function useSignOut() {
 
     return [error, loading, signedOut];
 }
-
-
-export {useAuth, useSignInUserEmailPassword, useCreateUserEmailPassword, useSignInWithGoogle, useSignOut}

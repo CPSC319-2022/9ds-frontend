@@ -9,7 +9,7 @@ import {
     setDoc,
     updateDoc
 } from "firebase/firestore";
-import {db, auth} from '../index'
+import {db, auth} from '../../index'
 import {useState, useEffect} from "react";
 import firebase from "firebase/compat";
 import DocumentData = firebase.firestore.DocumentData;
@@ -22,7 +22,7 @@ export interface UserData {
     uid: string
 }
 
-function useUserDirectory(n: number) {
+export const useUserDirectory = (n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [users, setUsers] = useState<DocumentData[]>();
@@ -48,7 +48,7 @@ function useUserDirectory(n: number) {
     return {error, loading, users};
 }
 
-function useUserArticles(uid: string, n: number) {
+export const useUserArticles = (uid: string, n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [articles, setArticles] = useState<DocumentData[]>();
@@ -82,7 +82,7 @@ function useUserArticles(uid: string, n: number) {
     return {error, loading, articles};
 }
 
-function useUserDrafts(n: number) {
+export const useUserDrafts = (n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [articles, setArticles] = useState<DocumentData[]>();
@@ -116,7 +116,7 @@ function useUserDrafts(n: number) {
     return {error, loading, articles};
 }
 
-function useApplyContrtibutor(){
+export const useApplyContrtibutor = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
@@ -134,7 +134,7 @@ function useApplyContrtibutor(){
     return {error, loading};
 }
 
-function useNewUser(username: string, profile_image: string) {
+export const useNewUser = (username: string, profile_image: string) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserData>();
@@ -159,12 +159,12 @@ function useNewUser(username: string, profile_image: string) {
                 setError(err.code)
             })
         }
-    })
+    }, [])
 
     return {error, loading, user};
 }
 
-function useUser() {
+export const useUser = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [queriedUser, setQueriedUser] = useState<UserData>({
@@ -198,5 +198,3 @@ function useUser() {
 
     return {error, loading, queriedUser};
 }
-
-export {useUser, useNewUser, useUserArticles, useUserDirectory, useUserDrafts, useApplyContrtibutor}
