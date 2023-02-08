@@ -21,8 +21,10 @@ const LogInWithEmailButton = styled(Button)({
 })
 
 const LogInButton = styled(Button)({
-  width: '89px',
-  height: '36px',
+  minWidth: '89px',
+  maxWidth: '89px',
+  minHeight: '36px',
+  maxHeight: '36px',
   padding: '6px 16px',
   borderRadius: '4px',
   fontWeight: 'button.fontWeight',

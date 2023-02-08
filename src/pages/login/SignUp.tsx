@@ -9,8 +9,10 @@ import {theme} from '../../theme';
 
 const SignUpWithGoogleButton = styled(Button)({
     boxShadow: 'none',
-    width: '235px',
-    height: '42px',
+    minWidth: '235px',
+    maxWidth: '235px',
+    minHeight: '42px',
+    maxHeight: '42px',
     padding: '6px 22px 6px 16px',
     border: '1px solid',
     borderRadius: '4px',
@@ -24,8 +26,10 @@ const SignUpWithGoogleButton = styled(Button)({
 })
 
 const SignUpButton = styled(Button)({
-    width: '89px',
-    height: '36px',
+    minWidth: '89px',
+    maxWidth: '89px',
+    minHeight: '36px',
+    maxHeight: '36px',
     padding: '6px 16px',
     borderRadius: '4px',
     fontWeight: 'button.fontWeight',
@@ -73,7 +77,7 @@ export function SignUp(){
                 {/*TODO add input Adornments red eye icon, visibilityOnOff*/}
                 <TextField id="password" label="Password" variant="outlined" style={{ width: '326px',
                     height: '56px',}}/>
-                <TextField id="profImgLink" label="Profile Image Link" variant="outlined" style={{ width: '326px',
+                <TextField id="profImgLink" label="Profile image link" variant="outlined" style={{ width: '326px',
                     height: '56px',}}/>
                 <SignUpButton variant="contained">SIGN UP</SignUpButton>
                 </Stack>
