@@ -1,14 +1,18 @@
 import * as React from 'react';
-import {Card, CardContent, Stack, TextField, Button, Typography, Box} from '@mui/material';
-
+import {
+    Stack,
+    TextField,
+    Button,
+    Typography,
+    Box,
+} from '@mui/material';
 import {createTheme, styled} from '@mui/material/styles';
 import {ThemeProvider} from '@mui/material/styles';
 import {theme} from '../../theme';
 
-//import googleIcon from './googleIcon.png';
+import googleIcon from '../../ui/googleIcon.png'
 
 const SignUpWithGoogleButton = styled(Button)({
-    boxShadow: 'none',
     minWidth: '235px',
     maxWidth: '235px',
     minHeight: '42px',
@@ -24,6 +28,8 @@ const SignUpWithGoogleButton = styled(Button)({
     borderColor: 'grey',
     fontColor: 'black'
 })
+
+
 
 const SignUpButton = styled(Button)({
     minWidth: '89px',
@@ -51,8 +57,7 @@ theme2.typography.body1 = {
     letterSpacing: 0
 }
 
-
-
+// TODO: gap
 export function SignUp(){
     return (
         <Box sx={{
@@ -63,24 +68,31 @@ export function SignUp(){
             backgroundColor: "#F8F8FA",
             borderRadius: "12px"
         }}>
-                {/*not sure what to put at spacing*/}
-                <Stack spacing={3}>
-                {/*TODO import google png, allignment, font color, shadow*/}
-                <SignUpWithGoogleButton variant="outlined">SIGNUP WITH GOOGLE</SignUpWithGoogleButton>
-                    <ThemeProvider theme={theme2}>
+
+            <Stack spacing={20/8}>
+                {/* TODO alignment, font color, add top gap */}
+                <SignUpWithGoogleButton sx = {{boxShadow:2, left:'32px'}} variant="outlined" >
+                    <Stack direction="row" alignItems="center" justifyContent="center" gap='8px'>
+                        <img src={googleIcon} width='24px' height='25px'/>
+                        SIGNUP WITH GOOGLE
+                    </Stack>
+                </SignUpWithGoogleButton>
+                <ThemeProvider theme={theme2}>
+                    <Stack direction="row" alignItems="center" justifyContent="center">
                         <Typography variant="body1">Or</Typography>
-                    </ThemeProvider>
+                    </Stack>
+                </ThemeProvider>
                 <TextField id="name" label="Name" variant="outlined" style={{ width: '326px',
-                    height: '56px',}}/>
+                    height: '56px', left:'32px'}}/>
                 <TextField id="email" label="Email" variant="outlined" style={{ width: '326px',
-                    height: '56px',}}/>
+                    height: '56px', left:'32px'}}/>
                 {/*TODO add input Adornments red eye icon, visibilityOnOff*/}
                 <TextField id="password" label="Password" variant="outlined" style={{ width: '326px',
-                    height: '56px',}}/>
+                    height: '56px', left:'32px'}}/>
                 <TextField id="profImgLink" label="Profile image link" variant="outlined" style={{ width: '326px',
-                    height: '56px',}}/>
-                <SignUpButton variant="contained">SIGN UP</SignUpButton>
-                </Stack>
+                    height: '56px', left:'32px'}}/>
+                <SignUpButton variant="contained" style={{left:'32px'}}>SIGN UP</SignUpButton>
+            </Stack>
         </Box>
     )
 }

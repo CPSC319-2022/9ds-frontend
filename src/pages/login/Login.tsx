@@ -2,6 +2,9 @@ import {Box, Button, Stack, TextField, Typography} from '@mui/material'
 import {styled, ThemeProvider} from "@mui/material/styles";
 import * as React from "react";
 
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
 const LogInWithEmailButton = styled(Button)({
   boxShadow: 'none',
   minWidth: '178px',
@@ -47,20 +50,24 @@ export function Login() {
       }}>
         {/*not sure what to put at spacing*/}
         <Stack spacing={3}>
-          <LogInWithEmailButton variant="outlined">LOGIN WITH EMAIL</LogInWithEmailButton>
-          <TextField id="email" label="Email" variant="outlined" style={{ width: '326px',
-            height: '56px',}}/>
+          {/*TODO add top gap*/}
+          <LogInWithEmailButton variant="outlined" sx={{boxShadow:2, left:'32px',}}>
+            LOGIN WITH EMAIL
+          </LogInWithEmailButton>
+          <TextField id="email" label="Email" variant="outlined" sx={{ width: '326px',
+            height: '56px', left:'32px'}}/>
           {/*TODO add input Adornments red eye icon, visibilityOnOff*/}
-          <TextField id="password" label="Password" variant="outlined" style={{ width: '326px',
-            height: '56px',}}/>
+          <TextField id="password" label="Password" variant="outlined" sx={{ width: '326px',
+            height: '56px', left:'32px'}}/>
           <Stack
               direction="row"
               alignItems='flex-end'
               justifyContent="flex-end"
           >
-            <LogInButton variant="contained">LOGIN</LogInButton>
+            <LogInButton variant="contained" sx={{right:'32px'}}>LOGIN</LogInButton>
           </Stack>
         </Stack>
       </Box>
   )
 }
+
