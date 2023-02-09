@@ -1,9 +1,6 @@
-import {collection, doc, query, where, orderBy, limit, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp} from "firebase/firestore";
+import {collection, doc, query, where, orderBy, limit, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, DocumentData, QuerySnapshot, FirestoreErrorCode, FirestoreError} from "firebase/firestore";
 import {db} from '../../index'
 import {useState, useEffect} from "react";
-import firebase from "firebase/compat";
-import DocumentData = firebase.firestore.DocumentData;
-import FirestoreErrorCode = firebase.firestore.FirestoreErrorCode;
 import {useUser} from "./useUser";
 import {comment} from "./useComment";
 
@@ -38,7 +35,7 @@ export const useArticleRecents = (n: number) => {
         const q = query(articleRef, where("published", "==", true), orderBy("publish_time"), limit(n))
 
         const unsubscribe = onSnapshot(q,
-            (docs) => {
+            (docs: QuerySnapshot<DocumentData>) => {
                 const articlesData: any[] = []
                 docs.forEach(doc => {
                     articlesData.push({
@@ -77,7 +74,7 @@ export const useArticleRead = (articleID: string) => {
                 setLoading(false);
                 setArticle(data as article)
             }
-        }, (err) => {
+        }, (err: FirestoreError) => {
             setError(err.code)
         })
 
@@ -94,7 +91,7 @@ export const useArticleComments = (articleID: string, n: number) => {
 
     useEffect( () => {
         const unsubscribe = onSnapshot(query(collection(db, `article/${articleID}/comments`), limit(n)),
-            (docs) => {
+            (docs: QuerySnapshot<DocumentData>) => {
             const commentsData: DocumentData[] = []
                 docs.forEach(doc => {
                     commentsData.push(doc.data)

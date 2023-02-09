@@ -1,9 +1,7 @@
-import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp, Timestamp} from "firebase/firestore";
+import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp, Timestamp, FirestoreErrorCode} from "firebase/firestore";
 import {db} from "../../index";
 import {useEffect, useState} from "react";
 import {useUser} from "./useUser";
-import firebase from "firebase/compat";
-import FirestoreErrorCode = firebase.firestore.FirestoreErrorCode;
 
 export interface comment {
     commenter_uid: string,
