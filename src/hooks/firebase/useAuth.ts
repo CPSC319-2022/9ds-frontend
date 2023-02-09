@@ -1,9 +1,8 @@
 import {useState, useEffect} from "react";
 import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo} from "firebase/auth";
+import {FirestoreErrorCode} from "firebase/firestore";
 import {auth} from "../../index";
 import {useNewUser, useUser, UserData} from "./useUser";
-import firebase from "firebase/compat";
-import FirestoreErrorCode = firebase.firestore.FirestoreErrorCode;
 
 export const useAuth = () => {
     const[state, setState] = useState(() => {

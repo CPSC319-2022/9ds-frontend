@@ -7,13 +7,13 @@ import {
     limit,
     onSnapshot,
     setDoc,
-    updateDoc
+    updateDoc,
+    QuerySnapshot,
+    DocumentData,
+    FirestoreErrorCode
 } from "firebase/firestore";
 import {db, auth} from '../../index'
 import {useState, useEffect} from "react";
-import firebase from "firebase/compat";
-import DocumentData = firebase.firestore.DocumentData;
-import FirestoreErrorCode = firebase.firestore.FirestoreErrorCode;
 
 export interface UserData {
     contributor: boolean,
@@ -31,7 +31,7 @@ export const useUserDirectory = (n: number) => {
         const q = query(collection(db, "users"), where("contributor", "==", true), orderBy("username"), limit(n))
 
         const unsubscribe = onSnapshot(q,
-            (docs) => {
+            (docs: QuerySnapshot<DocumentData>) => {
                 const usersData: UserData[] = []
                 docs.forEach(doc => {
                     usersData.push(doc.data() as UserData)
@@ -58,7 +58,7 @@ export const useUserArticles = (uid: string, n: number) => {
             where("author_uid", "==", uid), orderBy("post_time"), limit(n))
 
         const unsubscribe = onSnapshot(q,
-            (docs) => {
+            (docs: QuerySnapshot<DocumentData>) => {
                 const articlesData: DocumentData[] = []
                 docs.forEach(doc => {
                     articlesData.push({
@@ -92,7 +92,7 @@ export const useUserDrafts = (n: number) => {
             where("author_uid", "==", auth.currentUser), orderBy("post_time"), limit(n))
 
         const unsubscribe = onSnapshot(q,
-            (docs) => {
+            (docs: QuerySnapshot<DocumentData>) => {
                 const articlesData: DocumentData[] = []
                 docs.forEach(doc => {
                     articlesData.push({
