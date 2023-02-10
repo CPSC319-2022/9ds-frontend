@@ -5,7 +5,9 @@ type LabeledTextFieldProps = TextFieldProps & {
   onTextChange: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const LabeledTextField = ({
+//This is an interesting case: don't know why it's showing error unless I
+//explicitly define Props (in like 17) on top of defining it in line 10
+export const LabeledTextField: React.FC<LabeledTextFieldProps> = ({
   label,
   placeholder,
   variant,

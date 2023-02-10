@@ -5,6 +5,7 @@ import ArticleSmall from './ArticleSmall'
 type ArticleProps = {
   size?: 'large' | 'small'
 }
+
 const Article: FC<ArticleProps> = ({ size }) => {
   if (size !== 'large') {
     return <ArticleSmall />
