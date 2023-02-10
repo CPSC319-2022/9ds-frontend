@@ -1,10 +1,10 @@
 import { Card, CardContent, Typography, Button } from '@mui/material'
 import { Stack } from '@mui/system'
-import feather from '../ui/feather.png'
-import logo from '../ui/logo.png'
-import React, {FC} from 'react'
+import feather from '../../assets/feather.png'
+import logo from '../../assets/logo.png'
+import React, { FC } from 'react'
 
-export const SignInFooter: FC = () => {
+export const Footer: FC = () => {
   return (
     <Card
       sx={{
@@ -78,3 +78,5 @@ export const SignInFooter: FC = () => {
     </Card>
   )
 }
+
+//export default Footer
