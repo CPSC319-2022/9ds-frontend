@@ -2,9 +2,9 @@ import { Card, CardContent, Typography, Button } from '@mui/material'
 import { Stack } from '@mui/system'
 import feather from '../ui/feather.png'
 import logo from '../ui/logo.png'
-import React from 'react'
+import React, {FC} from 'react'
 
-export function SignInFooter() {
+export const SignInFooter: FC = () => {
   return (
     <Card
       sx={{
