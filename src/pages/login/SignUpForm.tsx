@@ -16,7 +16,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import googleIcon from '../../assets/googleIcon.png'
 
-export const SignUp = () => {
+const SignUpForm = () => {
 
     const [showPassword, setShowPassword] = React.useState(false);
 
@@ -81,4 +81,6 @@ export const SignUp = () => {
             </Stack>
     )
 }
+
+export default SignUpForm
 

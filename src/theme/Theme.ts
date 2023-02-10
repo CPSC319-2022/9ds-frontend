@@ -77,6 +77,7 @@ const paletteObject = {
     '30%': '#FFFFFF',
     '25%': '#FFFFFF',
     transparent: alpha('#FFFFFF', 0.3),
+    light: '#F8F8FA'
   },
 }
 

@@ -1,14 +1,16 @@
 import {Divider, Stack} from "@mui/material";
-import {SignUp} from "./SignUp";
-import {Login} from "./Login";
+import SignUpForm from "./SignUpForm";
+import LoginForm from "./LoginForm";
 
-export const LoginAndSignup = () => {
+const LoginAndSignUpForm = () => {
     return (
             <Stack direction='row' spacing ={62} px='25px' alignItems='center' justifyContent='center'>
-            <SignUp/>
+            <SignUpForm/>
                 <Divider orientation='vertical' sx={{ borderColor:'black.main', height:'300px'}}>
                 </Divider>
-            <Login/>
+            <LoginForm/>
             </Stack>
     )
 }
+
+export default LoginAndSignUpForm
