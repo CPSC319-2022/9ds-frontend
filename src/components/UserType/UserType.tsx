@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import { ReactComponent as Glasses } from '../../assets/glasses.svg'
 import { ReactComponent as Pencil } from '../../assets/pencil.svg'
@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 type UserTypeProps = {
   type?: 'reader' | 'contributor'
 }
-const UserType = ({ type }: UserTypeProps) => {
+const UserType: FC<UserTypeProps> = ({ type }) => {
   const reader = type && type === 'reader'
   return (
     <Stack

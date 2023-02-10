@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import sample from '../../assets/sample.jpg'
 import { Typography } from '@mui/material'
@@ -6,7 +6,8 @@ import { Typography } from '@mui/material'
 type AvatarProps = {
   dark?: boolean
 }
-const Avatar = ({ dark }: AvatarProps) => {
+
+export const Avatar: FC<AvatarProps> = ({ dark }) => {
   return (
     <Stack
       direction='row'

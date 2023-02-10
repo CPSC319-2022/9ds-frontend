@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import sample from '../../assets/sample.jpg'
 import { Typography } from '@mui/material'
 import Avatar from '../Avatar/Avatar'
 
-const ArticleSmall = () => {
+const ArticleSmall: FC = () => {
   return (
     <Stack
       alignItems='flex-start'
