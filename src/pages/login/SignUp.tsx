@@ -14,7 +14,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import googleIcon from '../../assets/googleIcon'
+import googleIcon from '../../assets/googleIcon.png'
 
 export const SignUp = () => {
 

@@ -1,4 +1,4 @@
-import {Divider, Stack, ThemeProvider} from "@mui/material";
+import {Divider, Stack} from "@mui/material";
 import {SignUp} from "./SignUp";
 import {Login} from "./Login";
 
