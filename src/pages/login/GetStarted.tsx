@@ -1,8 +1,7 @@
 import * as React from 'react';
 import {Typography, Stack} from '@mui/material';
-import {theme} from "../../theme";
 
-export function GetStarted(){
+export const GetStarted = () => {
     return(
             <Stack
                 justifyContent="center"

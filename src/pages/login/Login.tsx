@@ -1,4 +1,4 @@
-import {Box, Button, IconButton, Stack, TextField, Typography} from '@mui/material'
+import {Button, IconButton, Stack, TextField, Typography} from '@mui/material'
 import * as React from 'react';
 
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-export function Login() {
+export const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
