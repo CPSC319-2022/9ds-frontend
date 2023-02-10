@@ -1,73 +1,69 @@
-import {Box, Button, Stack, TextField, Typography} from '@mui/material'
-import {styled, ThemeProvider} from "@mui/material/styles";
-import * as React from "react";
+import {Box, Button, IconButton, Stack, TextField, Typography} from '@mui/material'
+import * as React from 'react';
 
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
-const LogInWithEmailButton = styled(Button)({
-  boxShadow: 'none',
-  minWidth: '178px',
-  maxWidth:'178px',
-  minHeight:'42px',
-  maxHeight: '42px',
-  padding: '6px 22px 6px 16px',
-  border: '1px solid',
-  borderRadius: '4px',
-  fontWeight: 'button.fontWeight',
-  fontSize: 'button.fontSize',
-  lineHeight: 'button.lineHeight',
-  letterSpacing: 'button.letterSpacing',
-  backgroundColor: 'white',
-  borderColor: 'grey',
-  fontColor: 'black'
-})
-
-const LogInButton = styled(Button)({
-  minWidth: '89px',
-  maxWidth: '89px',
-  minHeight: '36px',
-  maxHeight: '36px',
-  padding: '6px 16px',
-  borderRadius: '4px',
-  fontWeight: 'button.fontWeight',
-  fontSize: 'button.fontSize',
-  lineHeight: 'button.lineHeight',
-  letterSpacing: 'button.letterSpacing',
-  backgroundColor: 'black',
-  borderColor: 'grey'
-})
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export function Login() {
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
   return (
-      <Box sx={{
-        minWidth:"390px",
-        maxWidth:'390px',
-        minHeight:'314px',
-        maxHeight:"314px",
-        backgroundColor: "#F8F8FA",
-        borderRadius: "12px"
-      }}>
-        {/*not sure what to put at spacing*/}
-        <Stack spacing={3}>
-          {/*TODO add top gap*/}
-          <LogInWithEmailButton variant="outlined" sx={{boxShadow:2, left:'32px',}}>
-            LOGIN WITH EMAIL
-          </LogInWithEmailButton>
-          <TextField id="email" label="Email" variant="outlined" sx={{ width: '326px',
-            height: '56px', left:'32px'}}/>
-          {/*TODO add input Adornments red eye icon, visibilityOnOff*/}
-          <TextField id="password" label="Password" variant="outlined" sx={{ width: '326px',
-            height: '56px', left:'32px'}}/>
+      <Stack
+          width='390px'
+          direction='column'
+          justifyContent='flex-start'
+          alignItems='stretch'
+          borderRadius='12px'
+          sx={{backgroundColor: 'white.light'}}
+          p='32px'
+          spacing={24}
+      >
+        <Button variant='outlined' sx={{boxShadow:2, alignSelf:'flex-start'}}>
+          <Typography variant='button'>LOGIN WITH EMAIL</Typography>
+        </Button>
+        <TextField id='email' label='Email' variant='outlined' />
+        <FormControl variant='outlined'>
+          <InputLabel htmlFor='outlined-adornment-password'>Password</InputLabel>
+          <OutlinedInput
+             id='outlined-adornment-password'
+             type={showPassword ? 'text' : 'password'}
+             endAdornment={
+                <InputAdornment position='end'>
+                <IconButton
+                     aria-label='toggle password visibility'
+                     onClick={handleClickShowPassword}
+                     onMouseDown={handleMouseDownPassword}
+                     edge='end'
+                >
+                {showPassword ? <VisibilityOff/> : <Visibility/>}
+                </IconButton>
+                </InputAdornment>
+                }
+                label='Password'
+            />
+          </FormControl>
           <Stack
-              direction="row"
+              direction='row'
               alignItems='flex-end'
-              justifyContent="flex-end"
+              justifyContent='flex-end'
           >
-            <LogInButton variant="contained" sx={{right:'32px'}}>LOGIN</LogInButton>
-          </Stack>
+            <Button variant='contained' sx={{
+              alignSelf:'flex-start',
+              backgroundColor: 'black.main', }}>
+              <Typography variant='button'>LOGIN</Typography>
+            </Button>
         </Stack>
-      </Box>
+        </Stack>
+
   )
 }
 
