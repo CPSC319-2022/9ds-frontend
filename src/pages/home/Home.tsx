@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Article from '../../components/Article/Article'
 import UserType from '../../components/UserType/UserType'
 import Button from '../../components/Button/Button'
 
-const Home = () => {
+const Home: FC = () => {
   return (
     <Stack
       direction='column'

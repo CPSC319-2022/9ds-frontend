@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import React from 'react'
+import React, { FC } from 'react'
 import MuiButton from '@mui/material/Button'
 
 type ButtonProps = {
@@ -13,7 +13,7 @@ type ButtonProps = {
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined
 }
 
-const Button = ({
+const Button: FC<ButtonProps> = ({
   dark,
   text,
   variant,
@@ -22,7 +22,7 @@ const Button = ({
   href,
   startIcon,
   onClick,
-}: ButtonProps) => {
+}) => {
   return (
     <MuiButton
       variant={variant ?? 'contained'}
