@@ -9,7 +9,9 @@ type ArticleProps = {
   size?: 'large' | 'small'
 }
 const Article = ({ size }: ArticleProps) => {
-  if (size && size === 'large') {
+  if (size !== 'large') {
+    return <ArticleSmall />
+  } else {
     return (
       <Stack
         alignItems='flex-start'
@@ -55,8 +57,6 @@ const Article = ({ size }: ArticleProps) => {
         </Stack>
       </Stack>
     )
-  } else {
-    return <ArticleSmall />
   }
 }
 

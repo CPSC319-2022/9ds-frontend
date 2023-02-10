@@ -25,8 +25,8 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <MuiButton
-      variant={variant ? variant : 'contained'}
-      size={size ? size : 'medium'}
+      variant={variant ?? 'contained'}
+      size={size ?? 'medium'}
       startIcon={startIcon}
       onClick={onClick}
       href={href}
