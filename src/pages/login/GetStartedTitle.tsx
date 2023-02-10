@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Typography, Stack} from '@mui/material';
 
-const GetStarted = () => {
+const GetStartedTitle = () => {
     return(
             <Stack
                 justifyContent="center"
@@ -17,4 +17,4 @@ const GetStarted = () => {
     )
 }
 
-export default GetStarted
+export default GetStartedTitle

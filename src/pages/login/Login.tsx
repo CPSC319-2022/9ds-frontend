@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
-import GetStarted from './GetStarted'
+import GetStartedTitle from './GetStartedTitle'
 import LoginAndSignUpForm from './LoginAndSignUpForm'
 
 const Login: FC = () => {
@@ -12,12 +12,8 @@ const Login: FC = () => {
             boxSizing='border-box'
             p='24px'
         >
-            <Stack>
-                <GetStarted/>
-            </Stack>
-            <Stack>
-                <LoginAndSignUpForm/>
-            </Stack>
+            <GetStartedTitle/>
+            <LoginAndSignUpForm/>
 
         </Stack>
     )
