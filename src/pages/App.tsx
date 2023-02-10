@@ -3,6 +3,7 @@ import Home from '../pages/home/Home'
 import React from 'react'
 import { theme } from '../theme/Theme'
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'
+import { CreateArticle } from './createarticle/CreateArticle'
 
 export const App = () => {
   return (
@@ -10,6 +11,7 @@ export const App = () => {
       <ThemeProvider theme={theme}>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/create' element={<CreateArticle />} />
           {/* 
         Left here as template for next addition of routes
         <Route path="/sign-in" element={<Signin />}>

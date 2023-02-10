@@ -1,5 +1,4 @@
 import { FormLabel, Stack, TextField, TextFieldProps } from '@mui/material'
-import { type } from 'os'
 
 type LabeledTextFieldProps = TextFieldProps & {
   label: string
