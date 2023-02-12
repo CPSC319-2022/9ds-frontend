@@ -11,6 +11,7 @@ type ButtonProps = {
   href?: string
   startIcon?: ReactNode
   onClick?: MouseEventHandler<HTMLButtonElement> | undefined
+  darkText?: boolean
 }
 
 export const Button: FC<ButtonProps> = ({
@@ -23,6 +24,10 @@ export const Button: FC<ButtonProps> = ({
   startIcon,
   onClick,
 }) => {
+  const textColor = dark && variant === 'outlined' ? 'black.main' : 'white.main'
+  const bgColor = dark && variant === 'outlined' ? undefined : 'black.main'
+  const borderColor = dark ? 'black' : 'white'
+
   return (
     <MuiButton
       variant={variant ?? 'contained'}
@@ -31,15 +36,18 @@ export const Button: FC<ButtonProps> = ({
       onClick={onClick}
       href={href}
       sx={{
-        backgroundColor: dark ? 'black.main' : undefined,
-        border: variant === 'outlined' ? '2px solid white' : undefined,
+        backgroundColor: bgColor,
+        border: `2px solid ${borderColor}`,
         ...style,
       }}
     >
       <Typography
         variant='button'
         noWrap
-        sx={{ color: 'white.main', textTransform: 'none' }}
+        sx={{
+          color: textColor,
+          textTransform: 'none',
+        }}
       >
         {text}
       </Typography>

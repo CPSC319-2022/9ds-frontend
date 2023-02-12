@@ -65,19 +65,5 @@ export const Footer: FC = () => {
         </Typography>
       </Stack>
     </Stack>
-    // <Card
-    //   sx={{
-    //     maxWidth: '1000px',
-    //     minWidth: '500px',
-    //     height: '220px',
-    //     borderRadius: '15px',
-    //     bgcolor: 'black.main',
-    //     color: 'white.main',
-    //   }}
-    // >
-    //   <CardContent>
-
-    //   </CardContent>
-    // </Card>
   )
 }

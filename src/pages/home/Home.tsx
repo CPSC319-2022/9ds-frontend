@@ -5,16 +5,18 @@ import { Article } from '../../components/Article'
 import { UserType } from '../../components/UserType'
 import { Button } from '../../components/Button'
 import { Footer } from '../../components/Footer'
+import { Header } from '../../components/Header'
 
 export const Home: FC = () => {
   return (
     <Stack
       direction='column'
       alignItems='center'
-      spacing={64}
+      spacing={32}
       boxSizing='border-box'
       p='24px'
     >
+      <Header />
       <Article size='large' />
       <Stack direction='column' spacing={32} width='100%' alignItems='center'>
         <Typography
