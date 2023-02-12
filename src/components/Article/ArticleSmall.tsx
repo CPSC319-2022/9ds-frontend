@@ -2,9 +2,9 @@ import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import sample from '../../assets/sample.jpg'
 import { Typography } from '@mui/material'
-import Avatar from '../Avatar/Avatar'
+import { Avatar } from '../Avatar'
 
-const ArticleSmall: FC = () => {
+export const ArticleSmall: FC = () => {
   return (
     <Stack
       alignItems='flex-start'
@@ -39,5 +39,3 @@ const ArticleSmall: FC = () => {
     </Stack>
   )
 }
-
-export default ArticleSmall

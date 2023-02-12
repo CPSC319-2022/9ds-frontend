@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import React, { FC } from 'react'
+import React, { FC, MouseEventHandler, ReactNode } from 'react'
 import MuiButton from '@mui/material/Button'
 
 type ButtonProps = {
@@ -9,11 +9,11 @@ type ButtonProps = {
   size?: 'large' | 'medium'
   style?: { [k: string]: any }
   href?: string
-  startIcon?: React.ReactNode
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined
+  startIcon?: ReactNode
+  onClick?: MouseEventHandler<HTMLButtonElement> | undefined
 }
 
-const Button: FC<ButtonProps> = ({
+export const Button: FC<ButtonProps> = ({
   dark,
   text,
   variant,
@@ -45,5 +45,3 @@ const Button: FC<ButtonProps> = ({
     </MuiButton>
   )
 }
-
-export default Button

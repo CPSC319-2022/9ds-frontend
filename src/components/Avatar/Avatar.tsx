@@ -38,4 +38,3 @@ export const Avatar: FC<AvatarProps> = ({ dark }) => {
   )
 }
 
-export default Avatar
