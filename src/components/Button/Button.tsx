@@ -32,6 +32,7 @@ export const Button: FC<ButtonProps> = ({
       href={href}
       sx={{
         backgroundColor: dark ? 'black.main' : undefined,
+        border: variant === 'outlined' ? '2px solid white' : undefined,
         ...style,
       }}
     >
