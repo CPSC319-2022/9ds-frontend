@@ -1,13 +1,12 @@
 import { FormLabel, Stack, TextField, TextFieldProps } from '@mui/material'
+import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
   label: string
-  onTextChange: React.Dispatch<React.SetStateAction<string>>
+  onTextChange: Dispatch<SetStateAction<string>>
 }
 
-//This is an interesting case: don't know why it's showing error unless I
-//explicitly define Props (in like 17) on top of defining it in line 10
-export const LabeledTextField: React.FC<LabeledTextFieldProps> = ({
+export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   label,
   placeholder,
   variant,

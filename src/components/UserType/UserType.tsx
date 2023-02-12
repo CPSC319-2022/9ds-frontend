@@ -7,7 +7,8 @@ import Typography from '@mui/material/Typography'
 type UserTypeProps = {
   type?: 'reader' | 'contributor'
 }
-const UserType: FC<UserTypeProps> = ({ type }) => {
+
+export const UserType: FC<UserTypeProps> = ({ type }) => {
   const reader = type && type === 'reader'
   return (
     <Stack
@@ -30,5 +31,3 @@ const UserType: FC<UserTypeProps> = ({ type }) => {
     </Stack>
   )
 }
-
-export default UserType

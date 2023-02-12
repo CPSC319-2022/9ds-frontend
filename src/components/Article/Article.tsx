@@ -1,12 +1,12 @@
 import React, { FC } from 'react'
-import ArticleLarge from './ArticleLarge'
-import ArticleSmall from './ArticleSmall'
+import {ArticleLarge} from './ArticleLarge'
+import {ArticleSmall} from './ArticleSmall'
 
 type ArticleProps = {
   size?: 'large' | 'small'
 }
 
-const Article: FC<ArticleProps> = ({ size }) => {
+export const Article: FC<ArticleProps> = ({ size }) => {
   if (size !== 'large') {
     return <ArticleSmall />
   } else {
@@ -14,4 +14,3 @@ const Article: FC<ArticleProps> = ({ size }) => {
   }
 }
 
-export default Article

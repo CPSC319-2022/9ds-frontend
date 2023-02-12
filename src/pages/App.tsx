@@ -1,5 +1,5 @@
 import ThemeProvider from '@mui/material/styles/ThemeProvider'
-import Home from '../pages/home/Home'
+import { Home } from '../pages/home'
 import React from 'react'
 import { theme } from '../theme/Theme'
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'

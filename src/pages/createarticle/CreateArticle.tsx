@@ -1,6 +1,6 @@
 import { Box, Button, FormLabel, Stack } from '@mui/material'
 import { Container } from '@mui/system'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { LabeledTextField } from '../../components/LabeledTextField'
 
 const pictureUrls = [
@@ -13,12 +13,12 @@ const pictureUrls = [
 ]
 
 export const CreateArticle = () => {
-  const [pictureIndexStart, setPictureIndexStart] = React.useState(0)
-  const [selectedPictureIndex, setSelectedPictureIndex] = React.useState(0)
-  const [title, setTitle] = React.useState('')
-  const [body, setBody] = React.useState('')
+  const [pictureIndexStart, setPictureIndexStart] = useState(0)
+  const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
+  const [title, setTitle] = useState('')
+  const [body, setBody] = useState('')
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log(selectedPictureIndex)
   }, [selectedPictureIndex])
   return (

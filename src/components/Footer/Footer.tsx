@@ -78,5 +78,3 @@ export const Footer: FC = () => {
     </Card>
   )
 }
-
-//export default Footer
