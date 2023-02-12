@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Article from '../../components/Article/Article'
 import UserType from '../../components/UserType/UserType'
 import Button from '../../components/Button/Button'
+import { Footer } from '../../components/Footer'
 
 const Home: FC = () => {
   return (
@@ -43,6 +44,7 @@ const Home: FC = () => {
           <UserType type='contributor' />
         </Stack>
       </Stack>
+      <Footer />
     </Stack>
   )
 }
