@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import React, { FC } from 'react'
+import React, { FC, MouseEventHandler, ReactNode } from 'react'
 import MuiButton from '@mui/material/Button'
 
 type ButtonProps = {
@@ -9,11 +9,12 @@ type ButtonProps = {
   size?: 'large' | 'medium'
   style?: { [k: string]: any }
   href?: string
-  startIcon?: React.ReactNode
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined
+  startIcon?: ReactNode
+  onClick?: MouseEventHandler<HTMLButtonElement> | undefined
+  darkText?: boolean
 }
 
-const Button: FC<ButtonProps> = ({
+export const Button: FC<ButtonProps> = ({
   dark,
   text,
   variant,
@@ -23,6 +24,10 @@ const Button: FC<ButtonProps> = ({
   startIcon,
   onClick,
 }) => {
+  const textColor = dark && variant === 'outlined' ? 'black.main' : 'white.main'
+  const bgColor = dark && variant === 'outlined' ? undefined : 'black.main'
+  const borderColor = dark ? 'black' : 'white'
+
   return (
     <MuiButton
       variant={variant ?? 'contained'}
@@ -31,19 +36,21 @@ const Button: FC<ButtonProps> = ({
       onClick={onClick}
       href={href}
       sx={{
-        backgroundColor: dark ? 'black.main' : undefined,
+        backgroundColor: bgColor,
+        border: `2px solid ${borderColor}`,
         ...style,
       }}
     >
       <Typography
         variant='button'
         noWrap
-        sx={{ color: 'white.main', textTransform: 'none' }}
+        sx={{
+          color: textColor,
+          textTransform: 'none',
+        }}
       >
         {text}
       </Typography>
     </MuiButton>
   )
 }
-
-export default Button

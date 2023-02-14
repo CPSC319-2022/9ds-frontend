@@ -1,12 +1,12 @@
 import { FormLabel, Stack, TextField, TextFieldProps } from '@mui/material'
-import { type } from 'os'
+import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
   label: string
-  onTextChange: React.Dispatch<React.SetStateAction<string>>
+  onTextChange: Dispatch<SetStateAction<string>>
 }
 
-export const LabeledTextField = ({
+export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   label,
   placeholder,
   variant,

@@ -2,19 +2,22 @@
 import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Article from '../../components/Article/Article'
-import UserType from '../../components/UserType/UserType'
-import Button from '../../components/Button/Button'
+import { Article } from '../../components/Article'
+import { UserType } from '../../components/UserType'
+import { Button } from '../../components/Button'
+import { Footer } from '../../components/Footer'
+import { Header } from '../../components/Header'
 
-const Home: FC = () => {
+export const Home: FC = () => {
   return (
     <Stack
       direction='column'
       alignItems='center'
-      spacing={64}
+      spacing={32}
       boxSizing='border-box'
       p='24px'
     >
+      <Header />
       <Article size='large' />
       <Stack direction='column' spacing={32} width='100%' alignItems='center'>
         <Typography
@@ -44,8 +47,7 @@ const Home: FC = () => {
           <UserType type='contributor' />
         </Stack>
       </Stack>
+      <Footer />
     </Stack>
   )
 }
-
-export default Home

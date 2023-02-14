@@ -2,6 +2,9 @@ import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import GetStartedTitle from './GetStartedTitle'
 import LoginAndSignUpForm from './LoginAndSignUpForm'
+import { Header } from '../../components/Header'
+import { Footer } from '../../components/Footer'
+
 
 const Login: FC = () => {
     return (
@@ -10,11 +13,13 @@ const Login: FC = () => {
             alignItems='stretch'
             spacing={64}
             boxSizing='border-box'
-            p='24px'
+            px='24px'
+            py='27px'
         >
+            <Header/>
             <GetStartedTitle/>
             <LoginAndSignUpForm/>
-
+            <Footer/>
         </Stack>
     )
 }
