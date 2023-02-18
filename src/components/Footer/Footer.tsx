@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import feather from '../../assets/feather.png'
 import logo from '../../assets/logo.png'

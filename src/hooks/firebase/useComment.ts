@@ -3,6 +3,8 @@ import {db} from "../../index";
 import {useEffect, useState} from "react";
 import {useUser} from "./useUser";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export interface comment {
     commenter_uid: string,
     profile_image: string,
@@ -11,7 +13,7 @@ export interface comment {
     post_time: Timestamp
 }
 
-export const useCommentCreate = (articleID: string, comment: any)  => {
+export const useCommentCreate = (articleID: string, comment: unknown)  => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [commentId, setCommentId] = useState<string>();
@@ -38,7 +40,7 @@ export const useCommentCreate = (articleID: string, comment: any)  => {
     return {error, loading, commentId};
 }
 
-export const useCommentEdit = (articleID: string, commentID: string, comment: any) => {
+export const useCommentEdit = (articleID: string, commentID: string, comment: unknown) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
