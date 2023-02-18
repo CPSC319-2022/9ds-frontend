@@ -3,6 +3,8 @@ import { Container } from '@mui/system'
 import React, { useState, useEffect } from 'react'
 import { LabeledTextField } from '../../components/LabeledTextField'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const pictureUrls = [
   'https://via.placeholder.com/150',
   'https://via.placeholder.com/150',

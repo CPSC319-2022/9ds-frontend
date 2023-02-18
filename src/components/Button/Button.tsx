@@ -7,7 +7,7 @@ type ButtonProps = {
   text: string
   variant?: 'contained' | 'outlined'
   size?: 'large' | 'medium'
-  style?: { [k: string]: any }
+  style?: { [k: string]: unknown }
   href?: string
   startIcon?: ReactNode
   onClick?: MouseEventHandler<HTMLButtonElement> | undefined
