@@ -13,13 +13,49 @@ root.render(
   </React.StrictMode>,
 )
 
-const app = initializeApp({
-    projectId: "dev-emulator",
-    apiKey: "dev-emulator-placeholder-key"
-});
+interface firestoreConfigInterface {
+  projectId: string,
+  apiKey: string
+}
 
+let firestoreConfig: firestoreConfigInterface = {projectId: "", apiKey: ""}
+
+switch(process.env.REACT_APP_ENV) {
+  
+  case "DEV":
+    firestoreConfig = {
+      projectId: "ds-blog-dev",
+      apiKey: "AIzaSyCGGe5ZDxWeJITHmfr3Xn2he1iFWBdhe3I"
+    };
+    break;
+  
+  case "QA":
+    firestoreConfig = {
+      projectId: "ds-blog-qa",
+      apiKey: "AIzaSyDKFaX7kzx02Ca9qjjU5_NbSJVLdpOFcjw"
+    }
+    break;
+
+  case "PROD":
+    firestoreConfig = {
+      projectId: "ds-blog-376905",
+      apiKey: "AIzaSyA3GTkgZ2andw7-szFQ2Crnp8-pNbx9Av4"
+    }
+    break;
+  
+  default:
+    firestoreConfig = {
+      projectId: "dev-emulator",
+      apiKey: "dev-emulator-placeholder-key"
+  }
+}
+
+const app = initializeApp(firestoreConfig)
 export const db = getFirestore(app);
-connectFirestoreEmulator(db, 'localhost', 8080);
+
+if (!process.env.REACT_APP_ENV) {
+  connectFirestoreEmulator(db, 'localhost', 8080);
+}
 
 export const auth = getAuth(app);
 connectAuthEmulator(auth, 'https://localhost:9099', { disableWarnings: true })
