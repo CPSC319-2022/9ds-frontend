@@ -13,44 +13,44 @@ root.render(
   </React.StrictMode>,
 )
 
-interface firestoreConfigInterface {
+interface gcpConfigInterface {
   projectId: string,
   apiKey: string
 }
 
-let firestoreConfig: firestoreConfigInterface = {projectId: "", apiKey: ""}
+let gcpConfig: gcpConfigInterface = {projectId: "", apiKey: ""}
 
 switch(process.env.REACT_APP_ENV) {
   
   case "DEV":
-    firestoreConfig = {
+    gcpConfig = {
       projectId: "ds-blog-dev",
       apiKey: "AIzaSyCGGe5ZDxWeJITHmfr3Xn2he1iFWBdhe3I"
     };
     break;
   
   case "QA":
-    firestoreConfig = {
+    gcpConfig = {
       projectId: "ds-blog-qa",
       apiKey: "AIzaSyDKFaX7kzx02Ca9qjjU5_NbSJVLdpOFcjw"
     }
     break;
 
   case "PROD":
-    firestoreConfig = {
+    gcpConfig = {
       projectId: "ds-blog-376905",
       apiKey: "AIzaSyA3GTkgZ2andw7-szFQ2Crnp8-pNbx9Av4"
     }
     break;
   
   default:
-    firestoreConfig = {
+    gcpConfig = {
       projectId: "dev-emulator",
       apiKey: "dev-emulator-placeholder-key"
   }
 }
 
-const app = initializeApp(firestoreConfig)
+const app = initializeApp(gcpConfig)
 export const db = getFirestore(app);
 
 if (!process.env.REACT_APP_ENV) {
