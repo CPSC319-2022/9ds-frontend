@@ -66,10 +66,5 @@ service cloud.firestore {
         allow update: if signedIn() && isAuthor(resource.data.author_uid) && doesntUpdateKeys(['commenter_uid']);
       }
     }
-  
-    match /{document=**} {
-      allow read, write: if false;
-    }
   }
-  
 }
