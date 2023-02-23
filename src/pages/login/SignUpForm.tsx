@@ -37,12 +37,7 @@ const SignUpForm = () => {
                 p='32px'
                 spacing={24}
             >
-                <Button sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'>
-                    <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
-                        <img src={googleIcon} width='24px' height='25px' />
-                        <Typography variant='button'>SIGNUP WITH GOOGLE</Typography>
-                    </Stack>
-                </Button>
+                <div id='signUpGoogle'></div>
                     <Stack direction='row' alignItems='center' justifyContent='space-around' spacing={24}>
                         <Typography variant='body1.medium' sx={{fontSize:'14px', weight:600}}>Or</Typography>
                     </Stack>
