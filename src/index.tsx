@@ -13,11 +13,6 @@ root.render(
   </React.StrictMode>,
 )
 
-interface gcpConfigInterface {
-  projectId: string,
-  apiKey: string
-}
-
 let firebaseConfig;
 
 switch(process.env.REACT_APP_ENV) {
