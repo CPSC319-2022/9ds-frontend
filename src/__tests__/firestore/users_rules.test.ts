@@ -26,6 +26,7 @@ describe('Testing firestore user security rules', () => {
   });
 
   beforeEach(async () => {
+    await testEnv.clearFirestore();
     await testEnv.withSecurityRulesDisabled(context => {
       const firestoreWithoutRule = context.firestore()
       return firestoreWithoutRule
@@ -54,55 +55,70 @@ describe('Testing firestore user security rules', () => {
   });
 
   // Scenario for the 3 tests below: authenticated users can view user profiles
-  it('Should not allow visitors to read users collection', async () => {
-    const testDoc = visitor.firestore().collection('users')
-      .doc();
-    const getUser = testDoc.get();
+  it('Should not allow visitors to read/query users collection', async () => {
+    const testCollection = visitor.firestore().collection('users');
+    const getUser = testCollection.doc().get();
+    const queryUser = testCollection.where('contributor', '==', true).get();
     await firebase.assertFails(getUser);
+    await firebase.assertFails(queryUser);
   });
 
-  it('Should allow readers to read users collection', async () => {
-    const testDoc = reader.firestore().collection('users')
-      .doc();
-    const getUser = testDoc.get();
+  it('Should allow readers to read/query users collection', async () => {
+    const testCollection = reader.firestore().collection('users');
+    const getUser = testCollection.doc().get();
+    const queryUser = testCollection.where('contributor', '==', true).get();
     await firebase.assertSucceeds(getUser);
+    await firebase.assertSucceeds(queryUser);
   });
 
-  it('Should allow contributors to read users collection', async () => {
-    let testDoc = nonAuthorContributor.firestore().collection('users')
-      .doc();
-    let getUser = testDoc.get();
+  it('Should allow contributors to read/query users collection', async () => {
+    let testCollection = nonAuthorContributor.firestore().collection('users');
+    let getUser = testCollection.doc().get();
+    let queryUser = testCollection.where('contributor', '==', true).get();
     await firebase.assertSucceeds(getUser);
-    testDoc = author.firestore().collection('users')
-      .doc();
-    getUser = testDoc.get();
+    await firebase.assertSucceeds(queryUser);
+    testCollection = author.firestore().collection('users');
+    getUser = testCollection.doc().get();
+    queryUser = testCollection.where('contributor', '==', true).get();
     await firebase.assertSucceeds(getUser);
+    await firebase.assertSucceeds(queryUser);
   });
 
   // Assumption: all authenticated users will be logged out
-  it('Should only allow visitors to create new users', async () => {
+  it('Should only allow visitors to create new users once', async () => {
     let testCollection = visitor.firestore().collection('users');
-    let createUser = testCollection.add({
+    let addUser = testCollection.add({
+      contributor: false, username: 'visitorAndy'
+    });
+    const setUser = testCollection.doc('unique-id').set({
       contributor: false, username: '9Dudes'
     });
-    await firebase.assertSucceeds(createUser);
+    await firebase.assertSucceeds(addUser);
+    await firebase.assertSucceeds(setUser);
+    // user-id is already in the db
+    await firebase.assertFails(setUser);
     testCollection = reader.firestore().collection('users');
-    createUser = testCollection.add({
-      contributor: false, username: '8Dudes'
+    addUser = testCollection.add({
+      contributor: false, username: 'readerAndy'
     });
-    await firebase.assertFails(createUser);
+    await firebase.assertFails(addUser);
     testCollection = nonAuthorContributor.firestore().collection('users');
-    createUser = testCollection.add({
-      contributor: false, username: '7Dudes'
+    addUser = testCollection.add({
+      contributor: false, username: 'nonAuthorAndy'
     });
-    await firebase.assertFails(createUser);
+    await firebase.assertFails(addUser);
     testCollection = author.firestore().collection('users');
-    createUser = testCollection.add({
-      contributor: false, username: '6Dudes'
+    addUser = testCollection.add({
+      contributor: false, username: 'authorAndy'
     });
-    await firebase.assertFails(createUser);
+    await firebase.assertFails(addUser);
   });
 
-  // Scenario: Authenticated users can update their own profile
-
+  // // Scenario: Authenticated users can update their own profile
+  // it('Should only allow authenticated users to update their own document', () => {
+  //   let testCollection = visitor.firestore().collection('users');
+  //   let updateUser = testCollection.doc().update({
+  //     username:
+  //   })
+  // })
 });
