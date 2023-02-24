@@ -4,6 +4,8 @@ import React, { Dispatch, FC, SetStateAction } from 'react'
 type LabeledTextFieldProps = TextFieldProps & {
   label: string
   onTextChange: Dispatch<SetStateAction<string>>
+  spacing?: number
+  flex?:number
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
@@ -13,6 +15,8 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   multiline,
   rows,
   onTextChange,
+  spacing,
+  flex,
 }: LabeledTextFieldProps) => {
   return (
     <Stack
@@ -20,8 +24,9 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
       alignItems={'flex-start'}
       justifyContent={'space-between'}
       alignSelf={'stretch'}
+      spacing={spacing}
     >
-      <FormLabel style={{ flex: 0.05, color: 'black' }}>{label}</FormLabel>
+      <FormLabel style={{ flex: flex, color: 'black' }}>{label}</FormLabel>
       <TextField
         style={{ flex: 0.95 }}
         multiline={multiline}
