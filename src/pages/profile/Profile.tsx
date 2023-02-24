@@ -10,69 +10,53 @@ import { LabeledTextField } from '../../components/LabeledTextField'
 export const Profile: FC = () => {
   const [profileInfo, setProfileInfo] = useState('') // temp hook
   return (
-    <Stack
-    direction='column'
-    spacing={32}
-    boxSizing='border-box'
-    p='24px'
-    >
+    <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
-      <Typography
-          variant='h4'
-          color='black.main'
-          sx={{ paddingLeft:'32px' }}
-      >
-       Profile
-        </Typography>
-        <Stack
-        direction='row'
-        spacing={48}
-        boxSizing='border-box'
-        p='24px'
-        >
-          <img
-            src={profile}
-            width='140px'
-            height='140px'
-            style={{ borderRadius: '50%' }}
-          />    
-          <Stack direction='column'
+      <Typography variant='h4' color='black.main' sx={{ paddingLeft: '32px' }}>
+        Profile
+      </Typography>
+      <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
+        <img
+          src={profile}
+          width='140px'
+          height='140px'
+          style={{ borderRadius: '50%' }}
+        />
+        <Stack direction='column' spacing={32}>
+          <LabeledTextField
+            variant='standard'
+            onTextChange={setProfileInfo}
+            placeholder='Contributor'
+            label='Account type'
+            multiline={false}
             spacing={32}
-          >
-            <LabeledTextField
-              variant='standard'
-              onTextChange={setProfileInfo}
-              placeholder='Contributor'
-              label='Account type'
-              multiline={false}
-              spacing={32}
-              flex={0.5}
-            />
-            <LabeledTextField
-              variant='standard'
-              onTextChange={setProfileInfo}
-              placeholder='Emma Watson'
-              label='Name'
-              multiline={false}
-              spacing={32}
-              flex={0.5}
-            />
-            <LabeledTextField
-              variant='standard'
-              onTextChange={setProfileInfo}
-              placeholder='emma@watson.com'
-              label='Email'
-              multiline={false}
-              spacing={32}
-              flex={0.5}
-            />
+            flex={0.5}
+          />
+          <LabeledTextField
+            variant='standard'
+            onTextChange={setProfileInfo}
+            placeholder='Emma Watson'
+            label='Name'
+            multiline={false}
+            spacing={32}
+            flex={0.5}
+          />
+          <LabeledTextField
+            variant='standard'
+            onTextChange={setProfileInfo}
+            placeholder='emma@watson.com'
+            label='Email'
+            multiline={false}
+            spacing={32}
+            flex={0.5}
+          />
         </Stack>
       </Stack>
       <Typography
         variant='h5'
         color='black.main'
         justifyItems='flex-start'
-        sx={{ paddingLeft:'32px' }}
+        sx={{ paddingLeft: '32px' }}
       >
         Posts
       </Typography>
@@ -81,11 +65,7 @@ export const Profile: FC = () => {
           <Article key={key} size='small' />
         ))}
       </Stack>
-      <Typography
-        variant='h5'
-        color='black.main'
-        sx={{ paddingLeft:'32px' }}
-      >
+      <Typography variant='h5' color='black.main' sx={{ paddingLeft: '32px' }}>
         Drafts
       </Typography>
       <Stack direction='row' spacing={16} justifyContent='center'>
@@ -94,6 +74,6 @@ export const Profile: FC = () => {
         ))}
       </Stack>
       <Footer />
-  </Stack>
+    </Stack>
   )
 }
