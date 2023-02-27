@@ -21,6 +21,8 @@ import { useState, useEffect } from 'react'
 import { useUser } from './useUser'
 import { comment } from './useComment'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export interface articlePreview {
   title: string
   content: string
@@ -58,7 +60,7 @@ export const useArticleRecents = (n: number) => {
     const unsubscribe = onSnapshot(
       q,
       (docs: QuerySnapshot<DocumentData>) => {
-        const articlesData: any[] = []
+        const articlesData: unknown[] = []
         docs.forEach((doc) => {
           articlesData.push({
             title: doc.data().title,

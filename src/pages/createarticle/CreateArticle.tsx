@@ -4,6 +4,8 @@ import React, { useState, FormEvent } from 'react'
 import { LabeledTextField } from '../../components/LabeledTextField'
 import { useArticleCreate } from '../../hooks/firebase/useArticle'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const pictureUrls = [
   'https://via.placeholder.com/150',
   'https://via.placeholder.com/150',

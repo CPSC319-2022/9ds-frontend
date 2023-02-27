@@ -1,8 +1,9 @@
-import { Card, CardContent, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import feather from '../../assets/feather.png'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
+import { Link } from "react-router-dom";
 import { Button } from '../Button/Button'
 
 export const Footer: FC = () => {
@@ -30,13 +31,14 @@ export const Footer: FC = () => {
         </Typography>
         <img src={feather} width='80rem' height='60rem' />
       </Stack>
-
-      <Button
-        variant='outlined'
-        style={{ color: 'white.main', height: '60px', width: '140px' }}
-        text='Get started'
-        size='large'
-      />
+      <Link to={"/login"} style={{ textDecoration: 'none' }}>
+        <Button
+            variant='outlined'
+            style={{ color: 'white.main', height: '60px', width: '140px' }}
+            text='Get started'
+            size='large'
+        />
+      </Link>
 
       <Stack
         spacing={5}
@@ -50,9 +52,11 @@ export const Footer: FC = () => {
       >
         <img src={logo} width='60rem' height='35rem' />
         <Stack spacing={32} direction='row' sx={{ alignItems: 'center' }}>
+        <Link to={"/"} style={{ textDecoration: 'none' }}>
           <Typography variant='caption' color='white.main'>
             Home
           </Typography>
+        </Link>
           <Typography variant='caption' color='white.main'>
             About Us
           </Typography>
