@@ -56,7 +56,6 @@ export const CreateArticle = () => {
       setIsBodyError(false)
       setBodyHelperText('')
     }
-
     if (!isInvalid) {
       useArticleCreate(
         title,
