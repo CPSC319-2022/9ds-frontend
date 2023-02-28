@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
 import { Button } from '../../components/Button'
+import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 export const Header: FC = () => {
@@ -23,7 +24,9 @@ export const Header: FC = () => {
         direction='row'
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <Typography variant='subheading'>Home</Typography>
+        <Link to={"/"} style={{ textDecoration: 'none' }}>
+            <Typography variant='subheading'>Home</Typography>
+        </Link>
         <Stack direction='row' spacing={4} alignItems='center'>
           <Typography variant='subheading'>Blog</Typography>
           <KeyboardArrowDownIcon />
@@ -35,8 +38,12 @@ export const Header: FC = () => {
         spacing={12}
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <Button variant='outlined' text='Login' dark size='large' />
-        <Button dark text='Sign up' size='large' />
+        <Link to={"/login"} style={{ textDecoration: 'none' }}>
+            <Button variant='outlined' text='Login' dark size='large' />
+        </Link>
+        <Link to={"/login"} style={{ textDecoration: 'none' }}>
+            <Button dark text='Sign up' size='large' />
+        </Link>
       </Stack>
     </Stack>
   )
