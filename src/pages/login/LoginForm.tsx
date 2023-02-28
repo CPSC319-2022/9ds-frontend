@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+
 const LoginForm = () => {
 
     const [showPassword, setShowPassword] = React.useState(false);
@@ -28,7 +29,7 @@ const LoginForm = () => {
             p='32px'
             spacing={24}
         >
-            <div id='signInGoogle'></div>
+            {/*<div id='signInGoogle'></div>*/}
             <TextField id='email' label='Email' variant='outlined' />
             <FormControl variant='outlined'>
                 <InputLabel htmlFor='outlined-adornment-password'>Password</InputLabel>

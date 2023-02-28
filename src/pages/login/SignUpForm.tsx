@@ -15,7 +15,11 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import googleIcon from '../../assets/googleIcon.png'
+import {useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
+import {useState, useEffect} from "react";
+import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo} from "firebase/auth";
+import {auth} from "../../index";
 const SignUpForm = () => {
 
     const [showPassword, setShowPassword] = React.useState(false);
@@ -25,6 +29,13 @@ const SignUpForm = () => {
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    // const handleSignInWithGoogle = () = > {
+    //     const provider = new GoogleAuthProvider();
+    //     useEffect( () => {
+    //         signInWithPopup(auth, provider)
+    //     }, [auth.currentUser])
+    // }
 
     return (
             <Stack
@@ -37,7 +48,19 @@ const SignUpForm = () => {
                 p='32px'
                 spacing={24}
             >
-                <div id='signUpGoogle'></div>
+                <Button sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
+                onClick = { () => {
+                    const provider = new GoogleAuthProvider();
+                    useEffect( () => {
+                        signInWithPopup(auth, provider)
+                    }, [auth.currentUser])
+                }}
+                >
+                    <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
+                        <img src={googleIcon} width='24px' height='25px' />
+                        <Typography variant='button'>SIGNUP WITH GOOGLE</Typography>
+                    </Stack>
+                </Button>
                     <Stack direction='row' alignItems='center' justifyContent='space-around' spacing={24}>
                         <Typography variant='body1.medium' sx={{fontSize:'14px', weight:600}}>Or</Typography>
                     </Stack>
