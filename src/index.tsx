@@ -68,6 +68,3 @@ if (!process.env.REACT_APP_ENV) {
   connectFirestoreEmulator(db, 'localhost', 8080);
   connectAuthEmulator(auth, 'https://localhost:9099', { disableWarnings: true })
 }
-
-
-
