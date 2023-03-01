@@ -16,9 +16,9 @@ import {
   FirestoreErrorCode,
   FirestoreError,
 } from 'firebase/firestore'
-import { db } from '../../index'
+import {auth, db} from '../../index'
 import { useState, useEffect } from 'react'
-import { useUser } from './useUser'
+import {getUser} from './useUser'
 import { comment } from './useComment'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -47,11 +47,10 @@ export const useArticleRecents = (n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [articles, setArticles] = useState<articlePreview[]>()
-  const articleRef = collection(db, 'article')
 
   useEffect(() => {
     const q = query(
-      articleRef,
+        collection(db, 'article'),
       where('published', '==', true),
       orderBy('publish_time'),
       limit(n),
@@ -60,7 +59,7 @@ export const useArticleRecents = (n: number) => {
     const unsubscribe = onSnapshot(
       q,
       (docs: QuerySnapshot<DocumentData>) => {
-        const articlesData: unknown[] = []
+        const articlesData: articlePreview[] = []
         docs.forEach((doc) => {
           articlesData.push({
             title: doc.data().title,
@@ -138,121 +137,112 @@ export const useArticleComments = (articleID: string, n: number) => {
   return { error, loading, comments }
 }
 
-export const useArticleCreate = (
-  title: string,
-  content: string,
-  header_image: string,
-  published: boolean,
-) => {
+export const useArticleCreate = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [articleId, setArticleId] = useState<string>()
-  const articleRef = collection(db, 'article')
-  // dsad
-  useEffect(() => {
-    const { error, loading, queriedUser } = useUser()
-    if (error === null && !loading) {
-      addDoc(articleRef, {
-        author_uid: queriedUser.uid,
-        author_image: queriedUser.profile_image,
-        author_username: queriedUser.username,
-        content: content,
-        edit_time: serverTimestamp(),
-        header_image: header_image,
-        published: published,
-        publish_time: published ? serverTimestamp() : null,
-        title: title,
-      }).then(
-        (doc) => {
-          setLoading(false)
-          setArticleId(doc.id)
-        },
-        (err) => {
-          setError(err.code)
-        },
-      )
-    }
-  }, [title, content, header_image, published])
 
-  return { error, loading, articleId }
+  const createArticle = (
+      title: string,
+      content: string,
+      header_image: string,
+      published: boolean) => {
+
+    getUser(auth.currentUser === null ? null: auth.currentUser.uid)
+        .then((user) =>
+            addDoc(collection(db, 'article'), {
+                author_uid: user.uid,
+                author_image: user.profile_image,
+                author_username: user.username,
+                content: content,
+                edit_time: serverTimestamp(),
+                header_image: header_image,
+                published: published,
+                publish_time: published ? serverTimestamp() : null,
+                title: title,
+            }).then(
+                (doc) => {
+                setLoading(false)
+                setArticleId(doc.id)
+            },
+            (err) => {
+                setError(err.code)
+            }))
+        .catch((err) => {
+          setError("unauthenticated")
+        })
+    };
+
+  return {createArticle, error, loading, articleId }
 }
 
-export const useArticleEdit = (
-  articleID: string,
-  title: string,
-  content: string,
-  header_image: string,
-  published: boolean,
-) => {
+export const useArticleEdit = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const { error, loading, queriedUser } = useUser()
-    if (error === null && !loading) {
-      updateDoc(doc(db, 'article', articleID), {
-        content: content,
-        edit_time: serverTimestamp(),
-        header_image: header_image,
-        published: published,
-        publish_time: published ? serverTimestamp() : null,
-        title: title,
-      }).then(
-        (doc) => {
-          setLoading(false)
-        },
-        (err) => {
-          setError(err.code)
-        },
-      )
+  const editArticle = (
+      articleID: string,
+      title: string,
+      content: string,
+      header_image: string,
+      published: boolean,
+  ) => {
+    updateDoc(doc(db, 'article', articleID), {
+      content: content,
+      edit_time: serverTimestamp(),
+      header_image: header_image,
+      published: published,
+      publish_time: published ? serverTimestamp() : null,
+      title: title,
+    }).then(
+      (doc) => {
+      setLoading(false)
+      },
+      (err) => {
+       setError(err.code)
     }
-  }, [articleID, content, header_image, published])
+    )
+  };
 
-  return { error, loading }
+  return {editArticle, error, loading }
 }
 
-export const useArticlePost = (articleID: string) => {
+export const useArticlePost = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const { error, loading, queriedUser } = useUser()
-    if (error === null && !loading) {
-      updateDoc(doc(db, 'article', articleID), {
-        edit_time: serverTimestamp(),
-        published: true,
-        publish_time: serverTimestamp(),
-      }).then(
-        () => {
-          setLoading(false)
-        },
-        (err) => {
-          setError(err.code)
-        },
-      )
-    }
-  }, [articleID])
+  const postArticle = (articleID: string) => {
+    updateDoc(doc(db, 'article', articleID), {
+      edit_time: serverTimestamp(),
+      published: true,
+      publish_time: serverTimestamp(),
+    }).then(
+      () => {
+        setLoading(false)
+      },
+      (err) => {
+        setError(err.code)
+      },
+    )
+  };
 
-  return { error, loading }
+  return {postArticle, error, loading }
 }
 
 export const useArticleDelete = (articleID: string) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const { error, loading, queriedUser } = useUser()
-    if (error === null && !loading) {
-      deleteDoc(doc(db, 'article', articleID)).then(
-        () => {
-          setLoading(false)
-        },
-        (err) => {
-          setError(err.code)
-        },
-      )
-    }
-  }, [articleID])
+  const deleteArticle = () => {
+    deleteDoc(doc(db, 'article', articleID)).then(
+      () => {
+        setLoading(false)
+      },
+      (err) => {
+        setError(err.code)
+      },
+    )
+  };
 
-  return { error, loading }
+  return {deleteArticle, error, loading }
 }

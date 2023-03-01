@@ -29,6 +29,8 @@ export const CreateArticle = () => {
 
   const [customLink, setCustomLink] = useState('')
 
+  const {createArticle, error, loading, articleId} = useArticleCreate();
+
   const handleSubmit = (e: FormEvent<HTMLElement>, published: boolean) => {
     let isInvalid = false
     if (title.length === 0 || countWords(title) > 60) {
@@ -57,7 +59,7 @@ export const CreateArticle = () => {
       setBodyHelperText('')
     }
     if (!isInvalid) {
-      useArticleCreate(
+      createArticle(
         title,
         body,
         customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex],
