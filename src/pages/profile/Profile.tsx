@@ -30,8 +30,8 @@ export const Profile: FC = () => {
             label='Account type'
             multiline={false}
             spacing={32}
-            flex={0.5}
-            typographyVariant='h5'
+            flex={0.7}
+            typographyVariant='title'
           />
           <LabeledTextField
             variant='standard'
@@ -40,8 +40,8 @@ export const Profile: FC = () => {
             label='Name'
             multiline={false}
             spacing={32}
-            flex={0.5}
-            typographyVariant='h5'
+            flex={0.7}
+            typographyVariant='title'
           />
           <LabeledTextField
             variant='standard'
@@ -50,8 +50,8 @@ export const Profile: FC = () => {
             label='Email'
             multiline={false}
             spacing={32}
-            flex={0.5}
-            typographyVariant='h5'
+            flex={0.7}
+            typographyVariant='title'
           />
         </Stack>
       </Stack>
