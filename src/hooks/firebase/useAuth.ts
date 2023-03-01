@@ -2,7 +2,7 @@ import {useState, useEffect} from "react";
 import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo} from "firebase/auth";
 import {doc, FirestoreErrorCode, setDoc} from "firebase/firestore";
 import {auth, db} from "../../index";
-import {useUser, UserData, getUser} from "./useUser";
+import {UserData, getUser} from "./useUser";
 
 export const useAuth = () => {
     const[state, setState] = useState(() => {

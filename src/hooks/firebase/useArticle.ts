@@ -18,7 +18,7 @@ import {
 } from 'firebase/firestore'
 import {auth, db} from '../../index'
 import { useState, useEffect } from 'react'
-import {getUser, useUser} from './useUser'
+import {getUser} from './useUser'
 import { comment } from './useComment'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */

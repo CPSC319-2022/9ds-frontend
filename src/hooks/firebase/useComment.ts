@@ -1,7 +1,7 @@
 import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp, Timestamp, FirestoreErrorCode} from "firebase/firestore";
 import {db, auth} from "../../index";
-import {useCallback, useEffect, useState} from "react";
-import {getUser, useUser} from "./useUser";
+import {useState} from "react";
+import {getUser} from "./useUser";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
