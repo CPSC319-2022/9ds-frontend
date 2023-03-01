@@ -1,11 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { MemoryRouter as Router } from 'react-router-dom'
 import { Header } from '../../components/Header'
 
 describe('Header Styling', () => {
   beforeAll(() => {
-    render(<Header />)
-    jest.setTimeout(15000);
+    render(
+      <Router>
+        <Header />
+      </Router>
+    )
+    jest.setTimeout(15000)
   })
 
   test('style', () => {
