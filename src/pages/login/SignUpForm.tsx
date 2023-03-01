@@ -25,7 +25,7 @@ const SignUpForm = () => {
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-
+    const {signInWithGoogleWrapper, error, loading, user} = useSignInWithGoogle();
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
@@ -50,10 +50,7 @@ const SignUpForm = () => {
             >
                 <Button sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
                 onClick = { () => {
-                    const provider = new GoogleAuthProvider();
-                    useEffect( () => {
-                        signInWithPopup(auth, provider)
-                    }, [auth.currentUser])
+                    signInWithGoogleWrapper()
                 }}
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>

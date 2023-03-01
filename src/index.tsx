@@ -9,6 +9,7 @@ import { connectAuthEmulator, getAuth } from 'firebase/auth'
 const app = initializeApp({
   projectId: 'dev-emulator',
   apiKey: 'dev-emulator-placeholder-key',
+  authDomain: 'dev-emulator-auth'
 })
 
 export const db = getFirestore(app)
