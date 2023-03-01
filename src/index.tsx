@@ -16,7 +16,6 @@ root.render(
 let firebaseConfig;
 
 switch(process.env.REACT_APP_ENV) {
-
     case "DEV":
         firebaseConfig = {
             apiKey: "AIzaSyCHfU9yLnEnLeKKokIQ9sUGI8Cr9mLYXgE",
@@ -69,3 +68,4 @@ if (!process.env.REACT_APP_ENV) {
     connectFirestoreEmulator(db, 'localhost', 8080);
     connectAuthEmulator(auth, 'https://localhost:9099', { disableWarnings: true })
 }
+
