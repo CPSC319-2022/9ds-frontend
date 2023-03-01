@@ -18,8 +18,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import googleIcon from '../../assets/googleIcon.png'
 import {useState} from "react";
 
-
-
 const SignUpForm = () => {
     const [email, setEmail] = useState('')
     const [isEmailError, setIsEmailError] = useState(false)
@@ -105,8 +103,9 @@ const SignUpForm = () => {
                 p='32px'
                 spacing={24}
             >
-                <Button sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
-                onClick = {()=> console.log("signinwithGoogle")}
+                <Button
+                    sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
+                    onClick = {()=> console.log("signinwithGoogle")}
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
                         <img src={googleIcon} width='24px' height='25px' />
