@@ -1,8 +1,8 @@
 import {useState, useEffect} from "react";
 import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo} from "firebase/auth";
-import {FirestoreErrorCode} from "firebase/firestore";
-import {auth} from "../../index";
-import {useNewUser, useUser, UserData} from "./useUser";
+import {doc, FirestoreErrorCode, setDoc} from "firebase/firestore";
+import {auth, db} from "../../index";
+import {useUser, UserData, getUser} from "./useUser";
 
 export const useAuth = () => {
     const[state, setState] = useState(() => {
@@ -25,42 +25,57 @@ export const useAuth = () => {
     return state
 }
 
-export const useCreateUserEmailPassword = (email: string, password: string, username: string, profile_image: string) => {
+const createNewUser = (username: string, profile_image: string): Promise<void> => {
+    if (auth.currentUser === null) {
+        return Promise.reject("failed_precondition");
+    }
+    return setDoc(doc(db, "users", auth.currentUser.uid), {
+        contributor: false,
+        username: username,
+        profile_image: profile_image
+    })
+};
+
+export const useCreateUserEmailPassword = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserData>();
 
-    useEffect( () => {
+    const createWithEmailAndPasswordWrapper = (email: string, password: string, username: string, profile_image: string) => {
         createUserWithEmailAndPassword(auth, email, password).then(() => {
-            const {error, loading, user} = useNewUser(username, profile_image)
-            setError(error);
-            setLoading(loading);
-            setUser(user);
+            createNewUser(username, profile_image).then(() => {
+                setLoading(false);
+                setUser(user);
+            }).catch((err) => {
+                setError(err)
+            })
         }).catch((err) => {
             setError(err.code)
         })
-    }, [email, password])
+    };
 
-    return {error, loading, user};
+    return {createWithEmailAndPasswordWrapper,error, loading, user};
 }
 
-export const useSignInUserEmailPassword = (email:string, password: string) => {
+export const useSignInUserEmailPassword = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<UserData>();
 
-    useEffect( () => {
+    const signInWithEmailAndPasswordWrapper = (email:string, password: string) => {
         signInWithEmailAndPassword(auth, email, password).then(() => {
-            const {error, loading, queriedUser} = useUser()
-            setError(error);
-            setLoading(loading);
-            setUser(queriedUser);
+            getUser(auth.currentUser === null ? null: auth.currentUser.uid).then((user) => {
+                setLoading(false);
+                setUser(user)
+            }).catch((err) => {
+                setError(err)
+            })
         }).catch((err) => {
             setError(err.code)
         })
-    }, [email, password])
+    };
 
-    return {error, loading, user};
+    return {signInWithEmailAndPasswordWrapper ,error, loading, user};
 }
 
 export const useSignInWithGoogle = () => {
@@ -70,7 +85,7 @@ export const useSignInWithGoogle = () => {
 
     const provider = new GoogleAuthProvider();
 
-    useEffect( () => {
+    const signInWithGoogleWrapper = () => {
         signInWithPopup(auth, provider).then((result) => {
             const additionalInfo = getAdditionalUserInfo(result)
             if (additionalInfo?.isNewUser) {
@@ -78,23 +93,27 @@ export const useSignInWithGoogle = () => {
                 if (profile === null) {
                     setError("unknown");
                 } else {
-                    const {error, loading, user} = useNewUser(profile.displayName as string, profile.photoURL as string)
-                    setError(error);
-                    setLoading(loading);
-                    setUser(user);
+                    createNewUser(profile.displayName as string, profile.photoURL as string).then(() => {
+                        setLoading(false);
+                        setUser(user);
+                    }).catch((err) => {
+                        setError(err)
+                    })
                 }
             } else {
-                const {error, loading, queriedUser} = useUser()
-                setError(error);
-                setLoading(loading);
-                setUser(queriedUser);
+                getUser(auth.currentUser === null ? null: auth.currentUser.uid).then((user) => {
+                    setLoading(false);
+                    setUser(user)
+                }).catch((err) => {
+                    setError(err)
+                })
             }
         }).catch((err) => {
             setError(err.code)
         })
-    }, [auth.currentUser])
+    };
 
-    return {error, loading, user};
+    return {signInWithGoogleWrapper, error, loading, user};
 }
 
 export const useSignOut = () => {
@@ -102,14 +121,14 @@ export const useSignOut = () => {
     const [loading, setLoading] = useState(true);
     const [signedOut, setSignedOut] = useState<boolean>();
 
-    useEffect(() => {
+    const signOutWrapper = () => {
         signOut(auth).then(() => {
             setLoading(false);
             setSignedOut(true)
         }).catch((err) => {
             setError(err)
         })
-    })
+    };
 
-    return [error, loading, signedOut];
+    return [signOutWrapper, error, loading, signedOut];
 }
