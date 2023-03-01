@@ -8,9 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-
 const LoginForm = () => {
-
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -29,7 +27,9 @@ const LoginForm = () => {
             p='32px'
             spacing={24}
         >
-            {/*<div id='signInGoogle'></div>*/}
+            <Button variant='outlined' sx={{boxShadow:2, alignSelf:'flex-start'}}>
+                <Typography variant='button'>LOGIN WITH EMAIL</Typography>
+            </Button>
             <TextField id='email' label='Email' variant='outlined' />
             <FormControl variant='outlined'>
                 <InputLabel htmlFor='outlined-adornment-password'>Password</InputLabel>
