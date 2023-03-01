@@ -1,4 +1,4 @@
-import {Button, IconButton, Stack, TextField, Typography} from '@mui/material'
+import {Button, FormHelperText, IconButton, Stack, TextField, Typography} from '@mui/material'
 import * as React from 'react';
 
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -8,9 +8,16 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+import {useState} from "react";
 
 const LoginForm = () => {
+    const [email, setEmail] = useState('')
+    const [isEmailError, setIsEmailError] = useState(false)
+    const [emailHelperText, setEmailHelperText] = useState('')
 
+    const [password, setPassword] = useState('')
+    const [isPasswordError, setIsPasswordError] = useState(false)
+    const [passwordHelperText, setPasswordHelperText] = useState('')
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -18,6 +25,37 @@ const LoginForm = () => {
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    const handleLogin = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        let isInvalid = false
+        if (email.length === 0 || !validateEmail(email)) {
+            isInvalid = true
+            setIsEmailError(true)
+            if (email.length === 0) {
+                setEmailHelperText("Email can't be empty.")
+            } else {
+                setEmailHelperText("Invalid email format.")
+            }
+        } else {
+            setIsEmailError(false)
+            setEmailHelperText('')
+        }
+
+        if (password.length === 0) {
+            isInvalid = true
+            setIsPasswordError(true)
+            setPasswordHelperText("Password can't be empty.")
+        } else {
+            setIsPasswordError(false)
+            setPasswordHelperText("")
+        }
+
+        if (!isInvalid) {
+            console.log("LOGIN succesful")
+        }
+        e.preventDefault()
+    }
+
     return (
         <Stack
             width='390px'
@@ -29,8 +67,23 @@ const LoginForm = () => {
             p='32px'
             spacing={24}
         >
-            {/*<div id='signInGoogle'></div>*/}
-            <TextField id='email' label='Email' variant='outlined' />
+            <Button
+                variant='outlined'
+                sx={{boxShadow:2, alignSelf:'flex-start'}}
+                onClick={()=> console.log("Login with email")}
+            >
+                <Typography variant='button'>LOGIN WITH GOOGLE</Typography>
+            </Button>
+            <TextField
+                id='email'
+                label='Email'
+                variant='outlined'
+                onChange={(event) => {
+                    setEmail(event.target.value)
+                }}
+                error={isEmailError}
+                helperText={emailHelperText}
+            />
             <FormControl variant='outlined'>
                 <InputLabel htmlFor='outlined-adornment-password'>Password</InputLabel>
                 <OutlinedInput
@@ -49,7 +102,16 @@ const LoginForm = () => {
                         </InputAdornment>
                     }
                     label='Password'
+                    onChange={(event) => {
+                        setPassword(event.target.value)
+                    }}
+                    error={!!isPasswordError}
                 />
+                {!!isPasswordError && (
+                    <FormHelperText error id="passWord-error">
+                        {passwordHelperText}
+                    </FormHelperText>
+                )}
             </FormControl>
             <Stack
                 direction='row'
@@ -58,7 +120,9 @@ const LoginForm = () => {
             >
                 <Button variant='contained' sx={{
                     alignSelf:'flex-start',
-                    backgroundColor: 'black.main', }}>
+                    backgroundColor: 'black.main', }}
+                    onClick={(event) => handleLogin(event)}
+                >
                     <Typography variant='button'>LOGIN</Typography>
                 </Button>
             </Stack>
@@ -67,4 +131,13 @@ const LoginForm = () => {
     )
 }
 
+const validateEmail = (email) => {
+    return String(email)
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+};
+
 export default LoginForm
+
