@@ -31,6 +31,7 @@ export const Profile: FC = () => {
             multiline={false}
             spacing={32}
             flex={0.5}
+            typographyVariant='h5'
           />
           <LabeledTextField
             variant='standard'
@@ -40,6 +41,7 @@ export const Profile: FC = () => {
             multiline={false}
             spacing={32}
             flex={0.5}
+            typographyVariant='h5'
           />
           <LabeledTextField
             variant='standard'
@@ -49,6 +51,7 @@ export const Profile: FC = () => {
             multiline={false}
             spacing={32}
             flex={0.5}
+            typographyVariant='h5'
           />
         </Stack>
       </Stack>

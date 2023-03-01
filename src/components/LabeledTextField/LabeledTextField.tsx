@@ -1,4 +1,5 @@
 import { FormLabel, Stack, TextField, TextFieldProps, Typography } from '@mui/material'
+import { Variant } from '@mui/material/styles/createTypography'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
@@ -6,7 +7,7 @@ type LabeledTextFieldProps = TextFieldProps & {
   onTextChange: Dispatch<SetStateAction<string>>
   spacing?: number
   flex?:number
-  // typographyVariant: string
+  typographyVariant: Variant
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
@@ -18,7 +19,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   onTextChange,
   spacing,
   flex,
-  // typographyVariant,
+  typographyVariant,
 }: LabeledTextFieldProps) => {
   return (
     <Stack
@@ -28,7 +29,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
       alignSelf={'stretch'}
       spacing={spacing}
     >
-      <Typography variant='title' style={{ flex: flex, color: 'black'}}>{label}</Typography>
+      <Typography variant={typographyVariant} style={{ flex: flex, color: 'black'}}>{label}</Typography>
       <TextField
         style={{ flex: 0.95 }}
         multiline={multiline}
@@ -42,3 +43,8 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
     </Stack>
   )
 }
+
+LabeledTextField.defaultProps = {
+  spacing: 0,
+  flex:0,
+};

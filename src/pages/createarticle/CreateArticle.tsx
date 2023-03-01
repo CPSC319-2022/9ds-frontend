@@ -118,6 +118,7 @@ export const CreateArticle = () => {
             placeholder='60 words or less'
             label='Title'
             multiline={false}
+            typographyVariant='h5'
           />
           <LabeledTextField
             variant='outlined'
@@ -126,6 +127,7 @@ export const CreateArticle = () => {
             label='Body'
             multiline={true}
             rows={7}
+            typographyVariant='h5'
           />
         </Stack>
         <Button
