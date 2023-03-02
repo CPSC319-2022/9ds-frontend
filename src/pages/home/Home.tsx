@@ -1,23 +1,14 @@
-
 import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Article } from '../../components/Article'
 import { UserType } from '../../components/UserType'
 import { Button } from '../../components/Button'
-import { Footer } from '../../components/Footer'
-import { Header } from '../../components/Header'
+import { AppWrapper } from "../../components/AppWrapper";
 
 export const Home: FC = () => {
   return (
-    <Stack
-      direction='column'
-      alignItems='center'
-      spacing={32}
-      boxSizing='border-box'
-      p='24px'
-    >
-      <Header />
+    <AppWrapper>
       <Article size='large' />
       <Stack direction='column' spacing={32} width='100%' alignItems='center'>
         <Typography
@@ -47,7 +38,6 @@ export const Home: FC = () => {
           <UserType type='contributor' />
         </Stack>
       </Stack>
-      <Footer />
-    </Stack>
+    </AppWrapper>
   )
 }

@@ -6,8 +6,8 @@ import {
     orderBy,
     limit,
     onSnapshot,
-    setDoc,
     updateDoc,
+    getDoc,
     QuerySnapshot,
     DocumentData,
     FirestoreErrorCode
@@ -128,7 +128,7 @@ export const useApplyPromotion = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const applyContributor = () => {
         if (auth.currentUser !== null) {
             updateDoc(doc(db, "users", auth.currentUser.uid), "promotion_request", "requested").then(
                 () => {
@@ -136,40 +136,12 @@ export const useApplyPromotion = () => {
                 }, (err) => {
                     setError(err.code)
                 })
+        } else {
+            setError("unauthenticated")
         }
-    }, [auth.currentUser])
+    };
 
-    return {error, loading};
-}
-
-export const useNewUser = (username: string, profile_image: string) => {
-    const [error, setError] = useState<FirestoreErrorCode>();
-    const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<UserData>();
-
-    useEffect(() => {
-        if (auth.currentUser !== null) {
-            setDoc(doc(db, "users", auth.currentUser.uid), {
-                role: "reader",
-                username: username,
-                profile_image: profile_image
-            }).then(
-                () => {
-                    setLoading(false);
-                    setUser({
-                        role: "reader",
-                        username: username,
-                        profile_image: profile_image,
-                        uid: (auth.currentUser !== null)? auth.currentUser.uid : "Error"
-                    })
-                })
-            .catch((err) => {
-                setError(err.code)
-            })
-        }
-    }, [])
-
-    return {error, loading, user};
+    return {applyContributor, error, loading};
 }
 
 export const useUser = () => {
@@ -205,4 +177,21 @@ export const useUser = () => {
     }, [auth.currentUser])
 
     return {error, loading, queriedUser};
+}
+
+export const getUser = async (uid: string | null): Promise<UserData> => {
+    if (uid === null) {
+        return Promise.reject("unauthenticated");
+    }
+    const document = await getDoc(doc(db, "users", uid));
+    if(document.exists()) {
+        return {
+            contributor: document.data().contributor,
+            profile_image: document.data().profile_image,
+            username: document.data().username,
+            uid: document.id
+        }
+    } else {
+        return Promise.reject("not-found");
+    }
 }

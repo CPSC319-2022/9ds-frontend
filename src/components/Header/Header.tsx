@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
-import { Button } from '../../components/Button'
+import { Button } from '../Button'
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
@@ -25,13 +25,13 @@ export const Header: FC = () => {
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
         <Link to={"/"} style={{ textDecoration: 'none' }}>
-            <Typography variant='subheading'>Home</Typography>
+            <Typography variant='subheading' color="black.main">HOME</Typography>
         </Link>
         <Stack direction='row' spacing={4} alignItems='center'>
-          <Typography variant='subheading'>Blog</Typography>
+          <Typography variant='subheading' color="black.main">BLOG</Typography>
           <KeyboardArrowDownIcon />
         </Stack>
-        <Typography variant='subheading'>About Us</Typography>
+        <Typography variant='subheading' color="black.main">ABOUT US</Typography>
       </Stack>
       <Stack
         direction='row'

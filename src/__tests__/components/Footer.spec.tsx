@@ -1,11 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { MemoryRouter as Router } from 'react-router-dom'
 import { Footer } from '../../components/Footer'
 
 describe('Footer Styling', () => {
   beforeAll(() => {
-    render(<Footer />)
-    jest.setTimeout(15000);
+    render(
+      <Router>
+        <Footer />
+      </Router>
+    )
+    jest.setTimeout(15000)
   })
 
   test('style', () => {

@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "pwc-9ds"
+    "dev": "ds-blog-dev",
+    "qa": "ds-blog-qa",
+    "prod": "ds-blog-376905"
   }
 }
