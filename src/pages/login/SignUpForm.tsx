@@ -7,16 +7,15 @@ import {
     IconButton,
     FormHelperText,
 } from '@mui/material';
-
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-import googleIcon from '../../assets/googleIcon.png'
+import googleIcon from '../../assets/googleIcon.png';
 import {useState} from "react";
+import {useCreateUserEmailPassword, useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
 const SignUpForm = () => {
     const [email, setEmail] = useState('')
@@ -35,13 +34,16 @@ const SignUpForm = () => {
     const [isProfImageLinkError, setIsProfImageLinkError] = useState(false)
     const [profImageLinkHelperText, setProfImageLinkHelperText] = useState('')
 
-    const [showPassword, setShowPassword] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false)
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    const emailAccountCreate = useCreateUserEmailPassword()
+    const signInWithGoogle = useSignInWithGoogle()
 
     const handleSignUp = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         let isInvalid = false
@@ -73,7 +75,6 @@ const SignUpForm = () => {
             setIsPasswordError(false)
             setPasswordHelperText("")
         }
-        // TODO check image link valid
         if (profImageLink.length === 0) {
             isInvalid = true
             setIsProfImageLinkError(true)
@@ -87,7 +88,12 @@ const SignUpForm = () => {
             setProfImageLinkHelperText("")
         }
         if (!isInvalid) {
-            console.log("signup succesful")
+            emailAccountCreate.createWithEmailAndPasswordWrapper(
+                email,
+                password,
+                name,
+                profImageLink
+            )
         }
         e.preventDefault()
     }
@@ -105,7 +111,9 @@ const SignUpForm = () => {
             >
                 <Button
                     sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
-                    onClick = {()=> console.log("signinwithGoogle")}
+                    onClick ={() => {
+                        signInWithGoogle.signInWithGoogleWrapper()
+                    }}
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
                         <img src={googleIcon} width='24px' height='25px' />

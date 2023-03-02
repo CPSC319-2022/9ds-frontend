@@ -1,17 +1,15 @@
 import {Button, FormHelperText, IconButton, Stack, TextField, Typography} from '@mui/material'
 import * as React from 'react';
-
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-import {useState} from "react";
+import { useState } from "react";
+import { useSignInUserEmailPassword } from '../../hooks/firebase/useAuth'
 
 const LoginForm = () => {
-
     const [email, setEmail] = useState('')
     const [isEmailError, setIsEmailError] = useState(false)
     const [emailHelperText, setEmailHelperText] = useState('')
@@ -19,13 +17,15 @@ const LoginForm = () => {
     const [password, setPassword] = useState('')
     const [isPasswordError, setIsPasswordError] = useState(false)
     const [passwordHelperText, setPasswordHelperText] = useState('')
-    const [showPassword, setShowPassword] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false)
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    const emailAccountSignIn = useSignInUserEmailPassword()
 
     const handleLogin = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         let isInvalid = false
@@ -52,7 +52,7 @@ const LoginForm = () => {
         }
 
         if (!isInvalid) {
-            console.log("LOGIN succesful")
+            emailAccountSignIn.signInWithEmailAndPasswordWrapper(email,password)
         }
         e.preventDefault()
     }
@@ -71,9 +71,9 @@ const LoginForm = () => {
             <Button
                 variant='outlined'
                 sx={{boxShadow:2, alignSelf:'flex-start'}}
-                onClick={()=> console.log("Login with email")}
+                // onClick={()=> console.log("Login with email")} //not sure what this is supposed to do
             >
-                <Typography variant='button'>LOGIN WITH GOOGLE</Typography>
+                <Typography variant='button'>LOGIN WITH EMAIL</Typography>
             </Button>
             <TextField
                 id='email'
