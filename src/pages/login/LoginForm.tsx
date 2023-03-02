@@ -53,6 +53,7 @@ const LoginForm = () => {
 
         if (!isInvalid) {
             emailAccountSignIn.signInWithEmailAndPasswordWrapper(email,password)
+            // if successful, navigate to dashboard
         }
         e.preventDefault()
     }

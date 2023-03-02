@@ -17,6 +17,8 @@ import googleIcon from '../../assets/googleIcon.png';
 import {useState} from "react";
 import {useCreateUserEmailPassword, useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
+// TOOD: same email, but diff password.
+
 const SignUpForm = () => {
     const [email, setEmail] = useState('')
     const [isEmailError, setIsEmailError] = useState(false)
@@ -31,8 +33,8 @@ const SignUpForm = () => {
     const [nameHelperText, setnameHelperText] = useState('')
 
     const [profImageLink, setProfImage] = useState('')
-    const [isProfImageLinkError, setIsProfImageLinkError] = useState(false)
-    const [profImageLinkHelperText, setProfImageLinkHelperText] = useState('')
+    // const [isProfImageLinkError, setIsProfImageLinkError] = useState(false)
+    // const [profImageLinkHelperText, setProfImageLinkHelperText] = useState('')
 
     const [showPassword, setShowPassword] = React.useState(false)
 
@@ -67,26 +69,27 @@ const SignUpForm = () => {
             setIsNameError(false)
             setnameHelperText("")
         }
-        if (password.length === 0) {
+        if (password.length === 0 || password.length < 6) {
             isInvalid = true
             setIsPasswordError(true)
-            setPasswordHelperText("Password can't be empty.")
+            setPasswordHelperText("Password can't be empty and should be at least 6 character.")
         } else {
             setIsPasswordError(false)
             setPasswordHelperText("")
         }
-        if (profImageLink.length === 0) {
-            isInvalid = true
-            setIsProfImageLinkError(true)
-            if (profImageLink.length === 0) {
-                setProfImageLinkHelperText("profile image link can't be empty.")
-            } else {
-                setProfImageLinkHelperText("invalid link.")
-            }
-        } else {
-            setIsProfImageLinkError(false)
-            setProfImageLinkHelperText("")
-        }
+        // ProfImageLink can be empty
+        // if (profImageLink.length === 0) {
+        //     isInvalid = true
+        //     setIsProfImageLinkError(true)
+        //     if (profImageLink.length === 0) {
+        //         setProfImageLinkHelperText("profile image link can't be empty.")
+        //     } else {
+        //         setProfImageLinkHelperText("invalid link.")
+        //     }
+        // } else {
+        //     setIsProfImageLinkError(false)
+        //     setProfImageLinkHelperText("")
+        // }
         if (!isInvalid) {
             emailAccountCreate.createWithEmailAndPasswordWrapper(
                 email,
@@ -181,8 +184,8 @@ const SignUpForm = () => {
                     onChange={(event) => {
                         setProfImage(event.target.value)
                     }}
-                    error={isProfImageLinkError}
-                    helperText={profImageLinkHelperText}
+                    // error={isProfImageLinkError}
+                    // helperText={profImageLinkHelperText}
                 />
                 <Button
                     variant='contained' sx={{
