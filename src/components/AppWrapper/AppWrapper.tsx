@@ -1,13 +1,13 @@
-import React from 'react'
+import React, {FC, ReactNode} from 'react'
 import { Header } from "../Header";
 import { Footer } from '../Footer';
 import Stack from '@mui/material/Stack'
 
 export interface IProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const AppWrapper: React.FC<IProps> = (props) => {
+export const AppWrapper: FC<IProps> = (props) => {
   return (
     <Stack
       direction='column'
