@@ -30,6 +30,7 @@ export interface articlePreview {
   author_image: string
   author_username: string
   publish_time: Timestamp
+  articleId: string
 }
 
 export interface article {
@@ -60,7 +61,7 @@ export const useArticleRecents = (n: number) => {
     const unsubscribe = onSnapshot(
       q,
       (docs: QuerySnapshot<DocumentData>) => {
-        const articlesData: unknown[] = []
+        const articlesData: articlePreview[] = []
         docs.forEach((doc) => {
           articlesData.push({
             title: doc.data().title,
@@ -69,6 +70,7 @@ export const useArticleRecents = (n: number) => {
             author_image: doc.data().author_image,
             author_username: doc.data().author_username,
             publish_time: doc.data().publish_time,
+            articleId: doc.id
           })
         })
         setLoading(false), setArticles(articlesData)

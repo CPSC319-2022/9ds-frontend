@@ -14,9 +14,10 @@ import {
 } from "firebase/firestore";
 import {db, auth} from '../../index'
 import {useState, useEffect} from "react";
+import {articlePreview} from "./useArticle";
 
 export interface UserData {
-    contributor: boolean,
+    role: string,
     profile_image: string,
     username: string,
     uid: string
@@ -34,7 +35,12 @@ export const useUserDirectory = (n: number) => {
             (docs: QuerySnapshot<DocumentData>) => {
                 const usersData: UserData[] = []
                 docs.forEach(doc => {
-                    usersData.push(doc.data() as UserData)
+                    usersData.push({
+                        role: doc.data().role,
+                        profile_image: doc.data().profile_image,
+                        username: doc.data().username,
+                        uid: doc.id
+                    })
                 })
                 setLoading(false);
                 setUsers(usersData);
@@ -59,7 +65,7 @@ export const useUserArticles = (uid: string, n: number) => {
 
         const unsubscribe = onSnapshot(q,
             (docs: QuerySnapshot<DocumentData>) => {
-                const articlesData: DocumentData[] = []
+                const articlesData: articlePreview[] = []
                 docs.forEach(doc => {
                     articlesData.push({
                         title: doc.data().title,
@@ -67,7 +73,8 @@ export const useUserArticles = (uid: string, n: number) => {
                         header_image: doc.data().header_image,
                         author_image: doc.data().author_image,
                         author_username: doc.data().author_username,
-                        post_time: doc.data().post_time
+                        publish_time: doc.data().publish_time,
+                        articleId: doc.id
                     })
                 })
                 setLoading(false),
@@ -93,7 +100,7 @@ export const useUserDrafts = (n: number) => {
 
         const unsubscribe = onSnapshot(q,
             (docs: QuerySnapshot<DocumentData>) => {
-                const articlesData: DocumentData[] = []
+                const articlesData: articlePreview[] = []
                 docs.forEach(doc => {
                     articlesData.push({
                         title: doc.data().title,
@@ -101,7 +108,8 @@ export const useUserDrafts = (n: number) => {
                         header_image: doc.data().header_image,
                         author_image: doc.data().author_image,
                         author_username: doc.data().author_username,
-                        post_time: doc.data().post_time
+                        publish_time: doc.data().edit_time,
+                        articleId: doc.id
                     })
                 })
                 setLoading(false),
@@ -116,13 +124,13 @@ export const useUserDrafts = (n: number) => {
     return {error, loading, articles};
 }
 
-export const useApplyContrtibutor = () => {
+export const useApplyPromotion = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (auth.currentUser !== null) {
-            updateDoc(doc(db, "users", auth.currentUser.uid), "contributor_request", "requested").then(
+            updateDoc(doc(db, "users", auth.currentUser.uid), "promotion_request", "requested").then(
                 () => {
                     setLoading(false);
                 }, (err) => {
@@ -142,14 +150,14 @@ export const useNewUser = (username: string, profile_image: string) => {
     useEffect(() => {
         if (auth.currentUser !== null) {
             setDoc(doc(db, "users", auth.currentUser.uid), {
-                contributor: false,
+                role: "reader",
                 username: username,
                 profile_image: profile_image
             }).then(
                 () => {
                     setLoading(false);
                     setUser({
-                        contributor: false,
+                        role: "reader",
                         username: username,
                         profile_image: profile_image,
                         uid: (auth.currentUser !== null)? auth.currentUser.uid : "Error"
@@ -168,7 +176,7 @@ export const useUser = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [queriedUser, setQueriedUser] = useState<UserData>({
-        contributor: false,
+        role: "",
         profile_image: "",
         username: "",
         uid: ""
@@ -183,7 +191,7 @@ export const useUser = () => {
                 } else {
                     setLoading(false);
                     setQueriedUser({
-                        contributor: data.contributor,
+                        role: data.role,
                         profile_image: data.profile_image,
                         username: data.username,
                         uid: doc.id

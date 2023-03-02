@@ -7,7 +7,7 @@ import {useUser} from "./useUser";
 
 export interface comment {
     commenter_uid: string,
-    profile_image: string,
+    commenter_image: string,
     commenter_username: string,
     content: string,
     post_time: Timestamp
@@ -23,7 +23,7 @@ export const useCommentCreate = (articleID: string, comment: unknown)  => {
         if (error === null && !loading) {
             addDoc(collection(db, `article/${articleID}/comments`), {
                 commenter_uid: queriedUser.uid,
-                profile_image: queriedUser.profile_image,
+                commenter_image: queriedUser.profile_image,
                 commenter_username: queriedUser.username,
                 content: comment,
                 post_time: serverTimestamp()
