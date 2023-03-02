@@ -20,22 +20,22 @@ describe('Header Styling', () => {
     expect(logo).toHaveAttribute('width', '100px')
     expect(logo).toHaveAttribute('height', '50px')
 
-    const homeHeading = screen.getByText('Home')
+    const homeHeading = screen.getByText('HOME')
     expect(homeHeading).toBeInTheDocument()
     expect(homeHeading).toHaveClass(
-      'MuiTypography-root MuiTypography-subheading css-37jdci-MuiTypography-root',
+        'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
-    const blogHeading = screen.getByText('Blog')
+    const blogHeading = screen.getByText('BLOG')
     expect(blogHeading).toBeInTheDocument()
     expect(blogHeading).toHaveClass(
-      'MuiTypography-root MuiTypography-subheading css-37jdci-MuiTypography-root',
+      'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
-    const aboutUsHeading = screen.getByText('About Us')
+    const aboutUsHeading = screen.getByText('ABOUT US')
     expect(aboutUsHeading).toBeInTheDocument()
     expect(aboutUsHeading).toHaveClass(
-      'MuiTypography-root MuiTypography-subheading css-37jdci-MuiTypography-root',
+      'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
     const [loginButton, signUpButton] = screen.getAllByRole('button')
