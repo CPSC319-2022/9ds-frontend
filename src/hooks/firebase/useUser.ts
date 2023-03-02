@@ -186,7 +186,7 @@ export const getUser = async (uid: string | null): Promise<UserData> => {
     const document = await getDoc(doc(db, "users", uid));
     if(document.exists()) {
         return {
-            contributor: document.data().contributor,
+            role: document.data().role,
             profile_image: document.data().profile_image,
             username: document.data().username,
             uid: document.id
