@@ -1,12 +1,11 @@
 import {Button, FormHelperText, IconButton, Stack, TextField, Typography} from '@mui/material'
-import * as React from 'react';
+import React, { useState, FormEvent } from 'react'
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useState } from "react";
 import { useSignInUserEmailPassword } from '../../hooks/firebase/useAuth'
 
 const LoginForm = () => {
@@ -27,7 +26,7 @@ const LoginForm = () => {
 
     const emailAccountSignIn = useSignInUserEmailPassword()
 
-    const handleLogin = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleLogin = (e: FormEvent<HTMLElement>) => {
         let isInvalid = false
         if (email.length === 0 || !validateEmail(email)) {
             isInvalid = true
@@ -42,23 +41,59 @@ const LoginForm = () => {
             setEmailHelperText('')
         }
 
-        if (password.length === 0) {
+        if (password.length === 0 || password.length < 6) {
             isInvalid = true
             setIsPasswordError(true)
-            setPasswordHelperText("Password can't be empty.")
+            setPasswordHelperText("Invalid password.")
         } else {
             setIsPasswordError(false)
             setPasswordHelperText("")
         }
 
         if (!isInvalid) {
-            emailAccountSignIn.signInWithEmailAndPasswordWrapper(email,password)
-            // if successful, navigate to dashboard
+            emailAccountSignIn.signInWithEmailAndPasswordWrapper(email, password)
+            // need error to be updated
+            if (emailAccountSignIn.error === undefined) {
+                // if successful, navigate to dashboard
+                if (emailAccountSignIn.user !== undefined){
+                    console.log(emailAccountSignIn.user)
+                    console.log("loginSuccess")
+                }
+                setIsEmailError(false)
+                setEmailHelperText("")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+            } else if (emailAccountSignIn.error.toString() === "auth/wrong-password") {
+                setIsEmailError(false)
+                setEmailHelperText("")
+                setIsPasswordError(true)
+                setPasswordHelperText("Incorrect password.")
+            } else {
+                setIsEmailError(true)
+                setEmailHelperText("Cannot find user with that username and password.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+            }
+            // auth/invalid-email
+            // Thrown if the email address is not valid.
+            // auth/user-disabled
+            // Thrown if the user corresponding to the given email has been disabled.
+            // auth/user-not-found
+            // Thrown if there is no user corresponding to the given email.
+            // auth/wrong-password
+            // Thrown if the password is invalid for the given email,
+            // or the account corresponding to the email does not have a password set.
         }
+
         e.preventDefault()
     }
 
     return (
+        <form
+            onSubmit={(event) => {
+                handleLogin(event)
+            }}
+        >
         <Stack
             width='390px'
             direction='column'
@@ -72,12 +107,11 @@ const LoginForm = () => {
             <Button
                 variant='outlined'
                 sx={{boxShadow:2, alignSelf:'flex-start'}}
-                // onClick={()=> console.log("Login with email")} //not sure what this is supposed to do
             >
                 <Typography variant='button'>LOGIN WITH EMAIL</Typography>
             </Button>
             <TextField
-                id='email'
+                id="signInEmail"
                 label='Email'
                 variant='outlined'
                 onChange={(event) => {
@@ -89,7 +123,7 @@ const LoginForm = () => {
             <FormControl variant='outlined'>
                 <InputLabel htmlFor='outlined-adornment-password'>Password</InputLabel>
                 <OutlinedInput
-                    id='outlined-adornment-password'
+                    id='login-outlined-adornment-password'
                     type={showPassword ? 'text' : 'password'}
                     endAdornment={
                         <InputAdornment position='end'>
@@ -120,15 +154,16 @@ const LoginForm = () => {
                 alignItems='flex-end'
                 justifyContent='flex-end'
             >
-                <Button variant='contained' sx={{
-                    alignSelf:'flex-start',
-                    backgroundColor: 'black.main', }}
-                    onClick={(event) => handleLogin(event)}
+                <Button
+                    type='submit'
+                    variant='contained'
+                    sx={{alignSelf:'flex-start', backgroundColor: 'black.main'}}
                 >
                     <Typography variant='button'>LOGIN</Typography>
                 </Button>
             </Stack>
         </Stack>
+        </form>
 
     )
 }

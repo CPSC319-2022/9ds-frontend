@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, FormEvent } from 'react'
 import {
     Stack,
     TextField,
@@ -14,7 +14,6 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import googleIcon from '../../assets/googleIcon.png';
-import {useState} from "react";
 import {useCreateUserEmailPassword, useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
 // TOOD: same email, but diff password.
@@ -47,7 +46,9 @@ const SignUpForm = () => {
     const emailAccountCreate = useCreateUserEmailPassword()
     const signInWithGoogle = useSignInWithGoogle()
 
-    const handleSignUp = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+
+
+    const handleSignUp = (e:  FormEvent<HTMLElement>) => {
         let isInvalid = false
         if (email.length === 0 || !validateEmail(email)) {
             isInvalid = true
@@ -97,11 +98,34 @@ const SignUpForm = () => {
                 name,
                 profImageLink
             )
+            //check if email is taken
+            // state is not updated yet
+            if (emailAccountCreate.error.toString() === "auth/email-already-in-use") {
+                setIsEmailError(true)
+                setEmailHelperText("User with this email already exists.")
+            }
+
+            // auth/email-already-in-use
+            // Thrown if there already exists an account with the given email address.
+            // auth/invalid-email
+            // Thrown if the email address is not valid.
+            // auth/operation-not-allowed
+            // Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+            // auth/weak-password
+            // Thrown if the password is not strong enough.
+
+            // if successful, navigate to dashboard
+
         }
         e.preventDefault()
     }
 
     return (
+        <form
+            onSubmit={(event) => {
+                handleSignUp(event)
+            }}
+        >
             <Stack
                 width='390px'
                 direction='column'
@@ -198,6 +222,7 @@ const SignUpForm = () => {
                     </Typography>
                 </Button>
             </Stack>
+        </form>
     )
 }
 
