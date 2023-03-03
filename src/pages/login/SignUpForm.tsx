@@ -7,6 +7,7 @@ import {
     IconButton,
     FormHelperText,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -16,7 +17,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import googleIcon from '../../assets/googleIcon.png';
 import {useCreateUserEmailPassword, useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
+
 const SignUpForm = () => {
+    const navigate = useNavigate()
+
     const [email, setEmail] = useState('')
     const [isEmailError, setIsEmailError] = useState(false)
     const [emailHelperText, setEmailHelperText] = useState('')
@@ -88,7 +92,7 @@ const SignUpForm = () => {
                 // if successful, navigate to dashboard
                 // not happening, because user is always undefined, not sure how to know user is created
                 console.log("SignUp success")
-                console.log("going to dashboard...")
+                navigate("/")
             } else if (emailAccountCreate.error === undefined) {
                 // remove this later once the user/error is loaded first
                 console.log("user and error not loaded yet")
@@ -133,6 +137,13 @@ const SignUpForm = () => {
                     sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
                     onClick ={() => {
                         signInWithGoogle.signInWithGoogleWrapper()
+                        console.log(signInWithGoogle.error)
+                        if (signInWithGoogle.error !== undefined && signInWithGoogle.error.toString() === "not-found") {
+                            navigate("/")
+                        }
+                        // auth/account-exists-with-different-credential
+                        // auth/credential-already-in-use
+                        // auth/popup-closed-by-user
                     }}
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
@@ -201,8 +212,6 @@ const SignUpForm = () => {
                     onChange={(event) => {
                         setProfImage(event.target.value)
                     }}
-                    // error={isProfImageLinkError}
-                    // helperText={profImageLinkHelperText}
                 />
                 <Button
                     variant='contained' sx={{
@@ -221,7 +230,7 @@ const SignUpForm = () => {
 
 export default SignUpForm
 
-const validateEmail = (email) => {
+const validateEmail = (email: string) => {
     return String(email)
         .toLowerCase()
         .match(

@@ -1,5 +1,6 @@
-import {Button, FormHelperText, IconButton, Stack, TextField, Typography} from '@mui/material'
+import {Button, FormHelperText, IconButton, Stack, TextField, Typography, Link} from '@mui/material'
 import React, { useState, FormEvent } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -9,6 +10,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useSignInUserEmailPassword } from '../../hooks/firebase/useAuth'
 
 const LoginForm = () => {
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState('')
     const [isEmailError, setIsEmailError] = useState(false)
     const [emailHelperText, setEmailHelperText] = useState('')
@@ -55,10 +58,11 @@ const LoginForm = () => {
             // need error to be updated
             if (emailAccountSignIn.error === undefined) {
                 // first try login success
-                // if successful, navigate to dashboard
                 if (emailAccountSignIn.user !== undefined){
                     console.log(emailAccountSignIn.user)
                     console.log("loginSuccess")
+                    // if successful, navigate to dashboard
+                    navigate("/")
                 }
             } else if (emailAccountSignIn.error.toString() === "auth/wrong-password" && emailAccountSignIn.user === undefined) {
                 setIsPasswordError(true)
@@ -73,6 +77,7 @@ const LoginForm = () => {
                 // 2nd or more tries logging in success
                 console.log(emailAccountSignIn.user)
                 console.log("loginSuccess")
+                navigate("/")
             } else {
                 console.log("other errors not covered")
             }
@@ -153,8 +158,11 @@ const LoginForm = () => {
             <Stack
                 direction='row'
                 alignItems='flex-end'
-                justifyContent='flex-end'
+                justifyContent='space-between'
             >
+                <Link component={RouterLink} to="/" underline='none' color='#2602FF'>
+                    <Typography variant='small'>Forgot password?</Typography>
+                </Link>
                 <Button
                     type='submit'
                     variant='contained'
@@ -169,7 +177,7 @@ const LoginForm = () => {
     )
 }
 
-const validateEmail = (email) => {
+const validateEmail = (email: string) => {
     return String(email)
         .toLowerCase()
         .match(
