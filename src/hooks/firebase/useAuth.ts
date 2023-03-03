@@ -30,7 +30,7 @@ const createNewUser = (username: string, profile_image: string): Promise<void> =
         return Promise.reject("failed_precondition");
     }
     return setDoc(doc(db, "users", auth.currentUser.uid), {
-        contributor: false,
+        role: "reader",
         username: username,
         profile_image: profile_image
     })

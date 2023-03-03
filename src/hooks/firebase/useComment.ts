@@ -7,7 +7,7 @@ import {getUser} from "./useUser";
 
 export interface comment {
     commenter_uid: string,
-    profile_image: string,
+    commenter_image: string,
     commenter_username: string,
     content: string,
     post_time: Timestamp
