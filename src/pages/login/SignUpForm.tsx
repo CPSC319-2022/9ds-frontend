@@ -98,11 +98,24 @@ const SignUpForm = () => {
                 name,
                 profImageLink
             )
-            //check if email is taken
-            // state is not updated yet
-            if (emailAccountCreate.error.toString() === "auth/email-already-in-use") {
+            // error and user not updated because the above function is async and run late
+            console.log("error is " + emailAccountCreate.error)
+            console.log("user is " + emailAccountCreate.user)
+            if (emailAccountCreate.user !== undefined) {
+                // if successful, navigate to dashboard
+                console.log("you are logged in")
+                console.log("going to dashboard...")
+            } else if (emailAccountCreate.error === undefined) {
+                // remove this later once the user/error is loaded first
+                console.log("user and error not loaded yet")
+            } else if (emailAccountCreate.error.toString() === "auth/email-already-in-use") {
                 setIsEmailError(true)
-                setEmailHelperText("User with this email already exists.")
+                setEmailHelperText("There already exists an account with the given email address.")
+            } else if (emailAccountCreate.error.toString() === "operation-not-allowed") {
+                setIsEmailError(true)
+                setEmailHelperText("This email/password account is not enabled")
+            } else {
+                console.log("other error codes")
             }
 
             // auth/email-already-in-use
@@ -113,8 +126,6 @@ const SignUpForm = () => {
             // Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
             // auth/weak-password
             // Thrown if the password is not strong enough.
-
-            // if successful, navigate to dashboard
 
         }
         e.preventDefault()
