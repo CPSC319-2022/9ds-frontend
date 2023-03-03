@@ -26,33 +26,6 @@ const LoginForm = () => {
 
     const emailAccountSignIn = useSignInUserEmailPassword()
 
-    function callBackSetWarningText() {
-        console.log("callback starts now")
-        console.log("error should load as " + emailAccountSignIn.error)
-        console.log("user should load as " + emailAccountSignIn.user)
-        if (emailAccountSignIn.user !== undefined) {
-            console.log("you are logged in")
-            console.log("going to dashboard...")
-        } else if (emailAccountSignIn.error === undefined) {
-            // remove this later once the user/error is loaded first
-            console.log("user and error not loaded yet")
-        } else if (emailAccountSignIn.error.toString() === "auth/wrong-password") {
-            console.log("wrong pw")
-            setIsPasswordError(true)
-            setPasswordHelperText("Incorrect password.")
-        } else if (emailAccountSignIn.error.toString() === "auth/user-not-found") {
-            console.log("cannot find user")
-            setIsEmailError(true)
-            setEmailHelperText("Cannot find user with that username and password.")
-        } else if (emailAccountSignIn.error.toString() === "auth/user-disabled") {
-            console.log("user disabled")
-            setIsEmailError(true)
-            setEmailHelperText("User disabled.")
-        } else {
-            console.log("other error codes")
-        }
-    }
-
     const handleLogin = (e: FormEvent<HTMLElement>) => {
         let isInvalid = false
         if (email.length === 0 || !validateEmail(email)) {
@@ -79,31 +52,40 @@ const LoginForm = () => {
 
         if (!isInvalid) {
             emailAccountSignIn.signInWithEmailAndPasswordWrapper(email, password)
-           // now I should have error and user detail, but the function is async, so the error and user isn't updated yet
-            console.log("error is " + emailAccountSignIn.error)
-            console.log("user is " + emailAccountSignIn.user)
-            if (emailAccountSignIn.user !== undefined) {
-                console.log("you are logged in")
-                console.log("going to dashboard...")
-            } else if (emailAccountSignIn.error === undefined) {
-                // remove this later once the user/error is loaded first
-                console.log("user and error not loaded yet")
-            } else if (emailAccountSignIn.error.toString() === "auth/wrong-password") {
-                console.log("wrong pw")
+            // need error to be updated
+            if (emailAccountSignIn.error === undefined) {
+                // first try login success
+                // if successful, navigate to dashboard
+                if (emailAccountSignIn.user !== undefined){
+                    console.log(emailAccountSignIn.user)
+                    console.log("loginSuccess")
+                }
+            } else if (emailAccountSignIn.error.toString() === "auth/wrong-password" && emailAccountSignIn.user === undefined) {
                 setIsPasswordError(true)
                 setPasswordHelperText("Incorrect password.")
-            } else if (emailAccountSignIn.error.toString() === "auth/user-not-found") {
-                console.log("cannot find user")
+            } else if (emailAccountSignIn.error.toString() === "auth/user-not-found" && emailAccountSignIn.user === undefined) {
                 setIsEmailError(true)
                 setEmailHelperText("Cannot find user with that username and password.")
-            } else if (emailAccountSignIn.error.toString() === "auth/user-disabled"){
-                console.log("user disabled")
+            } else if (emailAccountSignIn.error.toString() === "auth/user-disabled" && emailAccountSignIn.user === undefined) {
                 setIsEmailError(true)
-                setEmailHelperText("User disabled.")
+                setEmailHelperText("User corresponding to the given email has been disabled.")
+            } else if (emailAccountSignIn.user !== undefined) {
+                // 2nd or more tries logging in success
+                console.log(emailAccountSignIn.user)
+                console.log("loginSuccess")
             } else {
-                console.log("other error codes")
+                console.log("other errors not covered")
             }
+
+            // auth/user-disabled
+            // Thrown if the user corresponding to the given email has been disabled.
+            // auth/user-not-found
+            // Thrown if there is no user corresponding to the given email.
+            // auth/wrong-password
+            // Thrown if the password is invalid for the given email,
+            // or the account corresponding to the email does not have a password set.
         }
+
         e.preventDefault()
     }
 

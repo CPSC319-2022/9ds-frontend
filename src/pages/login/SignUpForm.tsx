@@ -16,8 +16,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import googleIcon from '../../assets/googleIcon.png';
 import {useCreateUserEmailPassword, useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
-// TOOD: same email, but diff password.
-
 const SignUpForm = () => {
     const [email, setEmail] = useState('')
     const [isEmailError, setIsEmailError] = useState(false)
@@ -78,19 +76,7 @@ const SignUpForm = () => {
             setIsPasswordError(false)
             setPasswordHelperText("")
         }
-        // ProfImageLink can be empty
-        // if (profImageLink.length === 0) {
-        //     isInvalid = true
-        //     setIsProfImageLinkError(true)
-        //     if (profImageLink.length === 0) {
-        //         setProfImageLinkHelperText("profile image link can't be empty.")
-        //     } else {
-        //         setProfImageLinkHelperText("invalid link.")
-        //     }
-        // } else {
-        //     setIsProfImageLinkError(false)
-        //     setProfImageLinkHelperText("")
-        // }
+
         if (!isInvalid) {
             emailAccountCreate.createWithEmailAndPasswordWrapper(
                 email,
@@ -98,12 +84,10 @@ const SignUpForm = () => {
                 name,
                 profImageLink
             )
-            // error and user not updated because the above function is async and run late
-            console.log("error is " + emailAccountCreate.error)
-            console.log("user is " + emailAccountCreate.user)
             if (emailAccountCreate.user !== undefined) {
                 // if successful, navigate to dashboard
-                console.log("you are logged in")
+                // not happening, because user is always undefined, not sure how to know user is created
+                console.log("SignUp success")
                 console.log("going to dashboard...")
             } else if (emailAccountCreate.error === undefined) {
                 // remove this later once the user/error is loaded first
@@ -124,8 +108,6 @@ const SignUpForm = () => {
             // Thrown if the email address is not valid.
             // auth/operation-not-allowed
             // Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
-            // auth/weak-password
-            // Thrown if the password is not strong enough.
 
         }
         e.preventDefault()
@@ -158,9 +140,9 @@ const SignUpForm = () => {
                         <Typography variant='button'>SIGNUP WITH GOOGLE</Typography>
                     </Stack>
                 </Button>
-                    <Stack direction='row' alignItems='center' justifyContent='space-around' spacing={24}>
-                        <Typography variant='body1.medium' sx={{fontSize:'14px', weight:600}}>Or</Typography>
-                    </Stack>
+                <Stack direction='row' alignItems='center' justifyContent='space-around' spacing={24}>
+                    <Typography variant='body1.medium' sx={{fontSize:'14px', weight:600}}>Or</Typography>
+                </Stack>
                 <TextField
                     id='name'
                     label='Name'
