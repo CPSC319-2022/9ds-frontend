@@ -4,7 +4,7 @@ import feather from '../../assets/feather.png'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
 import { Link } from "react-router-dom";
-import { Button } from '../Button/Button'
+import { Button } from '../Button'
 
 export const Footer: FC = () => {
   return (
