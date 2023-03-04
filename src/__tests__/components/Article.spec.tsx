@@ -1,10 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import React from 'react'
-import { Article } from '../../components/Article'
+import { Article } from '../../components'
 
 describe('Article Style', () => {
   test('should be large', () => {
-    jest.setTimeout(15000);
+    jest.setTimeout(15000)
     render(<Article size='large' />)
     // This shows a clear view of the DOM that is useful for getting elements
     // screen.debug()
@@ -17,7 +16,7 @@ describe('Article Style', () => {
     expect(largeImage).toHaveStyle('border-radius: 50%')
   })
   test('should be small', () => {
-    jest.setTimeout(15000);
+    jest.setTimeout(15000)
     render(<Article size='small' />)
     // Use index to get the first occurrence of the image
     const smallImage = screen.getAllByRole('img')[0]

@@ -1,7 +1,7 @@
 import { Box, Button, FormLabel, Stack } from '@mui/material'
 import { Container } from '@mui/system'
 import React, { useState, FormEvent } from 'react'
-import { LabeledTextField } from '../../components/LabeledTextField'
+import { LabeledTextField } from '../../components'
 import { useArticleCreate } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -28,6 +28,8 @@ export const CreateArticle = () => {
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
+
+  const { createArticle, error, loading, articleId } = useArticleCreate()
 
   const handleSubmit = (e: FormEvent<HTMLElement>, published: boolean) => {
     let isInvalid = false
@@ -57,8 +59,7 @@ export const CreateArticle = () => {
       setBodyHelperText('')
     }
     if (!isInvalid) {
-      console.log('CREATED')
-      useArticleCreate(
+      createArticle(
         title,
         body,
         customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex],
