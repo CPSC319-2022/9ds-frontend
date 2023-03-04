@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo} from "firebase/auth";
+import {User, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset} from "firebase/auth";
 import {doc, FirestoreErrorCode, setDoc} from "firebase/firestore";
 import {auth, db} from "../../index";
 import {UserData, getUser} from "./useUser";
@@ -115,6 +115,54 @@ export const useSignInWithGoogle = () => {
 
     return {signInWithGoogleWrapper, error, loading, user};
 }
+
+export const useForgotPasswordEmail = () => {
+    const [error, setError] = useState();
+    const [loading, setLoading] = useState(true);
+
+    const sendEmail = (email: string) => {
+        sendPasswordResetEmail(auth, email).then(() => {
+            setLoading(false);
+        }).catch((err) => {
+            setError(err);
+        })
+    }
+
+    return {sendEmail, error, loading}
+}
+
+export const useResetCode = () => {
+    const [error, setError] = useState();
+    const [loading, setLoading] = useState(true);
+    const [email, setEmail] = useState("");
+
+    const verifyCode = (actionCode: string) => {
+        verifyPasswordResetCode(auth, actionCode).then((accountEmail) => {
+            setEmail(accountEmail);
+            setLoading(false);
+        }).catch((err) => {
+            setError(err);
+        })
+    }
+
+    return {verifyCode, error, loading, email}
+}
+
+export const useNewPassword = () => {
+    const [error, setError] = useState();
+    const [loading, setLoading] = useState(true);
+
+    const setNewPassword = (actionCode: string, password: string) => {
+        confirmPasswordReset(auth, actionCode, password).then(() => {
+            setLoading(false);
+        }).catch((err) => {
+            setError(err);
+        })
+    }
+
+    return {setNewPassword, error, loading}
+}
+
 
 export const useSignOut = () => {
     const [error, setError] = useState();
