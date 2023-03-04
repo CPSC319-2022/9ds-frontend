@@ -15,7 +15,7 @@ const pictureUrls = [
   'https://via.placeholder.com/150',
 ]
 
-export const CreateArticle = () => {
+export const UpdateArticle = () => {
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
 
@@ -57,7 +57,6 @@ export const CreateArticle = () => {
       setBodyHelperText('')
     }
     if (!isInvalid) {
-      console.log('CREATED')
       useArticleCreate(
         title,
         body,
