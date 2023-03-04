@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react'
+import React, { useState, FormEvent, useEffect } from 'react'
 import {
     Stack,
     TextField,
@@ -33,9 +33,7 @@ const SignUpForm = () => {
     const [isNameError, setIsNameError] = useState(false)
     const [nameHelperText, setnameHelperText] = useState('')
 
-    const [profImageLink, setProfImage] = useState('')
-    // const [isProfImageLinkError, setIsProfImageLinkError] = useState(false)
-    // const [profImageLinkHelperText, setProfImageLinkHelperText] = useState('')
+    const [profImageLink, setProfImageLink] = useState('')
 
     const [showPassword, setShowPassword] = React.useState(false)
 
@@ -48,6 +46,50 @@ const SignUpForm = () => {
     const emailAccountCreate = useCreateUserEmailPassword()
     const signInWithGoogle = useSignInWithGoogle()
 
+    // signUpSuccess login, loading was set to false in createNewUser
+    useEffect(() => {
+        if (emailAccountCreate.loading === false) {
+            navigate("/")
+        }
+    }, [emailAccountCreate.loading])
+
+    // signUp Error
+    // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword
+    useEffect(() => {
+        let error;
+        if (emailAccountCreate.error === undefined) {
+            error = ""
+        } else {
+            error = emailAccountCreate.error.toString()
+        }
+        switch (error) {
+            case "auth/email-already-in-use":
+                setIsEmailError(true)
+                setEmailHelperText("There already exists an account with the given email address.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
+            case "operation-not-allowed":
+                setIsEmailError(true)
+                setEmailHelperText("This email/password account is not enabled.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
+            default:
+                setIsEmailError(false)
+                setEmailHelperText("")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
+        }
+    }, [emailAccountCreate.error])
+
+    // googleSignUpSuccses
+    useEffect(() => {
+        if (signInWithGoogle.error !== undefined && signInWithGoogle.error.toString() === "not-found") {
+            navigate("/")
+        }
+    }, [signInWithGoogle.error])
 
 
     const handleSignUp = (e:  FormEvent<HTMLElement>) => {
@@ -80,39 +122,14 @@ const SignUpForm = () => {
             setIsPasswordError(false)
             setPasswordHelperText("")
         }
-
         if (!isInvalid) {
+            console.log({email, password, name, profImageLink})
             emailAccountCreate.createWithEmailAndPasswordWrapper(
                 email,
                 password,
                 name,
                 profImageLink
             )
-            if (emailAccountCreate.user !== undefined) {
-                // if successful, navigate to dashboard
-                // not happening, because user is always undefined, not sure how to know user is created
-                console.log("SignUp success")
-                navigate("/")
-            } else if (emailAccountCreate.error === undefined) {
-                // remove this later once the user/error is loaded first
-                console.log("user and error not loaded yet")
-            } else if (emailAccountCreate.error.toString() === "auth/email-already-in-use") {
-                setIsEmailError(true)
-                setEmailHelperText("There already exists an account with the given email address.")
-            } else if (emailAccountCreate.error.toString() === "operation-not-allowed") {
-                setIsEmailError(true)
-                setEmailHelperText("This email/password account is not enabled")
-            } else {
-                console.log("other error codes")
-            }
-
-            // auth/email-already-in-use
-            // Thrown if there already exists an account with the given email address.
-            // auth/invalid-email
-            // Thrown if the email address is not valid.
-            // auth/operation-not-allowed
-            // Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
-
         }
         e.preventDefault()
     }
@@ -137,13 +154,6 @@ const SignUpForm = () => {
                     sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
                     onClick ={() => {
                         signInWithGoogle.signInWithGoogleWrapper()
-                        console.log(signInWithGoogle.error)
-                        if (signInWithGoogle.error !== undefined && signInWithGoogle.error.toString() === "not-found") {
-                            navigate("/")
-                        }
-                        // auth/account-exists-with-different-credential
-                        // auth/credential-already-in-use
-                        // auth/popup-closed-by-user
                     }}
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
@@ -210,7 +220,11 @@ const SignUpForm = () => {
                     label='Profile image link'
                     variant='outlined'
                     onChange={(event) => {
-                        setProfImage(event.target.value)
+                        setProfImageLink(event.target.value)
+                        // check empty or invalid link here
+                        if (event.target.value === "" || !validateProfImageLink(event.target.value)) {
+                            setProfImageLink("https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg")
+                        }
                     }}
                 />
                 <Button
@@ -231,9 +245,11 @@ const SignUpForm = () => {
 export default SignUpForm
 
 const validateEmail = (email: string) => {
-    return String(email)
-        .toLowerCase()
-        .match(
+    return email.toLowerCase().match(
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         );
 };
+
+const validateProfImageLink = (link: string) => {
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(link);
+}

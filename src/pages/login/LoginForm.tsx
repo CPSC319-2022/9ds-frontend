@@ -1,5 +1,5 @@
 import {Button, FormHelperText, IconButton, Stack, TextField, Typography, Link} from '@mui/material'
-import React, { useState, FormEvent } from 'react'
+import React, { useState, FormEvent, useEffect } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -29,6 +29,51 @@ const LoginForm = () => {
 
     const emailAccountSignIn = useSignInUserEmailPassword()
 
+    // signIn success
+    useEffect(() => {
+        if (emailAccountSignIn.user !== undefined) {
+            console.log(emailAccountSignIn.user)
+            navigate("/")
+        }
+    }, [emailAccountSignIn.loading])
+
+    // signIn error
+    // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#signinwithemailandpassword
+    useEffect (() => {
+        let error;
+        if (emailAccountSignIn.error === undefined) {
+            error = ""
+        } else {
+            error = emailAccountSignIn.error.toString()
+        }
+        switch (error) {
+            case "auth/wrong-password":
+                setIsEmailError(false)
+                setEmailHelperText("")
+                setIsPasswordError(true)
+                setPasswordHelperText("Incorrect password.")
+                break;
+            case "auth/user-not-found":
+                setIsEmailError(true)
+                setEmailHelperText("Cannot find user with that username and password.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
+            case "auth/user-disabled":
+                setIsEmailError(true)
+                setEmailHelperText("User corresponding to the given email has been disabled.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
+            default:
+                setIsEmailError(false)
+                setEmailHelperText("")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
+        }
+    })
+
     const handleLogin = (e: FormEvent<HTMLElement>) => {
         let isInvalid = false
         if (email.length === 0 || !validateEmail(email)) {
@@ -55,42 +100,7 @@ const LoginForm = () => {
 
         if (!isInvalid) {
             emailAccountSignIn.signInWithEmailAndPasswordWrapper(email, password)
-            // need error to be updated
-            if (emailAccountSignIn.error === undefined) {
-                // first try login success
-                if (emailAccountSignIn.user !== undefined){
-                    console.log(emailAccountSignIn.user)
-                    console.log("loginSuccess")
-                    // if successful, navigate to dashboard
-                    navigate("/")
-                }
-            } else if (emailAccountSignIn.error.toString() === "auth/wrong-password" && emailAccountSignIn.user === undefined) {
-                setIsPasswordError(true)
-                setPasswordHelperText("Incorrect password.")
-            } else if (emailAccountSignIn.error.toString() === "auth/user-not-found" && emailAccountSignIn.user === undefined) {
-                setIsEmailError(true)
-                setEmailHelperText("Cannot find user with that username and password.")
-            } else if (emailAccountSignIn.error.toString() === "auth/user-disabled" && emailAccountSignIn.user === undefined) {
-                setIsEmailError(true)
-                setEmailHelperText("User corresponding to the given email has been disabled.")
-            } else if (emailAccountSignIn.user !== undefined) {
-                // 2nd or more tries logging in success
-                console.log(emailAccountSignIn.user)
-                console.log("loginSuccess")
-                navigate("/")
-            } else {
-                console.log("other errors not covered")
-            }
-
-            // auth/user-disabled
-            // Thrown if the user corresponding to the given email has been disabled.
-            // auth/user-not-found
-            // Thrown if there is no user corresponding to the given email.
-            // auth/wrong-password
-            // Thrown if the password is invalid for the given email,
-            // or the account corresponding to the email does not have a password set.
         }
-
         e.preventDefault()
     }
 

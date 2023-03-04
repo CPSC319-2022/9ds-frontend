@@ -46,9 +46,6 @@ export const useCreateUserEmailPassword = () => {
             createNewUser(username, profile_image).then(() => {
                 setLoading(false);
                 setUser(user);
-                console.log("userCreated")
-                // user is always undefined even successfully created
-                console.log(user)
             }).catch((err) => {
                 setError(err)
             })
