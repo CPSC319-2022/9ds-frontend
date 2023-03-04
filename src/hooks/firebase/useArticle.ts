@@ -13,12 +13,14 @@ import {
   DocumentData,
   QuerySnapshot,
   FirestoreErrorCode,
-  FirestoreError, getDoc, getDocs,
+  QueryDocumentSnapshot,
+  FirestoreError, getDoc, getDocs, startAfter
 } from 'firebase/firestore'
 import {auth, db} from '../../index'
 import { useState, useEffect } from 'react'
 import {getUser, UserData} from './useUser'
 import { comment } from './useComment'
+
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -63,26 +65,44 @@ export interface article {
 export const useArticleRecents = (n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [articles, setArticles] = useState<ArticlePreview[]>()
+  const [loadingNext, setLoadingNext] = useState(true)
+  const [articles, setArticles] = useState<ArticlePreview[]>([])
+
+  const q = query(
+    collection(db, 'article'),
+    where('published', '==', true),
+    orderBy('publish_time'),
+  )
+
+  let lastArticle: QueryDocumentSnapshot<DocumentData>;
+  let endOfCollection = false;
 
   useEffect(() => {
-    const q = query(
-        collection(db, 'article'),
-      where('published', '==', true),
-      orderBy('publish_time'),
-      limit(n),
-    )
-
-    getDocs(q)
+    getDocs(query(q, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
             setLoading(false);
             setArticles(articlePreviewTranslator(docs))
-      }).catch((err) => {
+            lastArticle = docs.docs[docs.docs.length - 1]
+            endOfCollection = docs.docs.length < n
+        }).catch((err: FirestoreError) => {
         setError(err.code)
       })
   }, [])
 
-  return { error, loading, articles }
+  const getNext = (n: number) => {
+      setLoadingNext(true)
+      getDocs(query(q, startAfter(lastArticle), limit(n)))
+          .then((docs: QuerySnapshot<DocumentData>) => {
+              setLoadingNext(false)
+              setArticles(articles.concat(articlePreviewTranslator(docs)))
+              lastArticle = docs.docs[docs.docs.length - 1]
+              endOfCollection = docs.docs.length < n
+      }).catch((err: FirestoreError) => {
+          setError(err.code)
+      })
+  }
+
+  return { getNext, error, loading, loadingNext, articles, endOfCollection }
 }
 
 export const useArticleRead = (articleID: string) => {
@@ -113,9 +133,15 @@ export const useArticleComments = (articleID: string, n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [comments, setComments] = useState<comment[]>([])
+  const [loadingNext, setLoadingNext] = useState(true)
+
+  const q = query(collection(db, `article/${articleID}/comments`));
+
+  let lastComment: QueryDocumentSnapshot<DocumentData>;
+  let endOfCollection = false;
 
   useEffect(() => {
-    getDocs(query(collection(db, `article/${articleID}/comments`), limit(n)))
+    getDocs(query(q, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
             const commentsData: DocumentData[] = []
             docs.forEach((doc) => {
@@ -123,13 +149,32 @@ export const useArticleComments = (articleID: string, n: number) => {
             })
             setLoading(false)
             setComments(commentsData as comment[])
+            lastComment = docs.docs[docs.docs.length - 1]
+            endOfCollection = docs.docs.length < n
       }).catch((err: FirestoreError) => {
             setError(err.code)
       })
 
   }, [articleID])
 
-  return {error, loading, comments }
+    const getNext = (n: number) => {
+        setLoadingNext(true)
+        getDocs(query(q, startAfter(lastComment), limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                const commentsData: DocumentData[] = []
+                docs.forEach((doc) => {
+                    commentsData.push(doc.data)
+                })
+                setLoadingNext(false)
+                setComments(comments.concat(commentsData as comment[]))
+                lastComment = docs.docs[docs.docs.length - 1]
+                endOfCollection = docs.docs.length < n
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
+    }
+
+  return {getNext, error, loading, loadingNext, comments, endOfCollection }
 }
 
 export const useArticleCreate = () => {
