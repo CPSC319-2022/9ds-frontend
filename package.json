@@ -64,6 +64,7 @@
         "functions": 80,
         "lines": 80
       }
-    }
+    },
+    "transformIgnorePatterns": ["/node_modules/(?!@mui/material)/"]
   }
 }
