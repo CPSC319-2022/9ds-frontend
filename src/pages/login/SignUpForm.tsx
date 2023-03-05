@@ -33,7 +33,7 @@ export const SignUpForm = () => {
     const [isNameError, setIsNameError] = useState(false)
     const [nameHelperText, setnameHelperText] = useState('')
 
-    const [profImageLink, setProfImageLink] = useState('')
+    const [profImageLink, setProfImageLink] = useState('https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg')
 
     const [showPassword, setShowPassword] = React.useState(false)
 
@@ -48,6 +48,7 @@ export const SignUpForm = () => {
 
     useEffect(() => {
         if (emailAccountCreate.user) {
+            console.log(emailAccountCreate.user)
             navigate("/")
         }
     }, [emailAccountCreate.user])
@@ -129,6 +130,7 @@ export const SignUpForm = () => {
                 name,
                 profImageLink
             )
+
         }
         e.preventDefault()
     }
@@ -208,7 +210,13 @@ export const SignUpForm = () => {
                     id='profImgLink'
                     label='Profile image link'
                     variant='outlined'
-                    onChange={(event) => setProfImageLink(event.target.value)}
+                    onChange={(event) => {
+                        if (!isProfImgLinkValid(event.target.value)){
+                            setProfImageLink("https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg")
+                        } else {
+                            setProfImageLink(event.target.value)
+                        }
+                    }}
                 />
                 <Button
                     variant='contained' sx={{
@@ -225,6 +233,7 @@ export const SignUpForm = () => {
     )
 }
 
+
 const IMAGE_LINK_REGEX = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/
 
-export const validateProfImageLink = (link: string) => IMAGE_LINK_REGEX.test(link)
+export const isProfImgLinkValid = (link: string) => IMAGE_LINK_REGEX.test(link)
