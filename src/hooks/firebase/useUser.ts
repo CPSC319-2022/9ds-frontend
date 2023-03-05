@@ -251,6 +251,26 @@ export const useApplyPromotion = () => {
     return {applyPromotion, error, loading};
 }
 
+export const useSetRole = () => {
+    const [error, setError] = useState<FirestoreErrorCode>();
+    const [loading, setLoading] = useState(true);
+
+    const setRole = (uid: string, role: string) => {
+        if (role == "reader" || role == "contributor" || role == "admin" || role == "banned"){
+            updateDoc(doc(db, "users", uid), "role", role)
+                .then(() => {
+                    setLoading(false);
+                }).catch((err) => {
+                setError(err.code)
+            })
+        } else {
+            setError("invalid-argument")
+        }
+    };
+
+    return {setRole, error, loading};
+}
+
 export const useUser = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
