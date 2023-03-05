@@ -62,7 +62,7 @@ export const CreateArticle = () => {
       createArticle(
         title,
         body,
-        customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex],
+        customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex as number],
         published,
       )
     }

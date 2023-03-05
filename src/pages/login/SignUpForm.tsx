@@ -18,7 +18,7 @@ import googleIcon from '../../assets/googleIcon.png';
 import {useCreateUserEmailPassword, useSignInWithGoogle} from '../../hooks/firebase/useAuth'
 
 
-const SignUpForm = () => {
+export const SignUpForm = () => {
     const navigate = useNavigate()
 
     const [email, setEmail] = useState('')
@@ -46,22 +46,23 @@ const SignUpForm = () => {
     const emailAccountCreate = useCreateUserEmailPassword()
     const signInWithGoogle = useSignInWithGoogle()
 
-    // signUpSuccess login, loading was set to false in createNewUser
     useEffect(() => {
-        if (emailAccountCreate.loading === false) {
+        if (emailAccountCreate.user) {
             navigate("/")
         }
-    }, [emailAccountCreate.loading])
+    }, [emailAccountCreate.user])
+
+    useEffect(() => {
+        if (signInWithGoogle.user) {
+            console.log(signInWithGoogle.user)
+            navigate("/")
+        }
+    }, [signInWithGoogle.user])
 
     // signUp Error
     // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword
     useEffect(() => {
-        let error;
-        if (emailAccountCreate.error === undefined) {
-            error = ""
-        } else {
-            error = emailAccountCreate.error.toString()
-        }
+        const error =  emailAccountCreate.error?.toString() ?? ""
         switch (error) {
             case "auth/email-already-in-use":
                 setIsEmailError(true)
@@ -75,6 +76,12 @@ const SignUpForm = () => {
                 setIsPasswordError(false)
                 setPasswordHelperText("")
                 break;
+            case "auth/invalid-email":
+                setIsEmailError(true)
+                setEmailHelperText("This email address is not valid.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
             default:
                 setIsEmailError(false)
                 setEmailHelperText("")
@@ -84,20 +91,13 @@ const SignUpForm = () => {
         }
     }, [emailAccountCreate.error])
 
-    // googleSignUpSuccses
-    useEffect(() => {
-        if (signInWithGoogle.error !== undefined && signInWithGoogle.error.toString() === "not-found") {
-            navigate("/")
-        }
-    }, [signInWithGoogle.error])
-
 
     const handleSignUp = (e:  FormEvent<HTMLElement>) => {
         let isInvalid = false
-        if (email.length === 0 || !validateEmail(email)) {
+        if (!email.length) {
             isInvalid = true
             setIsEmailError(true)
-            if (email.length === 0) {
+            if (!email.length) {
                 setEmailHelperText("Email can't be empty.")
             } else {
                 setEmailHelperText("Invalid email format.")
@@ -106,7 +106,7 @@ const SignUpForm = () => {
             setIsEmailError(false)
             setEmailHelperText('')
         }
-        if (name.length === 0) {
+        if (!name.length) {
             isInvalid = true
             setIsNameError(true)
             setnameHelperText("Name can't be empty.")
@@ -114,7 +114,7 @@ const SignUpForm = () => {
             setIsNameError(false)
             setnameHelperText("")
         }
-        if (password.length === 0 || password.length < 6) {
+        if (!password.length || password.length < 6) {
             isInvalid = true
             setIsPasswordError(true)
             setPasswordHelperText("Password can't be empty and should be at least 6 character.")
@@ -123,7 +123,6 @@ const SignUpForm = () => {
             setPasswordHelperText("")
         }
         if (!isInvalid) {
-            console.log({email, password, name, profImageLink})
             emailAccountCreate.createWithEmailAndPasswordWrapper(
                 email,
                 password,
@@ -136,9 +135,7 @@ const SignUpForm = () => {
 
     return (
         <form
-            onSubmit={(event) => {
-                handleSignUp(event)
-            }}
+            onSubmit={(event) => handleSignUp(event)}
         >
             <Stack
                 width='390px'
@@ -152,9 +149,7 @@ const SignUpForm = () => {
             >
                 <Button
                     sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
-                    onClick ={() => {
-                        signInWithGoogle.signInWithGoogleWrapper()
-                    }}
+                    onClick ={() => signInWithGoogle.signInWithGoogleWrapper()}
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
                         <img src={googleIcon} width='24px' height='25px' />
@@ -168,9 +163,7 @@ const SignUpForm = () => {
                     id='name'
                     label='Name'
                     variant='outlined'
-                    onChange={(event) => {
-                        setName(event.target.value)
-                    }}
+                    onChange={(event) => setName(event.target.value)}
                     error={isNameError}
                     helperText={nameHelperText}
                 />
@@ -178,9 +171,7 @@ const SignUpForm = () => {
                     id='email'
                     label='Email'
                     variant='outlined'
-                    onChange={(event) => {
-                        setEmail(event.target.value)
-                    }}
+                    onChange={(event) =>  setEmail(event.target.value)}
                     error={isEmailError}
                     helperText={emailHelperText}
                 />
@@ -203,9 +194,7 @@ const SignUpForm = () => {
                             </InputAdornment>
                         }
                         label='Password'
-                        onChange={(event) => {
-                            setPassword(event.target.value)
-                        }}
+                        onChange={(event) => setPassword(event.target.value)}
                         error={!!isPasswordError}
                     />
                     {!!isPasswordError && (
@@ -219,13 +208,7 @@ const SignUpForm = () => {
                     id='profImgLink'
                     label='Profile image link'
                     variant='outlined'
-                    onChange={(event) => {
-                        setProfImageLink(event.target.value)
-                        // check empty or invalid link here
-                        if (event.target.value === "" || !validateProfImageLink(event.target.value)) {
-                            setProfImageLink("https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg")
-                        }
-                    }}
+                    onChange={(event) => setProfImageLink(event.target.value)}
                 />
                 <Button
                     variant='contained' sx={{
@@ -242,14 +225,6 @@ const SignUpForm = () => {
     )
 }
 
-export default SignUpForm
+const IMAGE_LINK_REGEX = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/
 
-const validateEmail = (email: string) => {
-    return email.toLowerCase().match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        );
-};
-
-const validateProfImageLink = (link: string) => {
-    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(link);
-}
+export const validateProfImageLink = (link: string) => IMAGE_LINK_REGEX.test(link)

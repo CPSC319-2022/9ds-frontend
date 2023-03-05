@@ -5,7 +5,6 @@ import {
   where,
   orderBy,
   limit,
-  onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -14,16 +13,18 @@ import {
   DocumentData,
   QuerySnapshot,
   FirestoreErrorCode,
-  FirestoreError,
+  QueryDocumentSnapshot,
+  FirestoreError, getDoc, getDocs, startAfter
 } from 'firebase/firestore'
 import {auth, db} from '../../index'
 import { useState, useEffect } from 'react'
-import {getUser} from './useUser'
+import {getUser, UserData} from './useUser'
 import { comment } from './useComment'
+
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-export interface articlePreview {
+export interface ArticlePreview {
   title: string
   content: string
   header_image: string
@@ -31,6 +32,23 @@ export interface articlePreview {
   author_username: string
   publish_time: Timestamp
   articleId: string
+}
+
+export const articlePreviewTranslator = (docs: QuerySnapshot<DocumentData>): ArticlePreview[] => {
+    const articlesData: ArticlePreview[] = []
+    docs.forEach((doc) => {
+        articlesData.push({
+            title: doc.data().title,
+            content: doc.data().content,
+            header_image: doc.data().header_image,
+            author_image: doc.data().author_image,
+            author_username: doc.data().author_username,
+            publish_time: doc.data().publish_time,
+            articleId: doc.id
+        })
+    })
+
+    return articlesData
 }
 
 export interface article {
@@ -47,42 +65,44 @@ export interface article {
 export const useArticleRecents = (n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [articles, setArticles] = useState<articlePreview[]>()
+  const [loadingNext, setLoadingNext] = useState(true)
+  const [articles, setArticles] = useState<ArticlePreview[]>([])
+
+  const q = query(
+    collection(db, 'article'),
+    where('published', '==', true),
+    orderBy('publish_time'),
+  )
+
+  let lastArticle: QueryDocumentSnapshot<DocumentData>;
+  let endOfCollection = false;
 
   useEffect(() => {
-    const q = query(
-        collection(db, 'article'),
-      where('published', '==', true),
-      orderBy('publish_time'),
-      limit(n),
-    )
-
-    const unsubscribe = onSnapshot(
-      q,
-      (docs: QuerySnapshot<DocumentData>) => {
-        const articlesData: articlePreview[] = []
-        docs.forEach((doc) => {
-          articlesData.push({
-            title: doc.data().title,
-            content: doc.data().content,
-            header_image: doc.data().header_image,
-            author_image: doc.data().author_image,
-            author_username: doc.data().author_username,
-            publish_time: doc.data().publish_time,
-            articleId: doc.id
-          })
-        })
-        setLoading(false), setArticles(articlesData)
-      },
-      (err) => {
+    getDocs(query(q, limit(n)))
+        .then((docs: QuerySnapshot<DocumentData>) => {
+            setLoading(false);
+            setArticles(articlePreviewTranslator(docs))
+            lastArticle = docs.docs[docs.docs.length - 1]
+            endOfCollection = docs.docs.length < n
+        }).catch((err: FirestoreError) => {
         setError(err.code)
-      },
-    )
-
-    return () => unsubscribe()
+      })
   }, [])
 
-  return { error, loading, articles }
+  const getNext = (n: number) => {
+      setLoadingNext(true)
+      getDocs(query(q, startAfter(lastArticle), limit(n)))
+          .then((docs: QuerySnapshot<DocumentData>) => {
+              setLoadingNext(false)
+              setArticles(articles.concat(articlePreviewTranslator(docs)))
+              lastArticle = docs.docs[docs.docs.length - 1]
+              endOfCollection = docs.docs.length < n
+      }).catch((err: FirestoreError) => {
+          setError(err.code)
+      })
+  }
+
+  return { getNext, error, loading, loadingNext, articles, endOfCollection }
 }
 
 export const useArticleRead = (articleID: string) => {
@@ -91,9 +111,8 @@ export const useArticleRead = (articleID: string) => {
   const [article, setArticle] = useState<article>()
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      doc(db, 'article', articleID),
-      (doc) => {
+    getDoc(doc(db, 'article', articleID))
+        .then((doc) => {
         const data = doc.data()
         if (data === undefined) {
           setError('not-found')
@@ -101,13 +120,10 @@ export const useArticleRead = (articleID: string) => {
           setLoading(false)
           setArticle(data as article)
         }
-      },
-      (err: FirestoreError) => {
+      }).catch((err: FirestoreError) => {
         setError(err.code)
-      },
+      }
     )
-
-    return () => unsubscribe()
   }, [articleID])
 
   return { error, loading, article }
@@ -117,26 +133,48 @@ export const useArticleComments = (articleID: string, n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [comments, setComments] = useState<comment[]>([])
+  const [loadingNext, setLoadingNext] = useState(true)
+
+  const q = query(collection(db, `article/${articleID}/comments`));
+
+  let lastComment: QueryDocumentSnapshot<DocumentData>;
+  let endOfCollection = false;
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(collection(db, `article/${articleID}/comments`), limit(n)),
-      (docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: DocumentData[] = []
-        docs.forEach((doc) => {
-          commentsData.push(doc.data)
-        })
-        setLoading(false), setComments(commentsData as comment[])
-      },
-      (err) => {
-        setError(err.code)
-      },
-    )
+    getDocs(query(q, limit(n)))
+        .then((docs: QuerySnapshot<DocumentData>) => {
+            const commentsData: DocumentData[] = []
+            docs.forEach((doc) => {
+                commentsData.push(doc.data)
+            })
+            setLoading(false)
+            setComments(commentsData as comment[])
+            lastComment = docs.docs[docs.docs.length - 1]
+            endOfCollection = docs.docs.length < n
+      }).catch((err: FirestoreError) => {
+            setError(err.code)
+      })
 
-    return () => unsubscribe()
   }, [articleID])
 
-  return { error, loading, comments }
+    const getNext = (n: number) => {
+        setLoadingNext(true)
+        getDocs(query(q, startAfter(lastComment), limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                const commentsData: DocumentData[] = []
+                docs.forEach((doc) => {
+                    commentsData.push(doc.data)
+                })
+                setLoadingNext(false)
+                setComments(comments.concat(commentsData as comment[]))
+                lastComment = docs.docs[docs.docs.length - 1]
+                endOfCollection = docs.docs.length < n
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
+    }
+
+  return {getNext, error, loading, loadingNext, comments, endOfCollection }
 }
 
 export const useArticleCreate = () => {
@@ -151,7 +189,7 @@ export const useArticleCreate = () => {
       published: boolean) => {
 
     getUser(auth.currentUser === null ? null: auth.currentUser.uid)
-        .then((user) =>
+        .then((user: UserData) =>
             addDoc(collection(db, 'article'), {
                 author_uid: user.uid,
                 author_image: user.profile_image,

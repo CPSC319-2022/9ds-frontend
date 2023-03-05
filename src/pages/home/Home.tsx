@@ -1,10 +1,7 @@
 import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Article } from '../../components/Article'
-import { UserType } from '../../components/UserType'
-import { Button } from '../../components/Button'
-import { AppWrapper } from "../../components/AppWrapper";
+import { Article, AppWrapper, Button, UserType } from '../../components'
 
 export const Home: FC = () => {
   return (

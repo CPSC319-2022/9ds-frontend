@@ -9,7 +9,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useSignInUserEmailPassword } from '../../hooks/firebase/useAuth'
 
-const LoginForm = () => {
+export const LoginForm = () => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('')
@@ -31,21 +31,15 @@ const LoginForm = () => {
 
     // signIn success
     useEffect(() => {
-        if (emailAccountSignIn.user !== undefined) {
-            console.log(emailAccountSignIn.user)
+        if (emailAccountSignIn.user) {
             navigate("/")
         }
-    }, [emailAccountSignIn.loading])
+    }, [emailAccountSignIn.user])
 
     // signIn error
     // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#signinwithemailandpassword
     useEffect (() => {
-        let error;
-        if (emailAccountSignIn.error === undefined) {
-            error = ""
-        } else {
-            error = emailAccountSignIn.error.toString()
-        }
+        const error = emailAccountSignIn.error?.toString() ?? ""
         switch (error) {
             case "auth/wrong-password":
                 setIsEmailError(false)
@@ -65,6 +59,12 @@ const LoginForm = () => {
                 setIsPasswordError(false)
                 setPasswordHelperText("")
                 break;
+            case "auth/invalid-email":
+                setIsEmailError(true)
+                setEmailHelperText("The email address is not valid.")
+                setIsPasswordError(false)
+                setPasswordHelperText("")
+                break;
             default:
                 setIsEmailError(false)
                 setEmailHelperText("")
@@ -76,10 +76,10 @@ const LoginForm = () => {
 
     const handleLogin = (e: FormEvent<HTMLElement>) => {
         let isInvalid = false
-        if (email.length === 0 || !validateEmail(email)) {
+        if (!email.length) {
             isInvalid = true
             setIsEmailError(true)
-            if (email.length === 0) {
+            if (!email.length) {
                 setEmailHelperText("Email can't be empty.")
             } else {
                 setEmailHelperText("Invalid email format.")
@@ -89,7 +89,7 @@ const LoginForm = () => {
             setEmailHelperText('')
         }
 
-        if (password.length === 0 || password.length < 6) {
+        if (!password.length|| password.length < 6) {
             isInvalid = true
             setIsPasswordError(true)
             setPasswordHelperText("Invalid password.")
@@ -106,9 +106,7 @@ const LoginForm = () => {
 
     return (
         <form
-            onSubmit={(event) => {
-                handleLogin(event)
-            }}
+            onSubmit={(event) => handleLogin(event)}
         >
         <Stack
             width='390px'
@@ -130,9 +128,7 @@ const LoginForm = () => {
                 id="signInEmail"
                 label='Email'
                 variant='outlined'
-                onChange={(event) => {
-                    setEmail(event.target.value)
-                }}
+                onChange={(event) => setEmail(event.target.value)}
                 error={isEmailError}
                 helperText={emailHelperText}
             />
@@ -154,9 +150,7 @@ const LoginForm = () => {
                         </InputAdornment>
                     }
                     label='Password'
-                    onChange={(event) => {
-                        setPassword(event.target.value)
-                    }}
+                    onChange={(event) => setPassword(event.target.value)}
                     error={!!isPasswordError}
                 />
                 {!!isPasswordError && (
@@ -187,12 +181,4 @@ const LoginForm = () => {
     )
 }
 
-const validateEmail = (email: string) => {
-    return String(email)
-        .toLowerCase()
-        .match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        );
-};
 
-export default LoginForm
