@@ -54,10 +54,14 @@ switch(process.env.REACT_APP_ENV) {
 
     default:
         firebaseConfig = {
-            projectId: "dev-emulator",
-            apiKey: "dev-emulator-placeholder-key",
-            authDomain: "dev-emulator-auth"
-        }
+            apiKey: "AIzaSyCXZk4iU2LXkWimWFWpH89LEM3Qh2FDog4",
+            authDomain: "ds-blog-local.firebaseapp.com",
+            projectId: "ds-blog-local",
+            storageBucket: "ds-blog-local.appspot.com",
+            messagingSenderId: "312419112403",
+            appId: "1:312419112403:web:166f55b88f498281f80b26",
+            measurementId: "G-HPWHPJYZV2"
+        };
 }
 
 const app = initializeApp(firebaseConfig)
