@@ -1,6 +1,6 @@
 {
   "projects": {
-    "local": "ds-blog-local",
+    "default": "ds-blog-local",
     "dev": "ds-blog-dev",
     "qa": "ds-blog-qa",
     "prod": "ds-blog-376905"
