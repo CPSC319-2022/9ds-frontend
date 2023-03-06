@@ -16,6 +16,8 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   variant,
   multiline,
   rows,
+  helperText,
+  error,
   onTextChange,
   spacing,
   flex,
@@ -36,6 +38,8 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
         rows={rows}
         variant={variant}
         placeholder={placeholder}
+        error={error}
+        helperText={helperText}
         onChange={(event) => {
           onTextChange(event.target.value)
         }}

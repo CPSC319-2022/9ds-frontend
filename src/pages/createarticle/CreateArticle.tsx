@@ -1,7 +1,8 @@
 import { Box, Button, FormLabel, Stack } from '@mui/material'
 import { Container } from '@mui/system'
-import React, { useState, useEffect } from 'react'
+import React, { useState, FormEvent } from 'react'
 import { LabeledTextField } from '../../components/LabeledTextField'
+import { useArticleCreate } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -17,12 +18,57 @@ const pictureUrls = [
 export const CreateArticle = () => {
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
-  const [title, setTitle] = useState('')
-  const [body, setBody] = useState('')
 
-  useEffect(() => {
-    console.log(selectedPictureIndex)
-  }, [selectedPictureIndex])
+  const [isTitleError, setIsTitleError] = useState(false)
+  const [title, setTitle] = useState('')
+  const [titleHelperText, setTitleHelperText] = useState('')
+
+  const [isBodyError, setIsBodyError] = useState(false)
+  const [body, setBody] = useState('')
+  const [bodyHelperText, setBodyHelperText] = useState('')
+
+  const [customLink, setCustomLink] = useState('')
+
+  const {createArticle, error, loading, articleId} = useArticleCreate();
+
+  const handleSubmit = (e: FormEvent<HTMLElement>, published: boolean) => {
+    let isInvalid = false
+    if (title.length === 0 || countWords(title) > 60) {
+      isInvalid = true
+      setIsTitleError(true)
+      if (title.length === 0) {
+        setTitleHelperText("Title can't be empty.")
+      } else {
+        setBodyHelperText('Title must be 60 words or less.')
+      }
+    } else {
+      setIsTitleError(false)
+      setTitleHelperText('')
+    }
+    if (body.length === 0 || countWords(body) > 250) {
+      isInvalid = true
+      setIsBodyError(true)
+      if (body.length === 0) {
+        setBodyHelperText("Body can't be empty.")
+      } else {
+        setBodyHelperText('Body must be 250 words or less.')
+      }
+    } else {
+      console.log(countWords(body))
+      setIsBodyError(false)
+      setBodyHelperText('')
+    }
+    if (!isInvalid) {
+      createArticle(
+        title,
+        body,
+        customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex as number],
+        published,
+      )
+    }
+
+    e.preventDefault()
+  }
   return (
     <Container>
       <form
@@ -30,6 +76,9 @@ export const CreateArticle = () => {
           alignSelf: 'stretch',
           justifyItems: 'space-between',
           flex: 1,
+        }}
+        onSubmit={(event) => {
+          handleSubmit(event, true)
         }}
       >
         <Stack
@@ -41,6 +90,9 @@ export const CreateArticle = () => {
           <Button
             variant='contained'
             style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
+            onClick={(event) => {
+              handleSubmit(event, false)
+            }}
           >
             SAVE DRAFT
           </Button>
@@ -114,20 +166,32 @@ export const CreateArticle = () => {
           </Stack>
           <LabeledTextField
             variant='outlined'
-            onTextChange={setTitle}
-            placeholder='60 words or less'
-            label='Title'
+            onTextChange={setCustomLink}
+            placeholder='Paste link to image'
+            label='or'
             multiline={false}
             typographyVariant='h5'
           />
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
+            placeholder='60 words or less'
+            label='Title'
+            multiline={false}
+            typographyVariant='h5'
+            error={isTitleError}
+            helperText={titleHelperText}
+          />
+          <LabeledTextField
+            variant='outlined'
+            onTextChange={setBody}
             placeholder='250 words or less'
             label='Body'
             multiline={true}
             rows={7}
             typographyVariant='h5'
+            error={isBodyError}
+            helperText={bodyHelperText}
           />
         </Stack>
         <Button
@@ -140,4 +204,8 @@ export const CreateArticle = () => {
       </form>
     </Container>
   )
+}
+
+function countWords(text: string): number {
+  return text.trim().split(' ').length
 }

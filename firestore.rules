@@ -6,58 +6,63 @@ service cloud.firestore {
   		return request.auth != null;
   	}
   
- 	 	function isAuthor(uid) {
- 	 		return request.auth.uid == uid;
- 	 	}
-  
+ 	function isAuthor(uid) {
+ 	    return request.auth.uid == uid;
+ 	}
+
+ 	function isRole(role) {
+          	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
   	function doesntUpdateKeys(bannedList){
   		return !request.resource.data.diff(resource.data).affectedKeys().hasAny(bannedList);
   	}
-    
+
+  	function updatesKeys(list) {
+          	return request.resource.data.diff(resource.data).affectedKeys().hasAll(list);
+    }
+
     //function minKeys(minKeys) {
     //	return request.resource.data.keys.hasAll(minKeys);
     //}
-    
+
     //function maxKeys(maxKeys) {
     //	return request.resource.data.keys.hasOnly(maxKeys);
     //}
-  
+
   	match /users/{userId} {
-  		allow get: if signedIn() && isAuthor(userId);
-      allow list: if resource.data.contributor;
-    	allow create: if signedIn() && isAuthor(userId) && !exists(/databases/$(database)/documents/users/$(userId));
-      //	&& minKeys(['contributor', 'username']) && maxKeys(['contributor', 'username', 'contributor_request']);
-    	allow update: if signedIn() && isAuthor(userId) && doesntUpdateKeys(['contributor']);
+  	  allow get: if signedIn() && isAuthor(userId);
+      allow list: if resource.data.role == "contributor";
+      allow list: if signedIn() && isRole("admin");
+      allow create: if signedIn() && isAuthor(userId) && !exists(/databases/$(database)/documents/users/$(userId));
+      //	&& minKeys(['role', 'username', 'profile_image']) && maxKeys(['role', 'username', 'promotion_request', 'profile_image']);
+      allow update: if signedIn() && isAuthor(userId) && doesntUpdateKeys(['role']);
+      allow update: if signedIn() && isRole("admin") && updatesKeys(['role']);
       allow delete: if signedIn() && isAuthor(userId);
   	}
-    
-    
+
+
     match /article/{articleId} {
-    	function isContributor() {
-      	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.contributor;
-      }
-      
-      function updatesEditTime() {
-      	return request.resource.data.diff(resource.data).affectedKeys().hasAll(['edit_time']);
-      }
-    
+
     	allow read: if resource.data.published || isAuthor(resource.data.author_uid);
-      allow create: if signedIn() && isContributor()
-      //	&& minKeys(['author_uid', 'author_username', 'content', 'edit_time', 'published', 'title'])
-      //	&& maxKeys(['author_uid', 'author_username', 'content', 'edit_time', 'published', 'publish_time', 'title'])
+      allow create: if signedIn() && isRole("contributor")
+      //	&& minKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'title'])
+      //	&& maxKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'publish_time', 'title'])
         && isAuthor(request.resource.data.author_uid);
-      allow delete: if signedIn() && isAuthor(resource.data.author_uid) && isContributor();
+      allow delete: if signedIn() && isAuthor(resource.data.author_uid) && isRole("contributor");
+      allow delete: if signedIn() && isRole("admin");
       allow update: if signedIn() && isAuthor(resource.data.author_uid)
-      	&& doesntUpdateKeys(['author_uid']) && updatesEditTime();
-      
-      
+      	&& doesntUpdateKeys(['author_uid']) && updatesKeys(['edit_time']);
+
+
       match /comments/{commentId} {
       	allow read;
-        allow create: if signedIn() 
-        //	&& minKeys(['commenter_uid', 'commenter_username', 'content', 'post_time'])
-        //	&& maxKeys(['commenter_uid', 'commenter_username', 'content', 'post_time'])
+        allow create: if signedIn()
+        //	&& minKeys(['commenter_uid', 'commenter_username', 'commenter_image', 'content', 'post_time'])
+        //	&& maxKeys(['commenter_uid', 'commenter_username', 'commenter_image', 'content', 'post_time'])
           && isAuthor(request.resource.data.commenter_uid) ;
         allow delete: if signedIn() && isAuthor(resource.data.author_uid);
+        allow delete: if signedIn() && isRole("admin");
         allow update: if signedIn() && isAuthor(resource.data.author_uid) && doesntUpdateKeys(['commenter_uid']);
       }
     }

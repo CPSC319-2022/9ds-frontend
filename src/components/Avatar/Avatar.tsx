@@ -28,10 +28,10 @@ export const Avatar: FC<AvatarProps> = ({ dark }) => {
         height='32px'
         style={{ borderRadius: '50%' }}
       />
-      <Typography variant='caption' color={dark ? 'black.main' : 'white.main'}>
+      <Typography variant='caption' data-testid='avatarName' color={dark ? 'black.main' : 'white.main'}>
         Emma Watson
       </Typography>
-      <Typography variant='small' color={dark ? 'black.main' : 'white.main'}>
+      <Typography variant='small' data-testid='avatarDate' color={dark ? 'black.main' : 'white.main'}>
         18 Jan 2022
       </Typography>
     </Stack>
