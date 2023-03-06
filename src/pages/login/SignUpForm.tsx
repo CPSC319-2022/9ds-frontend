@@ -155,7 +155,7 @@ export const SignUpForm = () => {
                 >
                     <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
                         <img src={googleIcon} width='24px' height='25px' />
-                        <Typography variant='button'>SIGN UP WITH GOOGLE</Typography>
+                        <Typography variant='button'>Sign Up With Google</Typography>
                     </Stack>
                 </Button>
                 <Stack direction='row' alignItems='center' justifyContent='space-around' spacing={24}>

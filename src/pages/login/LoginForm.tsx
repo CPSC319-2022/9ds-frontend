@@ -127,10 +127,9 @@ export const LoginForm = () => {
             >
                 <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
                     <img src={googleIcon} width='24px' height='25px' />
-                    <Typography variant='button'>Sign in with Google</Typography>
+                    <Typography variant='button'>Sign In With Google</Typography>
                 </Stack>
             </Button>
-
             <TextField
                 id="signInEmail"
                 label='Email'
@@ -184,8 +183,5 @@ export const LoginForm = () => {
             </Stack>
         </Stack>
         </form>
-
     )
 }
-
-
