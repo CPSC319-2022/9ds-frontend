@@ -1,5 +1,4 @@
-import { Stack, TextField, TextFieldProps, Typography, TypographyPropsVariantOverrides } from '@mui/material'
-import { Variant } from '@mui/material/styles/createTypography'
+import { Stack, TextField, TextFieldProps, Typography } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
