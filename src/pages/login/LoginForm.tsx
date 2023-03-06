@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useSignInUserEmailPassword, useSignInWithGoogle } from '../../hooks/firebase/useAuth'
+import googleIcon from '../../assets/googleIcon.png';
 
 export const LoginForm = () => {
     const navigate = useNavigate();
@@ -121,11 +122,13 @@ export const LoginForm = () => {
             spacing={24}
         >
             <Button
-                variant='outlined'
-                sx={{boxShadow:2, alignSelf:'flex-start'}}
+                sx={{padding:'6px 22px 6px 16px', boxShadow: 2, alignSelf:'flex-start'}} variant='outlined'
                 onClick ={() => signInWithGoogle.signInWithGoogleWrapper()}
             >
-                <Typography variant='button'>LOGIN WITH EMAIL</Typography>
+                <Stack direction='row' alignItems='center' justifyContent='space-around'  spacing={8}>
+                    <img src={googleIcon} width='24px' height='25px' />
+                    <Typography variant='button'>Sign In With Google</Typography>
+                </Stack>
             </Button>
             <TextField
                 id="signInEmail"
