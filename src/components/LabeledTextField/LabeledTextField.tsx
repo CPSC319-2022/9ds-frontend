@@ -1,4 +1,4 @@
-import { Stack, TextField, TextFieldProps, Typography } from '@mui/material'
+import { Stack, TextField, TextFieldProps, Typography, TypographyPropsVariantOverrides } from '@mui/material'
 import { Variant } from '@mui/material/styles/createTypography'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
@@ -7,7 +7,8 @@ type LabeledTextFieldProps = TextFieldProps & {
   onTextChange: Dispatch<SetStateAction<string>>
   spacing?: number
   flex?:number
-  typographyVariant: Variant
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  typographyVariant: any;
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
