@@ -1,6 +1,7 @@
 import React from 'react'
 import { CreateArticle } from '../../pages/createarticle/CreateArticle'
 import { Home } from '../../pages/home'
+import { VerifyEmail } from '../../pages/forgotpassword/EmailVerification'
 import Login from '../../pages/login/Login'
 
 export interface RouteConfig {
@@ -22,5 +23,9 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   login: {
     path: '/login',
     component: <Login />,
+  },
+  resendEmail: {
+    path: '/reset/email',
+    component: <VerifyEmail/>,
   },
 }
