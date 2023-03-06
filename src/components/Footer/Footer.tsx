@@ -57,9 +57,11 @@ export const Footer: FC = () => {
             Home
           </Typography>
         </Link>
+       <Link to={"/aboutUs"} style={{ textDecoration: 'none' }}>
           <Typography variant='caption' color='white.main'>
             About Us
           </Typography>
+       </Link>
           <Typography variant='caption' color='white.main'>
             Blog
           </Typography>
