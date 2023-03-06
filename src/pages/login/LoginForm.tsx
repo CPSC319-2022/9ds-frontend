@@ -7,7 +7,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useSignInUserEmailPassword } from '../../hooks/firebase/useAuth'
+import { useSignInUserEmailPassword, useSignInWithGoogle } from '../../hooks/firebase/useAuth'
 
 export const LoginForm = () => {
     const navigate = useNavigate();
@@ -28,6 +28,13 @@ export const LoginForm = () => {
     };
 
     const emailAccountSignIn = useSignInUserEmailPassword()
+    const signInWithGoogle = useSignInWithGoogle()
+
+    useEffect(() => {
+        if (signInWithGoogle.user) {
+            navigate("/")
+        }
+    }, [signInWithGoogle.user])
 
     // signIn success
     useEffect(() => {
@@ -72,32 +79,27 @@ export const LoginForm = () => {
                 setPasswordHelperText("")
                 break;
         }
-    })
+    }, [emailAccountSignIn.error])
 
     const handleLogin = (e: FormEvent<HTMLElement>) => {
         let isInvalid = false
         if (!email.length) {
             isInvalid = true
             setIsEmailError(true)
-            if (!email.length) {
-                setEmailHelperText("Email can't be empty.")
-            } else {
-                setEmailHelperText("Invalid email format.")
-            }
+            setEmailHelperText("Email can't be empty.")
         } else {
             setIsEmailError(false)
             setEmailHelperText('')
         }
 
-        if (!password.length|| password.length < 6) {
+        if (!password.length) {
             isInvalid = true
             setIsPasswordError(true)
-            setPasswordHelperText("Invalid password.")
+            setPasswordHelperText("Password can't be empty.")
         } else {
             setIsPasswordError(false)
             setPasswordHelperText("")
         }
-
         if (!isInvalid) {
             emailAccountSignIn.signInWithEmailAndPasswordWrapper(email, password)
         }
@@ -121,6 +123,7 @@ export const LoginForm = () => {
             <Button
                 variant='outlined'
                 sx={{boxShadow:2, alignSelf:'flex-start'}}
+                onClick ={() => signInWithGoogle.signInWithGoogleWrapper()}
             >
                 <Typography variant='button'>LOGIN WITH EMAIL</Typography>
             </Button>

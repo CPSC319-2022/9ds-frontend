@@ -48,14 +48,12 @@ export const SignUpForm = () => {
 
     useEffect(() => {
         if (emailAccountCreate.user) {
-            console.log(emailAccountCreate.user)
             navigate("/")
         }
     }, [emailAccountCreate.user])
 
     useEffect(() => {
         if (signInWithGoogle.user) {
-            console.log(signInWithGoogle.user)
             navigate("/")
         }
     }, [signInWithGoogle.user])
@@ -83,6 +81,12 @@ export const SignUpForm = () => {
                 setIsPasswordError(false)
                 setPasswordHelperText("")
                 break;
+            case "auth/weak-password":
+                setIsEmailError(false)
+                setEmailHelperText("")
+                setIsPasswordError(true)
+                setPasswordHelperText("This password is not strong enough (at least 6 characters).")
+                break;
             default:
                 setIsEmailError(false)
                 setEmailHelperText("")
@@ -98,11 +102,7 @@ export const SignUpForm = () => {
         if (!email.length) {
             isInvalid = true
             setIsEmailError(true)
-            if (!email.length) {
-                setEmailHelperText("Email can't be empty.")
-            } else {
-                setEmailHelperText("Invalid email format.")
-            }
+            setEmailHelperText("Email can't be empty.")
         } else {
             setIsEmailError(false)
             setEmailHelperText('')
@@ -115,7 +115,7 @@ export const SignUpForm = () => {
             setIsNameError(false)
             setnameHelperText("")
         }
-        if (!password.length || password.length < 6) {
+        if (!password.length) {
             isInvalid = true
             setIsPasswordError(true)
             setPasswordHelperText("Password can't be empty and should be at least 6 character.")

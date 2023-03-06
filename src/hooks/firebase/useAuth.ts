@@ -130,12 +130,6 @@ export const useSignInWithGoogle = () => {
                     if (profile === null) {
                         setError('unknown')
                     } else {
-                        if (!profile.name) {
-                            profile.name = ""
-                        }
-                        if (!profile.picture) {
-                            profile.picture = "https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
-                        }
                         createNewUser(
                             profile.name as string,
                             profile.picture as string,
@@ -149,7 +143,6 @@ export const useSignInWithGoogle = () => {
                                     uid: auth.currentUser!.uid})
                             })
                             .catch((err) => {
-                                console.error(err)
                                 setError(err)
                             })
                     }
@@ -160,13 +153,11 @@ export const useSignInWithGoogle = () => {
                             setUser(user)
                         })
                         .catch((err) => {
-                            console.error(err.code)
                             setError(err)
                         })
                 }
             })
             .catch((err) => {
-                console.error(err)
                 setError(err.code)
             })
     }
