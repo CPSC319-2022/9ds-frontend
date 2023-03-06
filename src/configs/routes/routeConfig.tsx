@@ -1,7 +1,7 @@
 import React from 'react'
 import { CreateArticle } from '../../pages/createarticle/CreateArticle'
 import { Home } from '../../pages/home'
-import Login from '../../pages/login/Login'
+import { Login } from '../../pages/login/Login'
 
 export interface RouteConfig {
   path: string
