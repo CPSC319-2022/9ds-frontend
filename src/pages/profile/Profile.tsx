@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Article } from '../../components/Article'
@@ -8,7 +8,9 @@ import profile from '../../assets/profile.png'
 import { LabeledTextField } from '../../components/LabeledTextField'
 
 export const Profile: FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [profileInfo, setProfileInfo] = useState('') // temp hook
+
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
