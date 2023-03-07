@@ -9,6 +9,7 @@ import {
 import { VisibilityOff, Visibility } from '@mui/icons-material'
 import { FC, useState } from 'react'
 
+
 export interface PasswordProps {
   label: string
   setPassword: Function
@@ -45,7 +46,7 @@ export const PasswordField: FC<PasswordProps> = ({
               onMouseUp={handleMouseEventPassword}
               edge='end'
             >
-              {showPassword ? <Visibility /> : <VisibilityOff />}
+              {showPassword ? <VisibilityOff /> : <Visibility />}
             </IconButton>
           </InputAdornment>
         }

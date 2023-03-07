@@ -4,7 +4,6 @@ import { FC, FormEvent, useState } from 'react'
 import { Button } from '../Button'
 import { useForgotPasswordEmail } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
-/*@typescript-eslint/no-unused-vars*/
 
 enum ForgotPasswordErrors {
     invalidEmail = "auth/invalid-email",
@@ -20,15 +19,14 @@ export const EmailVerificationForm: FC = () => {
   const navigate = useNavigate();
   const forgotPasswordHandler = useForgotPasswordEmail()
 
-  const sendEmailLink = (event: FormEvent<HTMLFormElement>) => {
-
+  const sendEmailLink = (event: FormEvent<HTMLElement>) => {
     event.preventDefault()
 
     forgotPasswordHandler.sendEmail(email.trim())
-    const error = forgotPasswordHandler.error !== undefined ? forgotPasswordHandler.error?.toString() : ""
-    console.log(error)
+    const error = forgotPasswordHandler.error?.code ?? "success"
+   
     switch(error) {
-        case "":
+        case "success":
             navigate("/login")
             break
         case ForgotPasswordErrors.invalidEmail:
@@ -39,11 +37,12 @@ export const EmailVerificationForm: FC = () => {
             break
         default:
             setEmailError("Unable to send email link")
+            break
     }
   }
 
   return (
-    <form onSubmit={(event) => {sendEmailLink(event)}}>
+    <form onSubmit={sendEmailLink}>
       <Typography variant='h3'>Reset Password</Typography>
       <Stack
         width='270px'
@@ -74,7 +73,7 @@ export const EmailVerificationForm: FC = () => {
           dark={true}
           text='SEND RESET PASSWORD LINK'
           type={"submit"}
-          style={{ color: 'white.main', type: "submit"}}
+          style={{ color: 'white.main'}}
         />
       </Stack>
     </form>

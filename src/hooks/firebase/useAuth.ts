@@ -14,6 +14,7 @@ import {
 import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
 import { auth, db } from '../../index'
 import { UserData, getUser } from './useUser'
+import { FirebaseError } from 'firebase/app'
 
 export const useAuth = () => {
   const [state, setState] = useState(() => {
@@ -165,9 +166,9 @@ export const useSignInWithGoogle = () => {
 }
 
 export const useForgotPasswordEmail = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
+  const [error, setError] = useState<FirebaseError>()
   const [loading, setLoading] = useState(true)
-
+    
   const sendEmail = (email: string) => {
     sendPasswordResetEmail(auth, email)
       .then(() => {
