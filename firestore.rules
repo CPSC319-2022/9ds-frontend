@@ -45,7 +45,7 @@ service cloud.firestore {
     match /article/{articleId} {
 
     	allow read: if resource.data.published || isAuthor(resource.data.author_uid);
-      allow create: if signedIn() && isRole("contributor")
+      allow create: if signedIn() && (isRole("contributor") || isRole("admin"))
       //	&& minKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'title'])
       //	&& maxKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'publish_time', 'title'])
         && isAuthor(request.resource.data.author_uid);
@@ -65,6 +65,10 @@ service cloud.firestore {
         allow delete: if signedIn() && isRole("admin");
         allow update: if signedIn() && isAuthor(resource.data.author_uid) && doesntUpdateKeys(['commenter_uid']);
       }
+    match /{document=**} {
+        allow read, write: if false;
+      }
     }
+
   }
 }
