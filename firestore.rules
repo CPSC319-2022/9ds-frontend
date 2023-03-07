@@ -70,10 +70,10 @@ service cloud.firestore {
         allow delete: if signedIn() && isRole("admin");
         allow update: if signedIn() && isAuthor(resource.data.commenter_uid) && doesntUpdateKeys(['commenter_uid']);
       }
+    }
 
     match /{document=**} {
         allow read, write: if false;
       }
     }
-  }
 }
