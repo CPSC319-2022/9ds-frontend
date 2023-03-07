@@ -1,7 +1,8 @@
 import React from 'react'
 import { CreateArticle } from '../../pages/createarticle/CreateArticle'
 import { Home } from '../../pages/home'
-import { VerifyEmail } from '../../pages/forgotpassword/EmailVerification'
+import { EmailVerification } from '../../pages/forgotpassword/EmailVerification'
+import { ConfirmPassword } from '../../pages/forgotpassword/ConfirmPasswordReset'
 import Login from '../../pages/login/Login'
 
 export interface RouteConfig {
@@ -18,7 +19,7 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   create: {
     path: '/create',
     component: <CreateArticle />,
-    isProtected: true,
+    isProtected: false,
   },
   login: {
     path: '/login',
@@ -26,6 +27,10 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   },
   resendEmail: {
     path: '/reset/email',
-    component: <VerifyEmail/>,
+    component: <EmailVerification/>,
+  },
+  resetPassword: {
+    path: '/reset/password',
+    component: <ConfirmPassword/>,
   },
 }
