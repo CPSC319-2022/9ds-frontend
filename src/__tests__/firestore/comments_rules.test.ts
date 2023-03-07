@@ -17,7 +17,7 @@ import Firestore = fb.firestore.Firestore;
 
 const PROJECT_ID = "ds-blog-local";
 
-describe('Testing firestore user security rules', () => {
+describe('Testing firestore comment security rules', () => {
   let testEnv: firebase.RulesTestEnvironment;
   let visitor: Firestore;
   let reader: Firestore;
@@ -48,9 +48,9 @@ describe('Testing firestore user security rules', () => {
         setDoc(doc(firestoreWithoutRule, "users", readerData.uid),
             {username: readerData.username, profile_image: readerData.profile_image, role: readerData.role}),
         setDoc(doc(firestoreWithoutRule, "article", contributorPublishedArticleID), contributorPublishedArticle),
-        setDoc(doc(firestoreWithoutRule, "article", contributorPrivateArticleID), contributorPrivateArticle),
-        setDoc(doc(firestoreWithoutRule, "article", adminPublishedArticleID), adminPublishedArticle),
-        setDoc(doc(firestoreWithoutRule, "article", adminPrivateArticleID), adminPrivateArticle)
+        // setDoc(doc(firestoreWithoutRule, "article", contributorPrivateArticleID), contributorPrivateArticle),
+        // setDoc(doc(firestoreWithoutRule, "article", adminPublishedArticleID), adminPublishedArticle),
+        // setDoc(doc(firestoreWithoutRule, "article", adminPrivateArticleID), adminPrivateArticle)
       ]);
     });
     admin = testEnv.authenticatedContext(adminData.uid).firestore();
@@ -63,71 +63,71 @@ describe('Testing firestore user security rules', () => {
     testEnv.cleanup()
   })
 
-  describe("read requests", () => {
-
-  })
-
-  describe("create requests", () => {
-    it("should allow signed in users to create themselves as reader, if they do not exist", async() => {
-
-    })
-
-    it("should not allow signed in users to create themselves as a non-reader role, if they do not exist", async() => {
-
-    })
-
-    it("should not allow signed in users to create themselves as readers, if they already exist", async() => {
-
-    })
-
-    it("should not allow non-signed in users to create a user", async () => {
+  describe('read requests', () => {
+    it('should allow all users to read a comment', async () => {
 
     })
   })
 
-  describe("update requests", () => {
-    it("should allow signed users to update their username", async() => {
+  describe('create requests', () => {
+    it("should signed in users to post comments as themselves", async() => {
 
     })
 
-    it("should allow signed in users to update their profile_image", async() => {
+    it("should not allow signed in users to post comments as others", async() => {
 
     })
 
-    it("should not allow visitors to update users", async() => {
-
-    })
-
-    it("should not allow readers or contributors to update their own role", async() => {
-
-    })
-
-    it("should allow admins to update the roles of all users, to allowed role types", async() => {
-
-    })
-
-    it("should not allow admins to update the roles of users to non allowed role types", async() => {
-
-    })
-
-    it("should not allow admins to update non-role fields", async() => {
-
-    })
-
-    //field control, for later robustness
-  })
-
-  describe("delete requests", () => {
-    it("should allow signed users to delete themselves", async() => {
-
-    })
-
-    it("should not allow signed in users to delete other users", async() => {
-
-    })
-
-    it("should not allow visitors to delete users", async() => {
+    it("should not allow visitors to post comments", async() => {
 
     })
   })
+
+  describe('update requests', () => {
+    it("should signed in users to update their own comment", async() => {
+
+    })
+
+    it("should not allow signed in users to edit other's comments", async() => {
+
+    })
+
+    it("should not allow signed in users to edit the author of the comment", async() => {
+
+    })
+
+    it("should not allow visitors to edit comments", async() => {
+
+    })
+  })
+
+  describe('delete requests', () => {
+    it("should signed in users to delete their own comment", async() => {
+
+    })
+
+    it("should not allow readers and contributors to delete other's comments", async() => {
+
+    })
+
+    it("should allow admins to delete other's comments", async() => {
+
+    })
+
+    it("should not allow visitors to delete comments", async() => {
+
+    })
+  })
+
+  // it('Should not allow visitors to read users collection', async () => {
+  //   const readUser = visitor.firestore().collection('users')
+  //     .doc('authUser123').get()
+  //   await firebase.assertFails(readUser);
+  // });
+
+  // it('Should not allow visitors to read users collection', async () => {
+  //   const readUser = visitor.firestore().collection('users')
+  //     .doc('authUser123').get()
+  //   await firebase.assertFails(readUser);
+  // });
 });

@@ -34,17 +34,17 @@ service cloud.firestore {
   	  allow get: if signedIn() && isAuthor(userId);
       allow list: if resource.data.role == "contributor";
       allow list: if signedIn() && isRole("admin");
-      allow create: if signedIn() && isAuthor(userId) && !exists(/databases/$(database)/documents/users/$(userId));
+      allow create: if signedIn() && isAuthor(userId) && !exists(/databases/$(database)/documents/users/$(userId)); // must be reader
       //	&& minKeys(['role', 'username', 'profile_image']) && maxKeys(['role', 'username', 'promotion_request', 'profile_image']);
       allow update: if signedIn() && isAuthor(userId) && doesntUpdateKeys(['role']);
-      allow update: if signedIn() && isRole("admin") && updatesKeys(['role']);
+      allow update: if signedIn() && isRole("admin") && updatesKeys(['role']); //choose allowable values
       allow delete: if signedIn() && isAuthor(userId);
   	}
 
 
     match /article/{articleId} {
 
-    	allow read: if resource.data.published || isAuthor(resource.data.author_uid);
+    	allow read: if resource.data.published || (signedIn() && isAuthor(resource.data.author_uid));
       allow create: if signedIn() && (isRole("contributor") || isRole("admin"))
       //	&& minKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'title'])
       //	&& maxKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'publish_time', 'title'])
