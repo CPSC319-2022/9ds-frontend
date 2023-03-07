@@ -4,7 +4,7 @@ import React, { Dispatch, FC, SetStateAction } from 'react'
 type LabeledTextFieldProps = TextFieldProps & {
   onTextChange: Dispatch<SetStateAction<string>>
   spacing?: number
-  text: any
+  text: React.ReactNode
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
