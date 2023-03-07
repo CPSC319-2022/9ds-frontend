@@ -2,7 +2,7 @@ import { TextField, Typography, FormHelperText, Box } from '@mui/material'
 import { PasswordField } from '../PasswordField/PasswordField'
 import { Stack } from '@mui/system'
 import { FC, useState } from 'react'
-import { Button } from '../../components/Button'
+import { Button } from '../Button'
 /*@typescript-eslint/no-unused-vars*/
 
 export const ConfirmPasswordForm: FC = () => {
@@ -24,20 +24,6 @@ export const ConfirmPasswordForm: FC = () => {
         p='32px'
         spacing={24}
       >
-        <Box component='div'>
-          <TextField
-            id='code'
-            label='Code'
-            variant='outlined'
-            error={codeError.length > 0}
-            sx={{ width: '100%' }}
-          />
-          {codeError.length > 0 && (
-            <FormHelperText error={true} sx={{ pl: '13px' }}>
-              {codeError}
-            </FormHelperText>
-          )}
-        </Box>
         <PasswordField
           label='New password'
           setPassword={setNewPassword}

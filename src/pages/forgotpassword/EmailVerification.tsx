@@ -1,6 +1,6 @@
-import { EmailVerificationForm } from '../../components/ResetPassword'
+import { EmailVerificationForm } from '../../components/EmailVerificationForm'
 import { FC } from 'react'
-import { AppWrapper } from '../../components'
+import { AppWrapper } from '../../components/AppWrapper'
 
 export const EmailVerification: FC = () => {
   return (

@@ -1,7 +1,7 @@
 import { TextField, Typography, Box, FormHelperText } from '@mui/material'
 import { Stack } from '@mui/system'
 import { FC, useState } from 'react'
-import { Button } from '../../components/Button'
+import { Button } from '../Button'
 /*@typescript-eslint/no-unused-vars*/
 
 export const EmailVerificationForm: FC = () => {

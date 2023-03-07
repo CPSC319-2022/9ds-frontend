@@ -1,6 +1,6 @@
-import { ConfirmPasswordForm } from '../../components/ResetPassword'
+import { ConfirmPasswordForm } from '../../components/ConfirmPasswordForm'
 import { FC } from 'react'
-import { AppWrapper } from '../../components'
+import { AppWrapper } from '../../components/AppWrapper'
 
 export const ConfirmPassword: FC = () => {
   return (
