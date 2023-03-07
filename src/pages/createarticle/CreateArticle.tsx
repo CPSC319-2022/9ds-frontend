@@ -1,4 +1,4 @@
-import { Box, Button, FormLabel, Stack } from '@mui/material'
+import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import React, { useState, FormEvent } from 'react'
 import { LabeledTextField } from '../../components/LabeledTextField'
@@ -168,17 +168,15 @@ export const CreateArticle = () => {
             variant='outlined'
             onTextChange={setCustomLink}
             placeholder='Paste link to image'
-            label='or'
             multiline={false}
-            typographyVariant='h5'
+            text={<Typography variant='title' style={{color: 'black'}}>Or</Typography> }
           />
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
             placeholder='60 words or less'
-            label='Title'
             multiline={false}
-            typographyVariant='h5'
+            text={<Typography variant='h5' style={{color: 'black'}}>Title</Typography> }
             error={isTitleError}
             helperText={titleHelperText}
           />
@@ -186,10 +184,9 @@ export const CreateArticle = () => {
             variant='outlined'
             onTextChange={setBody}
             placeholder='250 words or less'
-            label='Body'
             multiline={true}
             rows={7}
-            typographyVariant='h5'
+            text={<Typography variant='h5' style={{color: 'black'}}>Body</Typography> }
             error={isBodyError}
             helperText={bodyHelperText}
           />

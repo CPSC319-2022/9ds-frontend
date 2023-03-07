@@ -32,8 +32,7 @@ export const Profile: FC = () => {
             label='Account type'
             multiline={false}
             spacing={32}
-            flex={0.7}
-            typographyVariant='title'
+            text={<Typography variant='title' style={{color: 'black'}}>Account Type</Typography> }
           />
           <LabeledTextField
             variant='standard'
@@ -42,8 +41,7 @@ export const Profile: FC = () => {
             label='Name'
             multiline={false}
             spacing={32}
-            flex={0.7}
-            typographyVariant='title'
+            text={<Typography variant='title' style={{color: 'black'}}>Name</Typography> }
           />
           <LabeledTextField
             variant='standard'
@@ -52,8 +50,7 @@ export const Profile: FC = () => {
             label='Email'
             multiline={false}
             spacing={32}
-            flex={0.7}
-            typographyVariant='title'
+            text={<Typography variant='title' style={{color: 'black'}}>Email</Typography> }
           />
         </Stack>
       </Stack>
@@ -65,7 +62,7 @@ export const Profile: FC = () => {
       >
         Posts
       </Typography>
-      <Stack direction='row' spacing={16} justifyContent='center'>
+      <Stack direction='row' spacing={16} justifyContent='flex-start'>
         {[...Array(4).keys()].map((key) => (
           <Article key={key} size='small' />
         ))}
@@ -73,7 +70,7 @@ export const Profile: FC = () => {
       <Typography variant='h5' color='black.main' sx={{ paddingLeft: '32px' }}>
         Drafts
       </Typography>
-      <Stack direction='row' spacing={16} justifyContent='center'>
+      <Stack direction='row' spacing={16} justifyContent='flex-start'>
         {[...Array(4).keys()].map((key) => (
           <Article key={key} size='small' />
         ))}
