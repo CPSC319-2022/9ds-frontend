@@ -156,7 +156,7 @@ export const useSignInWithGoogle = () => {
 }
 
 export const useForgotPasswordEmail = () => {
-  const [error, setError] = useState()
+  const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
   const sendEmail = (email: string) => {
