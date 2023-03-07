@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter as Router } from 'react-router-dom'
-import { Footer } from '../../components'
+import { Footer } from '../../components/Footer'
 
 describe('Footer Styling', () => {
   beforeAll(() => {

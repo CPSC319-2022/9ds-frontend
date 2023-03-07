@@ -2,7 +2,7 @@ import { TextField, Typography, FormHelperText, Box } from '@mui/material'
 import { PasswordField } from '../PasswordField/PasswordField'
 import { Stack } from '@mui/system'
 import { FC, useState } from 'react'
-import { Button } from '../../components'
+import { Button } from '../../components/Button'
 /*@typescript-eslint/no-unused-vars*/
 
 export const ConfirmPasswordForm: FC = () => {
