@@ -64,7 +64,15 @@ describe('Testing firestore user security rules', () => {
   })
 
   describe("read requests", () => {
+    it("should not let visitors get individual users", async () => {
 
+    })
+
+    it("should let signed in users get themselves", async () => {
+
+    })
+
+    //other features unclear, waiting for ahnaf
   })
 
   describe("create requests", () => {

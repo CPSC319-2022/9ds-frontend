@@ -75,3 +75,33 @@ export const adminPrivateArticle = {
 }
 
 export const adminPrivateArticleID = "3"
+
+export const adminComment = {
+    commenter_uid: adminData.uid,
+    commenter_image: adminData.profile_image,
+    commenter_username: adminData.username,
+    content: "Admin comment",
+    post_time: serverTimestamp()
+}
+
+export const adminCommentId = "0"
+
+export const contributorComment = {
+    commenter_uid: contributorData.uid,
+    commenter_image: contributorData.profile_image,
+    commenter_username: contributorData.username,
+    content: "Contributor comment",
+    post_time: serverTimestamp()
+}
+
+export const contributorCommentId = "1"
+
+export const readerComment = {
+    commenter_uid: readerData.uid,
+    commenter_image: readerData.profile_image,
+    commenter_username: readerData.username,
+    content: "Reader comment",
+    post_time: serverTimestamp()
+}
+
+export const readerCommentId = "2"
