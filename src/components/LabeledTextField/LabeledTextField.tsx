@@ -4,7 +4,6 @@ import React, { Dispatch, FC, SetStateAction } from 'react'
 type LabeledTextFieldProps = TextFieldProps & {
   onTextChange: Dispatch<SetStateAction<string>>
   spacing?: number
-  flex?:number
   text: any
 }
 
@@ -45,5 +44,4 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
 
 LabeledTextField.defaultProps = {
   spacing: 0,
-  flex:0,
 };

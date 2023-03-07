@@ -32,7 +32,7 @@ export const Profile: FC = () => {
             label='Account type'
             multiline={false}
             spacing={32}
-            text={<Typography variant='title' style={{color: 'black'}}>Account Type</Typography> }
+            text={<Typography variant='title' sx={{color: 'black'}}>Account Type</Typography> }
           />
           <LabeledTextField
             variant='standard'
@@ -41,7 +41,7 @@ export const Profile: FC = () => {
             label='Name'
             multiline={false}
             spacing={32}
-            text={<Typography variant='title' style={{color: 'black'}}>Name</Typography> }
+            text={<Typography variant='title' sx={{color: 'black'}}>Name</Typography> }
           />
           <LabeledTextField
             variant='standard'
@@ -50,7 +50,7 @@ export const Profile: FC = () => {
             label='Email'
             multiline={false}
             spacing={32}
-            text={<Typography variant='title' style={{color: 'black'}}>Email</Typography> }
+            text={<Typography variant='title' sx={{color: 'black'}}>Email</Typography> }
           />
         </Stack>
       </Stack>

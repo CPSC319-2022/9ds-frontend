@@ -169,14 +169,14 @@ export const CreateArticle = () => {
             onTextChange={setCustomLink}
             placeholder='Paste link to image'
             multiline={false}
-            text={<Typography variant='title' style={{color: 'black'}}>Or</Typography> }
+            text={<Typography variant='title' sx={{color: 'black'}}>Or</Typography> }
           />
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
             placeholder='60 words or less'
             multiline={false}
-            text={<Typography variant='h5' style={{color: 'black'}}>Title</Typography> }
+            text={<Typography variant='h5' sx={{color: 'black'}}>Title</Typography> }
             error={isTitleError}
             helperText={titleHelperText}
           />
@@ -186,7 +186,7 @@ export const CreateArticle = () => {
             placeholder='250 words or less'
             multiline={true}
             rows={7}
-            text={<Typography variant='h5' style={{color: 'black'}}>Body</Typography> }
+            text={<Typography variant='h5' sx={{color: 'black'}}>Body</Typography> }
             error={isBodyError}
             helperText={bodyHelperText}
           />
