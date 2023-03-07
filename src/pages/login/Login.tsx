@@ -1,9 +1,9 @@
 import React, { FC } from 'react'
-import GetStartedTitle from './GetStartedTitle'
-import LoginAndSignUpForm from './LoginAndSignUpForm'
+import { GetStartedTitle } from './GetStartedTitle'
+import { LoginAndSignUpForm } from './LoginAndSignUpForm'
 import { AppWrapper } from '../../components/AppWrapper'
 
-const Login: FC = () => {
+export const Login: FC = () => {
   return (
     <AppWrapper>
       <GetStartedTitle />
@@ -11,5 +11,3 @@ const Login: FC = () => {
     </AppWrapper>
   )
 }
-
-export default Login

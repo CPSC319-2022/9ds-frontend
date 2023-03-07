@@ -3,7 +3,8 @@ import { CreateArticle } from '../../pages/createarticle/CreateArticle'
 import { Home } from '../../pages/home'
 import { EmailVerification } from '../../pages/forgotpassword/EmailVerification'
 import { ConfirmPassword } from '../../pages/forgotpassword/ConfirmPasswordReset'
-import Login from '../../pages/login/Login'
+import { Login } from '../../pages/login/Login'
+import { Profile } from '../../pages/profile/Profile'
 
 export interface RouteConfig {
   path: string
@@ -32,5 +33,9 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   resetPassword: {
     path: '/reset/password',
     component: <ConfirmPassword/>,
+  },
+  profile: {
+    path: '/profile',
+    component: <Profile />,
   },
 }

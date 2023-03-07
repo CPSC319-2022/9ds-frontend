@@ -1,13 +1,13 @@
-import { FormLabel, Stack, TextField, TextFieldProps } from '@mui/material'
+import { Stack, TextField, TextFieldProps } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
-  label: string
   onTextChange: Dispatch<SetStateAction<string>>
+  spacing?: number
+  text: React.ReactNode
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
-  label,
   placeholder,
   variant,
   multiline,
@@ -15,6 +15,8 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   helperText,
   error,
   onTextChange,
+  spacing,
+  text,
 }: LabeledTextFieldProps) => {
   return (
     <Stack
@@ -22,10 +24,10 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
       alignItems={'flex-start'}
       justifyContent={'space-between'}
       alignSelf={'stretch'}
+      spacing={spacing}
     >
-      <FormLabel style={{ flex: 0.05, color: 'black' }}>{label}</FormLabel>
+      {text}
       <TextField
-        style={{ flex: 0.95 }}
         multiline={multiline}
         rows={rows}
         variant={variant}
@@ -39,3 +41,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
     </Stack>
   )
 }
+
+LabeledTextField.defaultProps = {
+  spacing: 0,
+};
