@@ -22,6 +22,13 @@ export const readerData: UserData = {
     uid: "2"
 }
 
+export const newUserData: UserData = {
+    profile_image: "https:example.com/img.jpg",
+    role: "reader",
+    username: "newUser",
+    uid: "3"
+}
+
 export const contributorPublishedArticle = {
     author_uid: contributorData.uid,
     author_image: contributorData.profile_image,

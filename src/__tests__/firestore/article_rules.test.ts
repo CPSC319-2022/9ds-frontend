@@ -136,13 +136,7 @@ describe('Testing firestore article security rules', () => {
       await firebase.assertFails(addDoc(collection(admin, "article"), contributorPublishedArticle))
     })
 
-    // it('should not allow articles missing fields', () => {
-    //
-    // })
-    //
-    // it('should not allow articles with extra fields', () => {
-    //
-    // })
+    // field control, for later robustness
 
   })
 

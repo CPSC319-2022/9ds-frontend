@@ -14,6 +14,10 @@ service cloud.firestore {
           	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
     }
 
+    function allowedRole(role) {
+        return role == "banned" || role == "reader" || role == "contributor" || role == "admin";
+    }
+
   	function doesntUpdateKeys(bannedList){
   		return !request.resource.data.diff(resource.data).affectedKeys().hasAny(bannedList);
   	}
@@ -34,41 +38,42 @@ service cloud.firestore {
   	  allow get: if signedIn() && isAuthor(userId);
       allow list: if resource.data.role == "contributor";
       allow list: if signedIn() && isRole("admin");
-      allow create: if signedIn() && isAuthor(userId) && !exists(/databases/$(database)/documents/users/$(userId)); // must be reader
+      allow create: if signedIn() && isAuthor(userId) && request.resource.data.role == "reader"; // must be reader
       //	&& minKeys(['role', 'username', 'profile_image']) && maxKeys(['role', 'username', 'promotion_request', 'profile_image']);
       allow update: if signedIn() && isAuthor(userId) && doesntUpdateKeys(['role']);
-      allow update: if signedIn() && isRole("admin") && updatesKeys(['role']); //choose allowable values
+      allow update: if signedIn() && isRole("admin") && updatesKeys(['role']) && doesntUpdateKeys(["username", "profile_image"])
+            && allowedRole(request.resource.data.role)  ; //choose allowable values
       allow delete: if signedIn() && isAuthor(userId);
   	}
 
 
     match /article/{articleId} {
 
-    	allow read: if resource != null && (resource.data.published || (signedIn() && isAuthor(resource.data.author_uid)));
+      allow read: if resource != null && (resource.data.published || (signedIn() && isAuthor(resource.data.author_uid)));
       allow create: if signedIn() && (isRole("contributor") || isRole("admin"))
       //	&& minKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'title'])
       //	&& maxKeys(['author_uid', 'author_username', 'author_image', 'content', 'header_image', 'edit_time', 'published', 'publish_time', 'title'])
-        && isAuthor(request.resource.data.author_uid);
+            && isAuthor(request.resource.data.author_uid);
       allow delete: if signedIn() && isAuthor(resource.data.author_uid) && isRole("contributor");
       allow delete: if signedIn() && isRole("admin");
       allow update: if signedIn() && isAuthor(resource.data.author_uid)
-      	&& doesntUpdateKeys(['author_uid']) && updatesKeys(['edit_time']);
+      	    && doesntUpdateKeys(['author_uid']) && updatesKeys(['edit_time']);
 
 
       match /comments/{commentId} {
       	allow read: if resource != null;
         allow create: if signedIn()
-        //	&& minKeys(['commenter_uid', 'commenter_username', 'commenter_image', 'content', 'post_time'])
+        //  && minKeys(['commenter_uid', 'commenter_username', 'commenter_image', 'content', 'post_time'])
         //	&& maxKeys(['commenter_uid', 'commenter_username', 'commenter_image', 'content', 'post_time'])
-          && isAuthor(request.resource.data.commenter_uid) ;
+            && isAuthor(request.resource.data.commenter_uid) ;
         allow delete: if signedIn() && isAuthor(resource.data.commenter_uid);
         allow delete: if signedIn() && isRole("admin");
         allow update: if signedIn() && isAuthor(resource.data.commenter_uid) && doesntUpdateKeys(['commenter_uid']);
       }
+
     match /{document=**} {
         allow read, write: if false;
       }
     }
-
   }
 }

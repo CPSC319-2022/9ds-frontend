@@ -95,6 +95,8 @@ describe('Testing firestore comment security rules', () => {
     it("should not allow visitors to post comments", async() => {
       await firebase.assertFails(addDoc(collection(visitor, `article/${contributorPublishedArticleID}/comments/`), contributorComment));
     })
+
+    //field control, for later robustness
   })
 
   describe('update requests', () => {
@@ -119,6 +121,8 @@ describe('Testing firestore comment security rules', () => {
     it("should not allow visitors to edit comments", async() => {
       await firebase.assertFails(updateDoc(doc(visitor, `article/${contributorPublishedArticleID}/comments`, adminCommentId), {content: "New comment"}))
     })
+
+    //field control, for later robustness
   })
 
   describe('delete requests', () => {
