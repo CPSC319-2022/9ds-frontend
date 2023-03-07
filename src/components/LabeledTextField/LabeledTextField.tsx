@@ -2,7 +2,7 @@ import { Stack, TextField, TextFieldProps } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
-  onTextChange: Dispatch<SetStateAction<string>>
+  onTextChange?: Dispatch<SetStateAction<string>>
   spacing?: number
   text: React.ReactNode
 }
@@ -35,7 +35,10 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
         error={error}
         helperText={helperText}
         onChange={(event) => {
-          onTextChange(event.target.value)
+          if(onTextChange) {
+            onTextChange(event.target.value)
+          }
+          
         }}
       />
     </Stack>
