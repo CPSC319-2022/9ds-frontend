@@ -170,7 +170,7 @@ export const LoginForm = () => {
                 alignItems='flex-end'
                 justifyContent='space-between'
             >
-                <Link component={RouterLink} to="/" underline='none' color='#2602FF'>
+                <Link component={RouterLink} to="/reset/email" underline='none' color='#2602FF'>
                     <Typography variant='small'>Forgot password?</Typography>
                 </Link>
                 <Button
