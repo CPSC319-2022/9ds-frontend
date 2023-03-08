@@ -6,7 +6,7 @@ import {initializeApp} from "firebase/app";
 import {connectFirestoreEmulator, getFirestore} from "firebase/firestore";
 import {connectAuthEmulator, getAuth} from "firebase/auth";
 
-const root = ReactDOM.createRoot(document.getElementById('root') || document.createElement('div') as HTMLElement)
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
         <App />
@@ -54,10 +54,14 @@ switch(process.env.REACT_APP_ENV) {
 
     default:
         firebaseConfig = {
-            projectId: "dev-emulator",
-            apiKey: "dev-emulator-placeholder-key",
-            authDomain: "dev-emulator-auth"
-        }
+            apiKey: "AIzaSyCXZk4iU2LXkWimWFWpH89LEM3Qh2FDog4",
+            authDomain: "ds-blog-local.firebaseapp.com",
+            projectId: "ds-blog-local",
+            storageBucket: "ds-blog-local.appspot.com",
+            messagingSenderId: "312419112403",
+            appId: "1:312419112403:web:166f55b88f498281f80b26",
+            measurementId: "G-HPWHPJYZV2"
+        };
 }
 
 const app = initializeApp(firebaseConfig)
@@ -66,6 +70,9 @@ export const auth = getAuth(app);
 
 if (!process.env.REACT_APP_ENV) {
     connectFirestoreEmulator(db, 'localhost', 8080);
-    connectAuthEmulator(auth, 'https://localhost:9099', { disableWarnings: true })
+    // google Sign In works when http instead of https,
+    // gets 400 bad request instead of
+    // post ERR_SSL_PROTOCOL_ERROR
+    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
 }
 

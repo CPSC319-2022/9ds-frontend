@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { Article } from '../../components'
+import { Article } from '../../components/Article'
 
 describe('Article Style', () => {
   test('should be large', () => {

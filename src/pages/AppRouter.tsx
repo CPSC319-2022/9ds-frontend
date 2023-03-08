@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
-import { ProtectedRoute } from '../components'
+import { ProtectedRoute } from '../components/Routes'
 import { RouteConfig, ROUTE_CONFIG } from '../configs'
 
 export const AppRouter = () => {
