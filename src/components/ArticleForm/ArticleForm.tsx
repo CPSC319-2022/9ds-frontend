@@ -5,6 +5,7 @@ import { LabeledTextField } from '../../components'
 import { article } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable security/detect-object-injection */
 
 const pictureUrls = [
   'https://via.placeholder.com/150',

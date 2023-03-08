@@ -2,6 +2,8 @@ import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
 import { useArticleCreate } from '../../hooks/firebase/useArticle'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export const CreateArticle = () => {
   const {
     createArticle,

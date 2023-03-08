@@ -2,6 +2,8 @@ import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
 import { useArticleEdit, useArticleRead } from '../../hooks/firebase/useArticle'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 interface UpdateArticleProps {
   articleIdForUpdate: string
 }
