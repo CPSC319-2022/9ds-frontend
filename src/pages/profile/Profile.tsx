@@ -24,15 +24,19 @@ export const Profile: FC = () => {
           height='140px'
           style={{ borderRadius: '50%' }}
         />
-        <Stack direction='column' spacing={32}>
+        <Stack direction='column' spacing={32} width={'auto'}>
           <LabeledTextField
             variant='standard'
             onTextChange={setProfileInfo}
             placeholder='Contributor'
             label='Account type'
             multiline={false}
-            spacing={32}
-            text={<Typography variant='title' sx={{color: 'black'}}>Account Type</Typography> }
+            labelWidth={4}
+            text={
+              <Typography variant='title' sx={{ color: 'black' }}>
+                Account Type
+              </Typography>
+            }
           />
           <LabeledTextField
             variant='standard'
@@ -40,8 +44,12 @@ export const Profile: FC = () => {
             placeholder='Emma Watson'
             label='Name'
             multiline={false}
-            spacing={32}
-            text={<Typography variant='title' sx={{color: 'black'}}>Name</Typography> }
+            labelWidth={4}
+            text={
+              <Typography variant='title' sx={{ color: 'black' }}>
+                Name
+              </Typography>
+            }
           />
           <LabeledTextField
             variant='standard'
@@ -49,8 +57,12 @@ export const Profile: FC = () => {
             placeholder='emma@watson.com'
             label='Email'
             multiline={false}
-            spacing={32}
-            text={<Typography variant='title' sx={{color: 'black'}}>Email</Typography> }
+            labelWidth={4}
+            text={
+              <Typography variant='title' sx={{ color: 'black' }}>
+                Email
+              </Typography>
+            }
           />
         </Stack>
       </Stack>

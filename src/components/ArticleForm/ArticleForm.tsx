@@ -1,4 +1,4 @@
-import { Box, Button, FormLabel, Stack } from '@mui/material'
+import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import { useState, FormEvent } from 'react'
 import { article } from '../../hooks/firebase/useArticle'
@@ -207,14 +207,24 @@ export const ArticleForm = ({
             variant='outlined'
             onTextChange={setCustomLink}
             placeholder='Paste link to image'
-            text='or'
+            text={
+              <Typography variant='title' sx={{ color: 'black' }}>
+                or
+              </Typography>
+            }
+            labelWidth={1}
             multiline={false}
           />
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
             placeholder='60 words or less'
-            text='Title'
+            text={
+              <Typography variant='title' sx={{ color: 'black' }}>
+                Title
+              </Typography>
+            }
+            labelWidth={1}
             multiline={false}
             error={isTitleError}
             helperText={titleHelperText}
@@ -226,7 +236,12 @@ export const ArticleForm = ({
             variant='outlined'
             onTextChange={setBody}
             placeholder='250 words or less'
-            text='Body'
+            text={
+              <Typography variant='title' sx={{ color: 'black' }}>
+                Body
+              </Typography>
+            }
+            labelWidth={1}
             multiline={true}
             rows={7}
             error={isBodyError}
