@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { Avatar } from '../../components'
+import { Avatar } from '../../components/Avatar'
 
 describe('Avatar Styling', () => {
   beforeAll(() => {

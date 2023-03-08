@@ -6,7 +6,7 @@ import {initializeApp} from "firebase/app";
 import {connectFirestoreEmulator, getFirestore} from "firebase/firestore";
 import {connectAuthEmulator, getAuth} from "firebase/auth";
 
-const root = ReactDOM.createRoot(document.getElementById('root') || document.createElement('div') as HTMLElement)
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
         <App />
