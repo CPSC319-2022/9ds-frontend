@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter as Router } from 'react-router-dom'
 import { ConfirmPasswordForm } from '../../components/ConfirmPasswordForm'
 
 

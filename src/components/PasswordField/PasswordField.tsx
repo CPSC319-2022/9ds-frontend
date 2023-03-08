@@ -9,7 +9,7 @@ import {
 import { VisibilityOff, Visibility } from '@mui/icons-material'
 import { FC, useState } from 'react'
 
-
+/* @typescript-eslint/no-unused-vars */
 export interface PasswordProps {
   label: string
   setPassword: Function
