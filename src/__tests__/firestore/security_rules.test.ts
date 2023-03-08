@@ -46,6 +46,7 @@ describe('Testing firestore security rules', () => {
   });
 
   afterAll(() => {
+    testEnv.clearFirestore()
     testEnv.cleanup()
   })
 
@@ -73,18 +74,28 @@ describe('Testing firestore security rules', () => {
     });
 
     describe("read requests", () => {
-      it("should not let visitors get individual users", async () => {
-
+      it("should not let visitors get user data", async () => {
+        await firebase.assertFails(getDoc(doc(visitor, "users", contributorData.uid)))
       })
 
-      it("should let signed in users get themselves", async () => {
-
+      it("should let signed in users get their own user data", async () => {
+        await firebase.assertSucceeds(getDoc(doc(admin, "users", adminData.uid)))
+        await firebase.assertSucceeds(getDoc(doc(contributor, "users", contributorData.uid)))
+        await firebase.assertSucceeds(getDoc(doc(reader, "users", readerData.uid)))
       })
 
-      //other features unclear, waiting for ahnaf
-      // Anyone can get a list of contributors
-      // No one can get a list of readers
-      // Signed in user's can read their own user data
+      it("should not let readers and contributors get other users", async() => {
+        await firebase.assertFails(getDoc(doc(contributor, "users", adminData.uid)))
+        await firebase.assertFails(getDoc(doc(reader, "users", adminData.uid)))
+      })
+
+      it("should let admins read get any user", async() => {
+        await firebase.assertSucceeds(getDoc(doc(admin, "users", adminData.uid)))
+        await firebase.assertSucceeds(getDoc(doc(admin, "users", contributorData.uid)))
+        await firebase.assertSucceeds(getDoc(doc(admin, "users", readerData.uid)))
+      })
+
+      //Decided not to have an author directory, so relevant security rules have been disabled.
     })
 
     describe("create requests", () => {
@@ -273,7 +284,6 @@ describe('Testing firestore security rules', () => {
       })
 
       // field control, for later robustness
-
     })
 
     describe('update requests', () => {
@@ -318,7 +328,7 @@ describe('Testing firestore security rules', () => {
       })
 
       //not worth testing visitor/reader, no interesting behaviour
-      //controlling updated fields? -if for later robustness maybe
+      //field control for later robustness
     })
 
     describe("delete requests", () => {

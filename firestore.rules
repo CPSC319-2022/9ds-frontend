@@ -36,13 +36,13 @@ service cloud.firestore {
 
   	match /users/{userId} {
   	  allow get: if signedIn() && isAuthor(userId);
-      allow list: if resource.data.role == "contributor";
-      allow list: if signedIn() && isRole("admin");
+      // allow list: if resource.data.role == "contributor" || resource.data.role == "admin"; No longer doing author directory
+      allow get: if signedIn() && isRole("admin");
       allow create: if signedIn() && isAuthor(userId) && request.resource.data.role == "reader"; // must be reader
       //	&& minKeys(['role', 'username', 'profile_image']) && maxKeys(['role', 'username', 'promotion_request', 'profile_image']);
       allow update: if signedIn() && isAuthor(userId) && doesntUpdateKeys(['role']);
       allow update: if signedIn() && isRole("admin") && updatesKeys(['role']) && doesntUpdateKeys(["username", "profile_image"])
-            && allowedRole(request.resource.data.role)  ; //choose allowable values
+            && allowedRole(request.resource.data.role);
       allow delete: if signedIn() && isAuthor(userId);
   	}
 
