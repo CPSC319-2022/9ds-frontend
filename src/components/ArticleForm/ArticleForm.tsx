@@ -161,6 +161,7 @@ export const ArticleForm = ({
                 .map((value, index) => {
                   return (
                     <Button
+                      aria-label='picture-selection'
                       style={{
                         backgroundColor:
                           selectedPictureIndex === pictureIndexStart + index

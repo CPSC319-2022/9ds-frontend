@@ -25,6 +25,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
     >
       <FormLabel style={{ flex: 0.05, color: 'black' }}>{label}</FormLabel>
       <TextField
+        aria-label={label}
         style={{ flex: 0.95 }}
         multiline={multiline}
         rows={rows}
