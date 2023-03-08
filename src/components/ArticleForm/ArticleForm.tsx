@@ -207,14 +207,14 @@ export const ArticleForm = ({
             variant='outlined'
             onTextChange={setCustomLink}
             placeholder='Paste link to image'
-            label='or'
+            text='or'
             multiline={false}
           />
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
             placeholder='60 words or less'
-            label='Title'
+            text='Title'
             multiline={false}
             error={isTitleError}
             helperText={titleHelperText}
@@ -226,7 +226,7 @@ export const ArticleForm = ({
             variant='outlined'
             onTextChange={setBody}
             placeholder='250 words or less'
-            label='Body'
+            text='Body'
             multiline={true}
             rows={7}
             error={isBodyError}
