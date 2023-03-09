@@ -144,7 +144,7 @@ export const theme = createTheme({
     title: {
       fontFamily: 'Roboto',
       fontWeight: 500,
-      fontSize: '16px',
+      fontSize: '20px',
       lineHeight: '120%',
       letterSpacing: 0,
     },
