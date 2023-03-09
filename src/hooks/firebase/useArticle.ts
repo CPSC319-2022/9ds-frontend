@@ -75,7 +75,7 @@ export const useArticleRecents = (n: number) => {
   const q = query(
     collection(db, 'article'),
     where('published', '==', true),
-    orderBy('publish_time'),
+    orderBy('publish_time', 'desc'),
   )
 
   let lastArticle: QueryDocumentSnapshot<DocumentData>
@@ -141,7 +141,7 @@ export const useArticleComments = (articleID: string, n: number) => {
   const [comments, setComments] = useState<comment[]>([])
   const [loadingNext, setLoadingNext] = useState(true)
 
-  const q = query(collection(db, `article/${articleID}/comments`))
+  const q = query(collection(db, `article/${articleID}/comments`), orderBy("post_time", "desc"))
 
   let lastComment: QueryDocumentSnapshot<DocumentData>
   let endOfCollection = false
