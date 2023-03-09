@@ -17,6 +17,7 @@ export const AboutUsCard: FC<AboutUsCardProps> = ({
     return (
         <Stack
             width='345px'
+            height='288px'
             direction='column'
             justifyContent='center'
             alignItems='center'
