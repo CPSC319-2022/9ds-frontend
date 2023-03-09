@@ -80,9 +80,7 @@
           "queryScope": "COLLECTION"
         },
         {
-          "queryScope": "COLLECTION"
-        },
-        {
+          "order": "ASCENDING",
           "queryScope": "COLLECTION_GROUP"
         }
       ]
