@@ -41,7 +41,6 @@ export const EmailVerificationForm: FC = () => {
     }
   return (
     <form onSubmit={sendEmailLink}>
-      <Typography variant='h3'>Reset Password</Typography>
       <Stack
         width='270px'
         direction='column'

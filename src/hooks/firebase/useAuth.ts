@@ -12,7 +12,7 @@ import {
   confirmPasswordReset,
 } from 'firebase/auth'
 import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
-import { auth, db } from '../../index'
+import { auth, db } from '../../firebaseApp'
 import { UserData, getUser } from './useUser'
 import { FirebaseError } from 'firebase/app'
 

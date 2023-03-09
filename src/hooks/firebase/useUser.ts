@@ -12,7 +12,7 @@ import {
     DocumentData,
     FirestoreErrorCode, FirestoreError, QueryDocumentSnapshot, startAfter
 } from "firebase/firestore";
-import {db, auth} from '../../index'
+import {db, auth} from '../../firebaseApp'
 import {useState, useEffect} from "react";
 import {ArticlePreview, articlePreviewTranslator} from "./useArticle";
 

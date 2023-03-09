@@ -11,8 +11,7 @@ describe('ConfirmPasswordForm', () => {
   })
 
   test('style', () => {
-    const [title, label, input] = screen.getAllByText("New password")
-    expect(title).toBeInTheDocument()
+    const [label, input] = screen.getAllByText("New password")
     expect(label).toBeInTheDocument()
     expect(label).toHaveAttribute("data-shrink", "false")
     expect(input).toBeInTheDocument()

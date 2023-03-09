@@ -13,7 +13,6 @@ export const ConfirmPasswordForm: FC = () => {
 
   return (
     <>
-      <Typography variant='h3'>New password</Typography>
       <Stack
         width='270px'
         direction='column'

@@ -19,10 +19,10 @@ import {
   getDocs,
   startAfter,
 } from 'firebase/firestore'
-import { auth, db } from '../../index'
 import { useState, useEffect } from 'react'
 import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
+import { auth, db } from '../../firebaseApp'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
