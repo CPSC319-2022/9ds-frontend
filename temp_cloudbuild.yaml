@@ -10,6 +10,6 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'run', 'deploy', 'pwcblog', '--image', 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA',
-    '--platform=managed', '--region=us-west1', '--allow-unauthenticated', '--memory', '3G', '--cpu', '2',
+    '--platform=managed', '--region=us-west1', '--allow-unauthenticated', '--memory', '1G',
     '--update-env-vars', 'REACT_APP_ENV=$_REACT_APP_ENV'
     ]
