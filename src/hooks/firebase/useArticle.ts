@@ -55,7 +55,7 @@ export const articlePreviewTranslator = (
   return articlesData
 }
 
-export interface article {
+export interface Article {
   title: string
   content: string
   header_image: string
@@ -78,8 +78,9 @@ export const useArticleRecents = (n: number) => {
     orderBy('publish_time', 'desc'),
   )
 
-  const [lastArticle, setLastArticle] = useState<QueryDocumentSnapshot<DocumentData>>()
-  const [endOfCollection, setEndOfCollection] = useState(false);
+  const [lastArticle, setLastArticle] =
+    useState<QueryDocumentSnapshot<DocumentData>>()
+  const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {
     getDocs(query(q, limit(n)))
@@ -114,7 +115,7 @@ export const useArticleRecents = (n: number) => {
 export const useArticleRead = (articleID: string) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [article, setArticle] = useState<article>()
+  const [article, setArticle] = useState<Article>()
 
   useEffect(() => {
     getDoc(doc(db, 'article', articleID))
@@ -124,7 +125,7 @@ export const useArticleRead = (articleID: string) => {
           setError('not-found')
         } else {
           setLoading(false)
-          setArticle(data as article)
+          setArticle(data as Article)
         }
       })
       .catch((err: FirestoreError) => {
@@ -141,9 +142,13 @@ export const useArticleComments = (articleID: string, n: number) => {
   const [comments, setComments] = useState<comment[]>([])
   const [loadingNext, setLoadingNext] = useState(false)
 
-  const q = query(collection(db, `article/${articleID}/comments`), orderBy("post_time", "desc"))
+  const q = query(
+    collection(db, `article/${articleID}/comments`),
+    orderBy('post_time', 'desc'),
+  )
 
-  const [lastComment, setLastComment] = useState<QueryDocumentSnapshot<DocumentData>>()
+  const [lastComment, setLastComment] =
+    useState<QueryDocumentSnapshot<DocumentData>>()
   const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {

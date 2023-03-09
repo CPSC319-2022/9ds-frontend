@@ -1,19 +1,24 @@
 import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
-import sample from '../../assets/sample.jpg'
 import { Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
+import { ArticlePreview } from '../../hooks/firebase/useArticle'
 
-export const ArticleLarge: FC = () => {
+export interface ArticleLargeProps {
+  article: ArticlePreview
+}
+
+export const ArticleLarge: FC<ArticleLargeProps> = ({ article }) => {
   return (
     <Stack
+      data-testid='root'
       alignItems='flex-start'
       justifyContent='flex-end'
       width='100%'
       borderRadius='12px'
       height='500px'
       sx={{
-        backgroundImage: `url(${sample})`,
+        backgroundImage: `url(${article.header_image})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: '100%',
         backgroundPosition: 'center center',
@@ -29,7 +34,7 @@ export const ArticleLarge: FC = () => {
       >
         <Stack
           sx={{ backgroundColor: 'black.transparent' }}
-          maxWidth='fit-content'
+          width='40%'
           spacing={10}
           alignItems='flex-start'
           justifyContent='flex-end'
@@ -40,13 +45,25 @@ export const ArticleLarge: FC = () => {
             Featured
           </Typography>
           <Typography variant='title' color='white.main'>
-            Article title herer
+            {article.title}
           </Typography>
-          <Typography variant='caption' color='white.main'>
-            Article descriptions ble bla lba etc etc ajsdfoiajwoignai
+          <Typography
+            variant='caption'
+            color='white.main'
+            sx={{
+              width: '100%',
+              height: '40px',
+              overflow: 'hidden',
+            }}
+          >
+            {article.content}
           </Typography>
         </Stack>
-        <Avatar />
+        <Avatar
+          name={article.author_username}
+          date={article.publish_time.toDate()}
+          avatarImgSrc={article.author_image}
+        />
       </Stack>
     </Stack>
   )

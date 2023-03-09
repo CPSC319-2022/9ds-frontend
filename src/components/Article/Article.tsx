@@ -1,16 +1,17 @@
 import React, { FC } from 'react'
-import {ArticleLarge} from './ArticleLarge'
-import {ArticleSmall} from './ArticleSmall'
+import { ArticlePreview } from '../../hooks/firebase/useArticle'
+import { ArticleLarge } from './ArticleLarge'
+import { ArticleSmall } from './ArticleSmall'
 
 type ArticleProps = {
   size?: 'large' | 'small'
+  article: ArticlePreview
 }
 
-export const Article: FC<ArticleProps> = ({ size }) => {
+export const Article: FC<ArticleProps> = ({ size, article }) => {
   if (size !== 'large') {
-    return <ArticleSmall />
+    return <ArticleSmall article={article} />
   } else {
-    return <ArticleLarge />
+    return <ArticleLarge article={article} />
   }
 }
-
