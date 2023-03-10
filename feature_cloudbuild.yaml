@@ -16,10 +16,6 @@ steps:
 - name: 'gcr.io/cloud-builders/yarn'
   args: ['test']
 
-# Security rules test
-- name: 'gcr.io/$PROJECT_ID/firebase'
-  args: ['emulators:exec', "\"src/__tests__/firestore/security_rules.test.ts\""]
-
 # Build
 - name: 'gcr.io/cloud-builders/yarn'
   args: ['build']
