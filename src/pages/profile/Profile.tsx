@@ -10,7 +10,6 @@ import { Footer, Header } from '../../components'
 export const Profile: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {error, loading, queriedUser} = useUser();
-  console.log(loading)
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
