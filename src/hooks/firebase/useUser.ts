@@ -37,7 +37,7 @@ export const userTranslator = (docs: QuerySnapshot<DocumentData>): UserData[] =>
     return userData;
 }
 
-export const useUserRoleDirectory = (n: number, roles: string[]) => {
+export const useUserRoleDirectory = (n: number | null, roles: string[]) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
     const [loadingNext, setLoadingNext] = useState(true)
@@ -48,12 +48,12 @@ export const useUserRoleDirectory = (n: number, roles: string[]) => {
     let endOfCollection = false;
 
     useEffect( () => {
-        getDocs(query(q, limit(n))).then(
+        getDocs(n !== null? query(q, limit(n)): q).then(
             (docs: QuerySnapshot<DocumentData>) => {
                 setLoading(false);
                 setUsers(userTranslator(docs));
                 lastUser = docs.docs[docs.docs.length - 1]
-                endOfCollection = docs.docs.length < n
+                endOfCollection = n !== null? docs.docs.length < n: true;
             }).catch((err) => {
             setError(err.code)
         })
