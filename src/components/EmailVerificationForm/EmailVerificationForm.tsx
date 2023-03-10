@@ -1,4 +1,4 @@
-import { TextField, Typography, Box, FormHelperText } from '@mui/material'
+import { TextField, Box, FormHelperText } from '@mui/material'
 import { Stack } from '@mui/system'
 import { FC, FormEvent, useState } from 'react'
 import { Button } from '../Button'
@@ -41,7 +41,6 @@ export const EmailVerificationForm: FC = () => {
     }
   return (
     <form onSubmit={sendEmailLink}>
-      <Typography variant='h3'>Reset Password</Typography>
       <Stack
         width='270px'
         direction='column'

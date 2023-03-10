@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material'
 import { PasswordField } from '../PasswordField/PasswordField'
 import { Stack } from '@mui/system'
 import { FC, useState } from 'react'
@@ -13,7 +12,6 @@ export const ConfirmPasswordForm: FC = () => {
 
   return (
     <>
-      <Typography variant='h3'>New password</Typography>
       <Stack
         width='270px'
         direction='column'
