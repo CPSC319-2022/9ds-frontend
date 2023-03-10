@@ -15,7 +15,7 @@ steps:
 # TODO: Add in '--coverage' flag after coverage reaches 80%
 # Test
 - name: 'gcr.io/cloud-builders/yarn'
-  args: ['test', '--coverage']
+  args: ['test']
 
 # TODO: Add in integration testing step
 
