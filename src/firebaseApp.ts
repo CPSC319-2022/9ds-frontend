@@ -59,9 +59,6 @@ const auth = getAuth(app);
 
 if (!process.env.REACT_APP_ENV) {
     connectFirestoreEmulator(db, 'localhost', 8080);
-    // google Sign In works when http instead of https,
-    // gets 400 bad request instead of
-    // post ERR_SSL_PROTOCOL_ERROR
     connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
 }
 
