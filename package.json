@@ -27,6 +27,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test src/__tests__/components --watchAll=false",
+    "rules_test": "firebase emulators:exec \"react-scripts test src/__tests__/firestore/security_rules.test.ts --watchAll=false\"",
     "eject": "react-scripts eject",
     "eslint": "eslint src --max-warnings=0"
   },
