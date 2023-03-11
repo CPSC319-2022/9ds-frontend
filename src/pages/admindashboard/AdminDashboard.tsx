@@ -1,7 +1,13 @@
 import { Button, Stack, Typography } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { AppWrapper } from '../../components/AppWrapper'
+import { useSetRole, useUserRoleDirectory } from '../../hooks/firebase/useUser'
 import { theme } from '../../theme'
+
+enum PromoteButtonRoles {
+  CONTRIBUTOR = 'contributor',
+  ADMIN = 'admin',
+}
 
 const columns: GridColDef[] = [
   { field: 'user', headerName: 'User', flex: 1 },
@@ -17,7 +23,12 @@ const columns: GridColDef[] = [
     headerName: 'Make contributor',
     flex: 1,
     renderCell: (params) => {
-      return <Button variant='contained'>Promote</Button>
+      return (
+        <PromoteButton
+          uid={params.row.uid}
+          role={PromoteButtonRoles.CONTRIBUTOR}
+        />
+      )
     },
   },
   {
@@ -26,63 +37,66 @@ const columns: GridColDef[] = [
     flex: 1,
     renderCell: (params) => {
       return (
-        <Button
-          onClick={() => {
-            console.log(params)
-          }}
-          variant='contained'
-          color='secondary'
-        >
-          Promote
-        </Button>
+        <PromoteButton uid={params.row.uid} role={PromoteButtonRoles.ADMIN} />
       )
     },
   },
 ]
 
 export const AdminDashboard = () => {
+  const { users, loading } = useUserRoleDirectory(null, [
+    'reader',
+    'contributor',
+    'admin',
+    'banned',
+  ])
+
   return (
     <AppWrapper>
       <Stack direction={'column'} alignSelf={'stretch'} spacing={10}>
         <Typography variant='h6' color='black.main'>
           Admin Dashboard
         </Typography>
-        <DataGrid
-          rows={[
-            {
-              id: 1,
-              user: 'das',
-              uid: 'dsasd',
-              status: 'dsadsa',
-              contribStatusReq: 'dsads',
-              makeContributor: 'adssd',
-              makeAdmin: 'asdsd',
-            },
-            {
-              id: 2,
-              user: 'das',
-              uid: 'dsasd',
-              status: 'dsadsa',
-              contribStatusReq: 'dsads',
-              makeContributor: 'adssd',
-              makeAdmin: 'asdsd',
-            },
-            {
-              id: 3,
-              user: 'das',
-              uid: 'dsasd',
-              status: 'dsadsa',
-              contribStatusReq: 'dsads',
-              makeContributor: 'adssd',
-              makeAdmin: 'asdsd',
-            },
-          ]}
-          autoHeight
-          checkboxSelection
-          disableRowSelectionOnClick
-          columns={columns}
-        />
+        {!loading && (
+          <DataGrid
+            rows={users.map((v, i) => {
+              return {
+                id: i + 1,
+                user: v.username,
+                status: v.role,
+                contribStatusReq:
+                  v.promotion_request === undefined ? 'no' : 'yes',
+                makeContributor: v.role !== 'contributor',
+                makeAdmin: v.role !== 'admin',
+              }
+            })}
+            autoHeight
+            checkboxSelection
+            disableRowSelectionOnClick
+            columns={columns}
+          />
+        )}
       </Stack>
     </AppWrapper>
+  )
+}
+
+interface PromoteButtonProps {
+  uid: string
+  role: PromoteButtonRoles
+}
+
+const PromoteButton = ({ uid, role }: PromoteButtonProps) => {
+  const { setRole, error, loading } = useSetRole()
+  return (
+    <Button
+      onClick={() => {
+        setRole(uid, role)
+      }}
+      variant='contained'
+      color='secondary'
+    >
+      Promote
+    </Button>
   )
 }

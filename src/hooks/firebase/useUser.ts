@@ -66,6 +66,7 @@ export const useUserRoleDirectory = (n: number | null, roles: string[]) => {
         setEndOfCollection(n !== null ? docs.docs.length < n : true)
       })
       .catch((err) => {
+        console.log(err)
         setError(err.code)
       })
   }, [])
