@@ -5,6 +5,7 @@ import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
+import { TEST_ARTICLE } from '../../configs/testArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -57,7 +58,7 @@ export const IndividualBlogPost = () => {
       p='24px'
     >
       <Header />
-      <Article size={'large'} />
+      <Article size={'large'} article={TEST_ARTICLE} />
       <Stack
         direction='column'
         alignItems='flex-start'

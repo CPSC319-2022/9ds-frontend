@@ -1,7 +1,7 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import { useState, FormEvent } from 'react'
-import { article } from '../../hooks/firebase/useArticle'
+import { Article } from '../../hooks/firebase/useArticle'
 import { LabeledTextField } from '../LabeledTextField'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -30,7 +30,7 @@ interface ArticleFormProps {
     published: boolean,
     articleId?: string,
   ) => void
-  article?: article
+  article?: Article
   articleId?: string
 }
 

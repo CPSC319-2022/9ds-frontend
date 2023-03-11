@@ -55,7 +55,7 @@ export const articlePreviewTranslator = (
   return articlesData
 }
 
-export interface article {
+export interface Article {
   title: string
   content: string
   header_image: string
@@ -69,7 +69,7 @@ export interface article {
 export const useArticleRecents = (n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [loadingNext, setLoadingNext] = useState(true)
+  const [loadingNext, setLoadingNext] = useState(false)
   const [articles, setArticles] = useState<ArticlePreview[]>([])
 
   const q = query(
@@ -78,16 +78,17 @@ export const useArticleRecents = (n: number) => {
     orderBy('publish_time', 'desc'),
   )
 
-  let lastArticle: QueryDocumentSnapshot<DocumentData>
-  let endOfCollection = false
+  const [lastArticle, setLastArticle] =
+    useState<QueryDocumentSnapshot<DocumentData>>()
+  const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {
     getDocs(query(q, limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
         setLoading(false)
         setArticles(articlePreviewTranslator(docs))
-        lastArticle = docs.docs[docs.docs.length - 1]
-        endOfCollection = docs.docs.length < n
+        setLastArticle(docs.docs[docs.docs.length - 1])
+        setEndOfCollection(docs.docs.length < n)
       })
       .catch((err: FirestoreError) => {
         setError(err.code)
@@ -100,8 +101,8 @@ export const useArticleRecents = (n: number) => {
       .then((docs: QuerySnapshot<DocumentData>) => {
         setLoadingNext(false)
         setArticles(articles.concat(articlePreviewTranslator(docs)))
-        lastArticle = docs.docs[docs.docs.length - 1]
-        endOfCollection = docs.docs.length < n
+        setLastArticle(docs.docs[docs.docs.length - 1])
+        setEndOfCollection(docs.docs.length < n)
       })
       .catch((err: FirestoreError) => {
         setError(err.code)
@@ -114,7 +115,7 @@ export const useArticleRecents = (n: number) => {
 export const useArticleRead = (articleID: string) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [article, setArticle] = useState<article>()
+  const [article, setArticle] = useState<Article>()
 
   useEffect(() => {
     getDoc(doc(db, 'article', articleID))
@@ -124,7 +125,7 @@ export const useArticleRead = (articleID: string) => {
           setError('not-found')
         } else {
           setLoading(false)
-          setArticle(data as article)
+          setArticle(data as Article)
         }
       })
       .catch((err: FirestoreError) => {
@@ -139,12 +140,16 @@ export const useArticleComments = (articleID: string, n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [comments, setComments] = useState<comment[]>([])
-  const [loadingNext, setLoadingNext] = useState(true)
+  const [loadingNext, setLoadingNext] = useState(false)
 
-  const q = query(collection(db, `article/${articleID}/comments`), orderBy("post_time", "desc"))
+  const q = query(
+    collection(db, `article/${articleID}/comments`),
+    orderBy('post_time', 'desc'),
+  )
 
-  let lastComment: QueryDocumentSnapshot<DocumentData>
-  let endOfCollection = false
+  const [lastComment, setLastComment] =
+    useState<QueryDocumentSnapshot<DocumentData>>()
+  const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {
     getDocs(query(q, limit(n)))
@@ -155,8 +160,8 @@ export const useArticleComments = (articleID: string, n: number) => {
         })
         setLoading(false)
         setComments(commentsData as comment[])
-        lastComment = docs.docs[docs.docs.length - 1]
-        endOfCollection = docs.docs.length < n
+        setLastComment(docs.docs[docs.docs.length - 1])
+        setEndOfCollection(docs.docs.length < n)
       })
       .catch((err: FirestoreError) => {
         setError(err.code)
@@ -173,8 +178,8 @@ export const useArticleComments = (articleID: string, n: number) => {
         })
         setLoadingNext(false)
         setComments(comments.concat(commentsData as comment[]))
-        lastComment = docs.docs[docs.docs.length - 1]
-        endOfCollection = docs.docs.length < n
+        setLastComment(docs.docs[docs.docs.length - 1])
+        setEndOfCollection(docs.docs.length < n)
       })
       .catch((err: FirestoreError) => {
         setError(err.code)

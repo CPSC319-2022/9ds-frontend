@@ -86,6 +86,7 @@ const paletteObject = {
     transparent: alpha('#FFFFFF', 0.3),
     light: '#F8F8FA',
   },
+
 }
 
 export const theme = createTheme({
