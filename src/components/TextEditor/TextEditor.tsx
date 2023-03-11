@@ -11,9 +11,10 @@ import { FC, useState } from 'react'
 
 interface TextEditorProps {
   editorState?: EditorState
+  error?: boolean
 }
 
-export const TextEditor: FC<TextEditorProps> = ({ editorState }) => {
+export const TextEditor: FC<TextEditorProps> = ({ editorState, error }) => {
   const [editState, setEditState] = useState(() =>
     editorState === undefined ? EditorState.createEmpty() : editorState,
   )
@@ -32,34 +33,34 @@ export const TextEditor: FC<TextEditorProps> = ({ editorState }) => {
   }
   return (
     <>
-    <Stack
-      direction='row'
-      justifyContent={'space-between'}
-      sx={{ padding: '50px 50px' }}
-    >
-      <Typography variant='title' sx={{ color: 'black.main' }}>
-        Body
-      </Typography>
-      <Box
-        borderRadius='4px'
-        width={'80%'}
-        height={'182px'}
-        sx={{
-          padding: '16.5px 14px',
-          wordBreak: 'break-all',
-          overflowY: 'scroll',
-          borderColor: 'white.textBorder',
-          border: 1,
-        }}
+      <Stack
+        direction='row'
+        justifyContent={'space-between'}
+        sx={{ padding: '50px 50px' }}
       >
-        <Editor
-          editorStyle={{ font: 'Roboto', maxLines: 7 }}
-          toolbar={toolbarConfig}
-          editorState={editState}
-          onEditorStateChange={setEditState}
-        />
-      </Box>
-    </Stack>
+        <Typography variant='title' sx={{ color: 'black.main' }}>
+          Body
+        </Typography>
+        <Box
+          borderRadius='4px'
+          width={'80%'}
+          height={'182px'}
+          sx={{
+            padding: '16.5px 14px',
+            wordBreak: 'break-all',
+            overflowY: 'scroll',
+            border: 1,
+            borderColor: error ? 'error.main' : 'grey.500',
+          }}
+        >
+          <Editor
+            editorStyle={{ font: 'Roboto', maxLines: 7 }}
+            toolbar={toolbarConfig}
+            editorState={editState}
+            onEditorStateChange={setEditState}
+          />
+        </Box>
+      </Stack>
     </>
   )
 }

@@ -18,7 +18,6 @@ declare module '@mui/material/styles/createPalette' {
     '25%': string
     light: string
     transparent: string
-    textBorder: string
   }
 }
 
@@ -79,8 +78,8 @@ const paletteObject = {
     '25%': '#FFFFFF',
     transparent: alpha('#FFFFFF', 0.3),
     light: '#F8F8FA',
-    textBorder: "#000000de"
   },
+
 }
 
 export const theme = createTheme({
