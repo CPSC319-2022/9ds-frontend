@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { AppWrapper } from '../../components/AppWrapper'
 import { RecentPosts } from './RecentPosts'
@@ -7,8 +7,11 @@ import {
   useArticleRecents,
 } from '../../hooks/firebase/useArticle'
 import { UISkeleton } from '../../components/UISkeleton'
+import { NotificationContext } from '../../context'
 
 export const Home: FC = () => {
+  const { dispatch } = useContext(NotificationContext)
+
   const [featuredArticle, setFeaturedArticle] = useState<
     ArticlePreview | undefined
   >()
@@ -16,9 +19,11 @@ export const Home: FC = () => {
     useArticleRecents(5)
 
   useEffect(() => {
-    // TODO: send error notification
     if (error) {
-      console.log(error)
+      dispatch({
+        notificationActionType: 'error',
+        message: `Error fetching recent artices: ${error}`,
+      })
     }
   }, [error])
 
