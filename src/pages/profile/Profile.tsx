@@ -6,6 +6,7 @@ import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import profile from '../../assets/profile.png'
 import { LabeledTextField } from '../../components/LabeledTextField'
+import { UserType } from '../../components/UserType'
 
 export const Profile: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -64,6 +65,9 @@ export const Profile: FC = () => {
               </Typography>
             }
           />
+        </Stack>
+        <Stack  maxWidth='390px' width='100%'>
+          <UserType type='contributor' />
         </Stack>
       </Stack>
       <Typography
