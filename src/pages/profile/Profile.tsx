@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Article } from '../../components/Article'
@@ -8,10 +8,23 @@ import { CircularProgress, Box } from '@mui/material'
 import { TEST_ARTICLE } from '../../configs/testArticle'
 import { Header } from '../../components/Header'
 import { Footer } from '../../components/Footer'
+import { NotificationContext } from '../../context'
 
 export const Profile: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {error, loading, queriedUser} = useUser();
+  const { dispatch } = useContext(NotificationContext)
+  
+  useEffect(() => {
+    if (error) {
+      dispatch({
+        notificationActionType: 'error',
+        message: `Error fetching profile information: ${error}`,
+      })
+    }
+  }, [error])
+
+  
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
