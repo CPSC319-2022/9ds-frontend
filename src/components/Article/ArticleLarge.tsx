@@ -4,6 +4,7 @@ import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
 import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
+import { convertFromRaw } from 'draft-js'
 
 export interface ArticleLargeProps {
   article: ArticlePreview
@@ -69,7 +70,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
                 overflow: 'hidden',
               }}
             >
-              {article.content}
+              {convertFromRaw(JSON.parse(article.content)).getPlainText()}
             </Typography>
           </Stack>
           <Avatar

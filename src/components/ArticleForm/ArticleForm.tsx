@@ -51,15 +51,18 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const article = !rest.article?.content ? '' : rest.article?.content
 
-  const editState = ArticleFormPurpose.UPDATE === purpose ? EditorState.createWithContent(convertFromRaw(JSON.parse(article))) : EditorState.createEmpty()
-  const [editorState, setEditorState] = useState(() => editState)
+//   const editState =
+//     ArticleFormPurpose.UPDATE === purpose
+//       ? EditorState.createWithContent(
+//           convertFromRaw(JSON.parse(rest.article?.content as string)),
+//         )
+//       : EditorState.createEmpty()
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
   const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
-
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLElement>, published: boolean) => {
@@ -114,7 +117,7 @@ export const ArticleForm = ({
             published,
           )
         }
-        navigate("/profile")
+        navigate('/profile')
       }
       e.preventDefault()
     },
@@ -126,9 +129,11 @@ export const ArticleForm = ({
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
+      if (purpose === ArticleFormPurpose.UPDATE) {
+        setEditorState(() => EditorState.createWithContent(convertFromRaw(JSON.parse(article.content))))
+      }
     }
-}, [])
-
+  }, [])
 
   return (
     <Container>
@@ -256,7 +261,11 @@ export const ArticleForm = ({
             helperText={titleHelperText}
             value={title}
           />
-          <TextEditor editorInfo={editorInfo} error={isBodyError} errorMsg={bodyHelperText}/>
+          <TextEditor
+            editorInfo={editorInfo}
+            error={isBodyError}
+            errorMsg={bodyHelperText}
+          />
         </Stack>
         <Button
           type='submit'

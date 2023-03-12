@@ -8,6 +8,7 @@ import { theme } from '../../theme/Theme'
 import { useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
 import { convertFromRaw, EditorState } from 'draft-js'
+import { Editor } from 'react-draft-wysiwyg'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -26,14 +27,16 @@ export const IndividualBlogPost = () => {
   const [comments, setComments] = useState<Array<CommentProps>>([
     { profilePic: sample, comment: 'blasdlklsadads' },
   ])
-  const encodedContent = article?.content
-  const articleContent =  EditorState.createWithContent(convertFromRaw(JSON.parse()))
+
+  const editState = EditorState.createWithContent(convertFromRaw(JSON.parse(article?.content as string)))
+  const [editorState, setEditorState] = useState(() => editState)
 
   useEffect(() => {
     if (!loading) {
       if (article !== undefined) {
         setTitle(article.title)
         setBody(article.content)
+        setEditorState(() => EditorState.createWithContent(convertFromRaw(JSON.parse(article.content))))
       }
     }
   }, [loading])
@@ -121,21 +124,22 @@ export const IndividualBlogPost = () => {
                 height='42px'
                 style={{ borderRadius: '50%' }}
               />
-              <Paper
+              {/* <Paper
                 style={{
                   borderBottomLeftRadius: 25,
                   borderTopRightRadius: 25,
                   padding: 15,
                   backgroundColor: theme.palette.black['50%'],
                 }}
-              >
+              > */}
+              <Editor editorState={editorState} readOnly/>
                 <TextField
                   multiline
                   variant='standard'
                   placeholder='Comment away...'
                   color='primary'
                 />
-              </Paper>
+              {/* </Paper> */}
             </Stack>
           </Stack>
         </>
