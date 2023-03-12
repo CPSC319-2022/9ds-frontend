@@ -7,6 +7,7 @@ import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
 import { useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
+import { convertFromRaw, EditorState } from 'draft-js'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -25,8 +26,8 @@ export const IndividualBlogPost = () => {
   const [comments, setComments] = useState<Array<CommentProps>>([
     { profilePic: sample, comment: 'blasdlklsadads' },
   ])
-
-  const articleContent =  EditorState.createWithContent(convertFromRaw(JSON.parse(article.content)))
+  const encodedContent = article?.content
+  const articleContent =  EditorState.createWithContent(convertFromRaw(JSON.parse()))
 
   useEffect(() => {
     if (!loading) {
