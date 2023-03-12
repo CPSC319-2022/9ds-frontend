@@ -26,6 +26,8 @@ export const IndividualBlogPost = () => {
     { profilePic: sample, comment: 'blasdlklsadads' },
   ])
 
+  const articleContent =  EditorState.createWithContent(convertFromRaw(JSON.parse(article.content)))
+
   useEffect(() => {
     if (!loading) {
       if (article !== undefined) {

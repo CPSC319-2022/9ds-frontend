@@ -1,8 +1,7 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { convertFromRaw, convertToRaw } from 'draft-js'
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
 import { useState, FormEvent, useCallback, useEffect } from 'react'
-import { EditorState } from 'react-draft-wysiwyg'
 import { useNavigate } from 'react-router-dom'
 import { Article } from '../../hooks/firebase/useArticle'
 import { LabeledTextField } from '../LabeledTextField'
@@ -55,78 +54,78 @@ export const ArticleForm = ({
   const article = !rest.article?.content ? '' : rest.article?.content
 
   const editState = ArticleFormPurpose.UPDATE === purpose ? EditorState.createWithContent(convertFromRaw(JSON.parse(article))) : EditorState.createEmpty()
-//   const [editorState, setEditorState] = useState(() => editState)
-//   const editorInfo: TextEditorInfo = { editorState, setEditorState }
-//   const [bodyHelperText, setBodyHelperText] = useState('')
+  const [editorState, setEditorState] = useState(() => editState)
+  const editorInfo: TextEditorInfo = { editorState, setEditorState }
+  const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const handleSubmit = useCallback(() => {} , [])
-//     (e: FormEvent<HTMLElement>, published: boolean) => {
-//       let isInvalid = false
-//       if (title.length === 0 || countWords(title) > 60) {
-//         isInvalid = true
-//         setIsTitleError(true)
-//         if (title.length === 0) {
-//           setTitleHelperText("Title can't be empty.")
-//         } else {
-//           setBodyHelperText('Title must be 60 words or less.')
-//         }
-//       } else {
-//         setIsTitleError(false)
-//         setTitleHelperText('')
-//       }
-//       const bodyText = editorState.getCurrentContent().getPlainText()
-//       if (bodyText.length === 0 || countWords(bodyText) > 250) {
-//         isInvalid = true
-//         setIsBodyError(true)
-//         if (bodyText.length === 0) {
-//           setBodyHelperText("Body can't be empty.")
-//         } else {
-//           setIsBodyError(false)
-//           setBodyHelperText('')
-//         }
-//       } else {
-//         setIsBodyError(false)
-//         setBodyHelperText('')
-//       }
-//       if (!isInvalid) {
-//         const encodedText = JSON.stringify(
-//           convertToRaw(editorState.getCurrentContent()),
-//         )
-//         if (rest.articleId !== undefined) {
-//           onSubmit(
-//             title,
-//             encodedText,
-//             customLink.length > 0
-//               ? customLink
-//               : pictureUrls[selectedPictureIndex],
-//             published,
-//             rest.articleId,
-//           )
-//         } else {
-//           onSubmit(
-//             title,
-//             encodedText,
-//             customLink.length > 0
-//               ? customLink
-//               : pictureUrls[selectedPictureIndex],
-//             published,
-//           )
-//         }
-//       }
-//       e.preventDefault()
-//     },
-//     [title, editorState, customLink],
-//   )
+
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLElement>, published: boolean) => {
+      let isInvalid = false
+      if (title.length === 0 || countWords(title) > 60) {
+        isInvalid = true
+        setIsTitleError(true)
+        if (title.length === 0) {
+          setTitleHelperText("Title can't be empty.")
+        } else {
+          setBodyHelperText('Title must be 60 words or less.')
+        }
+      } else {
+        setIsTitleError(false)
+        setTitleHelperText('')
+      }
+      const bodyText = editorState.getCurrentContent().getPlainText()
+      if (bodyText.length === 0 || countWords(bodyText) > 250) {
+        isInvalid = true
+        setIsBodyError(true)
+        if (bodyText.length === 0) {
+          setBodyHelperText("Body can't be empty.")
+        } else {
+          setIsBodyError(false)
+          setBodyHelperText('')
+        }
+      } else {
+        setIsBodyError(false)
+        setBodyHelperText('')
+      }
+      if (!isInvalid) {
+        const encodedText = JSON.stringify(
+          convertToRaw(editorState.getCurrentContent()),
+        )
+        if (rest.articleId !== undefined) {
+          onSubmit(
+            title,
+            encodedText,
+            customLink.length > 0
+              ? customLink
+              : pictureUrls[selectedPictureIndex],
+            published,
+            rest.articleId,
+          )
+        } else {
+          onSubmit(
+            title,
+            encodedText,
+            customLink.length > 0
+              ? customLink
+              : pictureUrls[selectedPictureIndex],
+            published,
+          )
+        }
+        navigate("/profile")
+      }
+      e.preventDefault()
+    },
+    [title, editorState, customLink],
+  )
 
   useEffect(() => {
     const { article } = rest
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
-    //   setEditorState(editorState)
     }
 }, [])
 
@@ -140,7 +139,7 @@ export const ArticleForm = ({
           flex: 1,
         }}
         onSubmit={(event) => {
-        //   handleSubmit(event, true)
+          handleSubmit(event, true)
         }}
       >
         <Stack
@@ -154,7 +153,7 @@ export const ArticleForm = ({
               variant='contained'
               style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
               onClick={(event) => {
-                // handleSubmit(event, false)
+                handleSubmit(event, false)
               }}
             >
               SAVE DRAFT
@@ -257,7 +256,7 @@ export const ArticleForm = ({
             helperText={titleHelperText}
             value={title}
           />
-          <TextEditor />
+          <TextEditor editorInfo={editorInfo} error={isBodyError} errorMsg={bodyHelperText}/>
         </Stack>
         <Button
           type='submit'
