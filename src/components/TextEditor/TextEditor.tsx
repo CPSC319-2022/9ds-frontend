@@ -51,7 +51,7 @@ export const TextEditor: FC<TextEditorProps> = ({
         </Typography>
         <Box
           borderRadius='4px'
-          width={'88%'}
+          width={'89%'}
           height={'182px'}
           sx={{
             padding: '16.5px 14px',
