@@ -19,6 +19,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   columnSpacing,
   labelWidth,
   text,
+  value,
 }: LabeledTextFieldProps) => {
   return (
     <Grid container columnSpacing={columnSpacing} alignSelf={'stretch'}>
@@ -27,6 +28,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
       </Grid>
       <Grid item xs={12 - labelWidth}>
         <TextField
+          value={value}
           fullWidth
           multiline={multiline}
           rows={rows}

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
+import { MemoryRouter as Router } from 'react-router-dom'
 
 describe('ArticleForm', () => {
   const onSubmitMock = jest.fn()
@@ -10,10 +11,12 @@ describe('ArticleForm', () => {
 
   it('renders title and body text field and custom link field', () => {
     render(
-      <ArticleForm
-        purpose={ArticleFormPurpose.UPDATE}
-        onSubmit={onSubmitMock}
-      />,
+      <Router>
+        <ArticleForm
+          purpose={ArticleFormPurpose.UPDATE}
+          onSubmit={onSubmitMock}
+        />
+      </Router>,
     )
 
     const allTextField = screen.getAllByRole('textbox')
@@ -23,10 +26,12 @@ describe('ArticleForm', () => {
 
   it('renders publish and save draft buttons', () => {
     render(
-      <ArticleForm
-        purpose={ArticleFormPurpose.UPDATE}
-        onSubmit={onSubmitMock}
-      />,
+      <Router>
+        <ArticleForm
+          purpose={ArticleFormPurpose.UPDATE}
+          onSubmit={onSubmitMock}
+        />
+      </Router>,
     )
 
     const createButton = screen.getByRole('button', { name: 'UPDATE' })
