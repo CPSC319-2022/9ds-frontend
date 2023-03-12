@@ -1,5 +1,5 @@
 import {addDoc, deleteDoc, doc, collection, updateDoc, serverTimestamp, Timestamp, FirestoreErrorCode} from "firebase/firestore";
-import {db, auth} from "../../index";
+import {db, auth} from "../../firebaseApp";
 import {useState} from "react";
 import {getUser} from "./useUser";
 

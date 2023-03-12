@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter as Router } from 'react-router-dom'
-import { Header } from '../../components'
+import { Header } from '../../components/Header'
 
 describe('Header Styling', () => {
   beforeAll(() => {

@@ -1,9 +1,11 @@
-import { Stack, TextField, TextFieldProps } from '@mui/material'
+import { Grid, TextField, TextFieldProps } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
-  onTextChange?: Dispatch<SetStateAction<string>>
   spacing?: number
+  onTextChange?: Dispatch<SetStateAction<string>>
+  labelWidth: number
+  columnSpacing?: number
   text: React.ReactNode
 }
 
@@ -15,36 +17,35 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   helperText,
   error,
   onTextChange,
-  spacing,
+  columnSpacing,
+  labelWidth,
   text,
 }: LabeledTextFieldProps) => {
   return (
-    <Stack
-      direction={'row'}
-      alignItems={'flex-start'}
-      justifyContent={'space-between'}
-      alignSelf={'stretch'}
-      spacing={spacing}
-    >
-      {text}
-      <TextField
-        multiline={multiline}
-        rows={rows}
-        variant={variant}
-        placeholder={placeholder}
-        error={error}
-        helperText={helperText}
-        onChange={(event) => {
-          if(onTextChange) {
-            onTextChange(event.target.value)
-          }
-          
-        }}
-      />
-    </Stack>
+    <Grid container columnSpacing={columnSpacing} alignSelf={'stretch'}>
+      <Grid item xs={labelWidth}>
+        {text}
+      </Grid>
+      <Grid item xs={12 - labelWidth}>
+        <TextField
+          fullWidth
+          multiline={multiline}
+          rows={rows}
+          variant={variant}
+          placeholder={placeholder}
+          error={error}
+          helperText={helperText}
+          onChange={(event) => {
+            if(onTextChange) {
+              onTextChange(event.target.value)
+            }
+          }}
+        />
+      </Grid>
+    </Grid>
   )
 }
 
 LabeledTextField.defaultProps = {
-  spacing: 0,
-};
+  columnSpacing: 0,
+}

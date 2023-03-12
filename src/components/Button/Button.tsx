@@ -12,6 +12,8 @@ type ButtonProps = {
   startIcon?: ReactNode
   onClick?: MouseEventHandler<HTMLButtonElement> | undefined
   darkText?: boolean
+  type?: undefined | 'submit'
+  disabled?: boolean
 }
 
 export const Button: FC<ButtonProps> = ({
@@ -23,6 +25,8 @@ export const Button: FC<ButtonProps> = ({
   href,
   startIcon,
   onClick,
+  type,
+  disabled,
 }) => {
   const textColor = dark && variant === 'outlined' ? 'black.main' : 'white.main'
   const bgColor = dark && variant === 'outlined' ? undefined : 'black.main'
@@ -32,8 +36,10 @@ export const Button: FC<ButtonProps> = ({
     <MuiButton
       variant={variant ?? 'contained'}
       size={size ?? 'medium'}
+      type={type}
       startIcon={startIcon}
       onClick={onClick}
+      disabled={disabled}
       href={href}
       sx={{
         backgroundColor: bgColor,

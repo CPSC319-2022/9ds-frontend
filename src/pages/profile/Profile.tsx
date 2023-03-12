@@ -5,7 +5,9 @@ import { Article } from '../../components/Article'
 import { LabeledTextField } from '../../components/LabeledTextField'
 import { useUser } from '../../hooks/firebase/useUser'
 import { CircularProgress, Box } from '@mui/material'
-import { Footer, Header } from '../../components'
+import { TEST_ARTICLE } from '../../configs/testArticle'
+import { Header } from '../../components/Header'
+import { Footer } from '../../components/Footer'
 
 export const Profile: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,11 +15,11 @@ export const Profile: FC = () => {
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
-      {loading ? (
+      {/* {loading ? (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
             <CircularProgress color="secondary" />
           </Box>
-        ) : (
+        ) : ( */}
       <><Typography variant='h4' color='black.main' sx={{ paddingLeft: '32px' }}>
             Profile
           </Typography><Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
@@ -26,28 +28,38 @@ export const Profile: FC = () => {
                 width='140px'
                 height='140px'
                 style={{ borderRadius: '50%' }} />
-              <Stack direction='column' spacing={32}>
+              <Stack direction='column' spacing={32} width={'auto'}>
                 <LabeledTextField
                   variant='standard'
                   placeholder={queriedUser.role}
                   label='Account type'
                   multiline={false}
-                  spacing={32}
-                  text={<Typography variant='title' sx={{ color: 'black' }}>Account Type</Typography>} />
+                  labelWidth={5}
+                  text={<Typography variant='title' sx={{ color: 'black' }}>
+                    Account Type
+                  </Typography>} />
                 <LabeledTextField
                   variant='standard'
                   placeholder={queriedUser.username}
                   label='Name'
                   multiline={false}
-                  spacing={32}
-                  text={<Typography variant='title' sx={{ color: 'black' }}>Name</Typography>} />
-                <LabeledTextField
-                  variant='standard'
-                  placeholder='emma@watson.com'
-                  label='Email'
-                  multiline={false}
-                  spacing={32}
-                  text={<Typography variant='title' sx={{ color: 'black' }}>Email</Typography>} />
+                  labelWidth={5}
+                  text={<Typography variant='title' sx={{ color: 'black' }}>
+                    Name
+                  </Typography>} />
+                {/* <LabeledTextField
+      variant='standard'
+      onTextChange={setProfileInfo}
+      placeholder='emma@watson.com'
+      label='Email'
+      multiline={false}
+      labelWidth={4}
+      text={
+        <Typography variant='title' sx={{ color: 'black' }}>
+          Email
+        </Typography>
+      }
+    /> */}
               </Stack>
             </Stack><Typography
               variant='h5'
@@ -58,19 +70,18 @@ export const Profile: FC = () => {
               Posts
             </Typography><Stack direction='row' spacing={16} justifyContent='flex-start'>
               {[...Array(4).keys()].map((key) => (
-                <Article key={key} size='small' />
+                <Article key={key} size='small' article={TEST_ARTICLE} />
               ))}
             </Stack><Typography variant='h5' color='black.main' sx={{ paddingLeft: '32px' }}>
               Drafts
             </Typography><Stack direction='row' spacing={16} justifyContent='flex-start'>
               {[...Array(4).keys()].map((key) => (
-                <Article key={key} size='small' />
+                <Article key={key} article={TEST_ARTICLE} />
               ))}
             </Stack></>
-       )}
-      <Footer/>
+        {/* )} */}
+      <Footer />
     </Stack>
-    
 
   )
 }

@@ -1,40 +1,55 @@
-import React, { FC } from 'react'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { Article, AppWrapper, Button, UserType } from '../../components'
+import React, { FC, useContext, useEffect, useState } from 'react'
+import { Article } from '../../components/Article'
+import { AppWrapper } from '../../components/AppWrapper'
+import { RecentPosts } from './RecentPosts'
+import {
+  ArticlePreview,
+  useArticleRecents,
+} from '../../hooks/firebase/useArticle'
+import { UISkeleton } from '../../components/UISkeleton'
+import { NotificationContext } from '../../context'
 
 export const Home: FC = () => {
+  const { dispatch } = useContext(NotificationContext)
+
+  const [featuredArticle, setFeaturedArticle] = useState<
+    ArticlePreview | undefined
+  >()
+  const { articles, getNext, loading, loadingNext, endOfCollection, error } =
+    useArticleRecents(5)
+
+  useEffect(() => {
+    if (error) {
+      dispatch({
+        notificationActionType: 'error',
+        message: `Error fetching recent artices: ${error}`,
+      })
+    }
+  }, [error])
+
+  useEffect(() => {
+    if (!featuredArticle && articles.length) {
+      const randArticle = articles[Math.floor(Math.random() * articles.length)]
+      setFeaturedArticle(randArticle)
+    }
+  }, [articles])
+
   return (
     <AppWrapper>
-      <Article size='large' />
-      <Stack direction='column' spacing={32} width='100%' alignItems='center'>
-        <Typography
-          variant='h4'
-          color='black.main'
-          sx={{ alignSelf: 'flex-start' }}
-        >
-          Recent posts
-        </Typography>
-        <Stack direction='row' spacing={16}>
-          {[...Array(4).keys()].map((key) => (
-            <Article key={key} size='small' />
-          ))}
-        </Stack>
-        <Button dark text='Load more...' size='large' />
-      </Stack>
-      <Stack direction='column' spacing={32} width='100%' alignItems='center'>
-        <Typography
-          variant='h4'
-          color='black.main'
-          sx={{ alignSelf: 'flex-start' }}
-        >
-          Unlock more by signing up
-        </Typography>
-        <Stack direction='row' spacing={32} maxWidth='780px' width='100%'>
-          <UserType type='reader' />
-          <UserType type='contributor' />
-        </Stack>
-      </Stack>
+      {featuredArticle ? (
+        <Article size='large' article={featuredArticle} />
+      ) : (
+        <UISkeleton elemWidth='100%' elemHeight='100%' />
+      )}
+      <RecentPosts
+        articles={articles.filter(
+          (article) => article.articleId !== featuredArticle?.articleId,
+        )}
+        getNext={getNext}
+        loading={loading}
+        loadingNext={loadingNext}
+        endOfCollection={endOfCollection}
+      />
     </AppWrapper>
   )
 }
