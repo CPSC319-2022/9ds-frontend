@@ -1,8 +1,9 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { convertToRaw } from 'draft-js'
-import { useState, FormEvent } from 'react'
+import { convertFromRaw, convertToRaw } from 'draft-js'
+import { useState, FormEvent, useCallback, useEffect } from 'react'
 import { EditorState } from 'react-draft-wysiwyg'
+import { useNavigate } from 'react-router-dom'
 import { Article } from '../../hooks/firebase/useArticle'
 import { LabeledTextField } from '../LabeledTextField'
 import { TextEditor, TextEditorInfo } from '../TextEditor'
@@ -42,6 +43,7 @@ export const ArticleForm = ({
   onSubmit,
   ...rest
 }: ArticleFormProps) => {
+  const navigate = useNavigate()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
 
@@ -50,65 +52,77 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const [editorState, setEditorState] = ArticleFormPurpose.UPDATE ? useState(() => EditorState.createEmpty()) : useState(() => EditorState.createEmpty())
+  const article = !rest.article?.content ? "" : rest.article?.content
+  const [editorState, setEditorState] = ArticleFormPurpose.UPDATE ? useState(() => convertFromRaw(JSON.parse(article))) : useState(() => EditorState.createEmpty())
   const editorInfo: TextEditorInfo = {editorState, setEditorState}
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
 
-  const handleSubmit = (e: FormEvent<HTMLElement>, published: boolean) => {
-    let isInvalid = false
-    if (title.length === 0 || countWords(title) > 60) {
-      isInvalid = true
-      setIsTitleError(true)
-      if (title.length === 0) {
-        setTitleHelperText("Title can't be empty.")
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLElement>, published: boolean) => {
+      let isInvalid = false
+      if (title.length === 0 || countWords(title) > 60) {
+        isInvalid = true
+        setIsTitleError(true)
+        if (title.length === 0) {
+          setTitleHelperText("Title can't be empty.")
+        } else {
+          setBodyHelperText('Title must be 60 words or less.')
+        }
       } else {
-        setBodyHelperText('Title must be 60 words or less.')
+        setIsTitleError(false)
+        setTitleHelperText('')
       }
-    } else {
-      setIsTitleError(false)
-      setTitleHelperText('')
-    }
     const bodyText = editorState.getCurrentContent().getPlainText()
     if (bodyText.length === 0 || bodyText.length > 250) {
-      isInvalid = true
-      setIsBodyError(true)
-      if (bodyText.length === 0) {
+        isInvalid = true
+        setIsBodyError(true)
+        if (bodyText.length === 0) {
         setBodyHelperText("Body can't be empty.")
-      } else {
-        setBodyHelperText('Body must be 250 words or less.')
-      }
+        } else {
+        setIsBodyError(false)
+        setBodyHelperText('')
+        }
     } else {
-      setIsBodyError(false)
-      setBodyHelperText('')
+        setIsBodyError(false)
+        setBodyHelperText('')
     }
     if (!isInvalid) {
-      const encodedText = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
-      if (rest.articleId !== undefined) {
-        onSubmit(
-          title,
-          encodedText,
-          customLink.length > 0
-            ? customLink
-            : pictureUrls[selectedPictureIndex],
-          published,
-          rest.articleId,
-        )
-      } else {
-        onSubmit(
-          title,
-          encodedText,
-          customLink.length > 0
-            ? customLink
-            : pictureUrls[selectedPictureIndex],
-          published,
-        )
+        const encodedText = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+        if (rest.articleId !== undefined) {
+          onSubmit(
+            title,
+            encodedText,
+            customLink.length > 0
+              ? customLink
+              : pictureUrls[selectedPictureIndex],
+            published,
+            rest.articleId,
+          )
+        } else {
+          onSubmit(
+            title,
+            encodedText,
+            customLink.length > 0
+              ? customLink
+              : pictureUrls[selectedPictureIndex],
+            published,
+          )
+        }
       }
-    }
+      e.preventDefault()
+    },
+    [title, editorState, customLink],
+  )
 
-    e.preventDefault()
-  }
+  useEffect(() => {
+    const { article } = rest
+    if (article !== undefined) {
+      setTitle(article.title)
+      setCustomLink(article.header_image)
+    }
+  }, [])
 
   return (
     <Container>
@@ -219,6 +233,7 @@ export const ArticleForm = ({
             }
             labelWidth={1}
             multiline={false}
+            value={customLink}
           />
           <LabeledTextField
             variant='outlined'
@@ -233,9 +248,7 @@ export const ArticleForm = ({
             multiline={false}
             error={isTitleError}
             helperText={titleHelperText}
-            value={
-              purpose === ArticleFormPurpose.UPDATE ? rest.article?.title : null
-            }
+            value={title}
           />
           <TextEditor editorInfo={editorInfo} error={isBodyError} errorMsg={bodyHelperText}/>
         </Stack>

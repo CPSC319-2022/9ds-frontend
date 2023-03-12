@@ -5,6 +5,8 @@ import { EmailVerification } from '../../pages/sendemail/EmailVerification'
 import { ConfirmPassword } from '../../pages/confirmpassword/ConfirmPasswordReset'
 import { Login } from '../../pages/login/Login'
 import { Profile } from '../../pages/profile/Profile'
+import { UpdateArticle } from '../../pages/updatearticle'
+import { IndividualBlogPost } from '../../pages/individualblogpost'
 
 export interface RouteConfig {
   path: string
@@ -28,14 +30,23 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   },
   resendEmail: {
     path: '/reset/email',
-    component: <EmailVerification/>,
+    component: <EmailVerification />,
   },
   resetPassword: {
     path: '/reset/password',
-    component: <ConfirmPassword/>,
+    component: <ConfirmPassword />,
   },
   profile: {
     path: '/profile',
     component: <Profile />,
+  },
+  edit: {
+    path: '/update/:articleId',
+    component: <UpdateArticle />,
+    isProtected: false,
+  },
+  individualBlogPost: {
+    path: '/blog/:articleId',
+    component: <IndividualBlogPost />,
   },
 }
