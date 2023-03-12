@@ -37,7 +37,7 @@ export const UpdateArticle = () => {
             published: boolean,
             articleId?: string,
           ) => {
-            if (articleId !== undefined) {
+            if (articleId) {
               editArticle(articleId, title, body, imagelink, published)
             } else {
               throw Error('Error editing article. Please try again later!')

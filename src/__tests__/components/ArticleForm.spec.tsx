@@ -13,6 +13,38 @@ describe('ArticleForm', () => {
     render(
       <Router>
         <ArticleForm
+          purpose={ArticleFormPurpose.CREATE}
+          onSubmit={onSubmitMock}
+        />
+      </Router>,
+    )
+
+    const allTextField = screen.getAllByRole('textbox')
+
+    expect(allTextField.length).toBe(3)
+  })
+
+  it('renders publish and save draft buttons', () => {
+    render(
+      <Router>
+        <ArticleForm
+          purpose={ArticleFormPurpose.CREATE}
+          onSubmit={onSubmitMock}
+        />
+      </Router>,
+    )
+
+    const publishButton = screen.getByRole('button', { name: 'CREATE' })
+    expect(publishButton).toBeInTheDocument()
+
+    const saveDraftButton = screen.getByRole('button', { name: 'SAVE DRAFT' })
+    expect(saveDraftButton).toBeInTheDocument()
+  })
+
+  it('renders title and body text field and custom link field', () => {
+    render(
+      <Router>
+        <ArticleForm
           purpose={ArticleFormPurpose.UPDATE}
           onSubmit={onSubmitMock}
         />

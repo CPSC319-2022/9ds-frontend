@@ -78,7 +78,6 @@ export const ArticleForm = ({
           setBodyHelperText('Body must be 250 words or less.')
         }
       } else {
-        console.log(countWords(body))
         setIsBodyError(false)
         setBodyHelperText('')
       }
@@ -113,7 +112,7 @@ export const ArticleForm = ({
 
   useEffect(() => {
     const { article } = rest
-    console.log(article)
+
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
