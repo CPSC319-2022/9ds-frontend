@@ -1,8 +1,11 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
+import { convertToRaw } from 'draft-js'
 import { useState, FormEvent } from 'react'
+import { EditorState } from 'react-draft-wysiwyg'
 import { Article } from '../../hooks/firebase/useArticle'
 import { LabeledTextField } from '../LabeledTextField'
+import { TextEditor, TextEditorInfo } from '../TextEditor'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -47,7 +50,8 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const [body, setBody] = useState('')
+  const [editorState, setEditorState] = ArticleFormPurpose.UPDATE ? useState(() => EditorState.createEmpty()) : useState(() => EditorState.createEmpty())
+  const editorInfo: TextEditorInfo = {editorState, setEditorState}
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
@@ -66,24 +70,25 @@ export const ArticleForm = ({
       setIsTitleError(false)
       setTitleHelperText('')
     }
-    if (body.length === 0 || countWords(body) > 250) {
+    const bodyText = editorState.getCurrentContent().getPlainText()
+    if (bodyText.length === 0 || bodyText.length > 250) {
       isInvalid = true
       setIsBodyError(true)
-      if (body.length === 0) {
+      if (bodyText.length === 0) {
         setBodyHelperText("Body can't be empty.")
       } else {
         setBodyHelperText('Body must be 250 words or less.')
       }
     } else {
-      console.log(countWords(body))
       setIsBodyError(false)
       setBodyHelperText('')
     }
     if (!isInvalid) {
+      const encodedText = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
       if (rest.articleId !== undefined) {
         onSubmit(
           title,
-          body,
+          encodedText,
           customLink.length > 0
             ? customLink
             : pictureUrls[selectedPictureIndex],
@@ -93,7 +98,7 @@ export const ArticleForm = ({
       } else {
         onSubmit(
           title,
-          body,
+          encodedText,
           customLink.length > 0
             ? customLink
             : pictureUrls[selectedPictureIndex],
@@ -232,21 +237,7 @@ export const ArticleForm = ({
               purpose === ArticleFormPurpose.UPDATE ? rest.article?.title : null
             }
           />
-          <LabeledTextField
-            variant='outlined'
-            onTextChange={setBody}
-            placeholder='250 words or less'
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                Body
-              </Typography>
-            }
-            labelWidth={1}
-            multiline={true}
-            rows={7}
-            error={isBodyError}
-            helperText={bodyHelperText}
-          />
+          <TextEditor editorInfo={editorInfo} error={isBodyError} errorMsg={bodyHelperText}/>
         </Stack>
         <Button
           type='submit'
