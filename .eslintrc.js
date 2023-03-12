@@ -12,6 +12,8 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
+    "plugin:security/recommended"
+      
   ],
   overrides: [],
   parser: '@typescript-eslint/parser',
@@ -21,6 +23,21 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
+    "@typescript-eslint/ban-types": ["error",
+    {
+        "types": {
+            "String": false,
+            "Boolean": false,
+            "Number": false,
+            "Symbol": false,
+            "{}": false,
+            "Object": false,
+            "object": false,
+            "Function": false,
+        },
+        "extendDefaults": true
+        }
+    ],
     // suppress errors for missing 'import React' in files
     'react/react-in-jsx-scope': 'off',
     // allow jsx syntax in js/ts files

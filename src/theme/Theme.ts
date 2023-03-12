@@ -77,8 +77,9 @@ const paletteObject = {
     '30%': '#FFFFFF',
     '25%': '#FFFFFF',
     transparent: alpha('#FFFFFF', 0.3),
-    light: '#F8F8FA'
+    light: '#F8F8FA',
   },
+
 }
 
 export const theme = createTheme({
@@ -143,7 +144,7 @@ export const theme = createTheme({
     title: {
       fontFamily: 'Roboto',
       fontWeight: 500,
-      fontSize: '16px',
+      fontSize: '20px',
       lineHeight: '120%',
       letterSpacing: 0,
     },

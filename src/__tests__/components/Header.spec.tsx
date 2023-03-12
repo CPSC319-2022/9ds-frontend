@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import React from 'react'
 import { MemoryRouter as Router } from 'react-router-dom'
 import { Header } from '../../components/Header'
 
@@ -8,7 +7,7 @@ describe('Header Styling', () => {
     render(
       <Router>
         <Header />
-      </Router>
+      </Router>,
     )
     jest.setTimeout(15000)
   })
@@ -23,7 +22,7 @@ describe('Header Styling', () => {
     const homeHeading = screen.getByText('HOME')
     expect(homeHeading).toBeInTheDocument()
     expect(homeHeading).toHaveClass(
-        'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
+      'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
     const blogHeading = screen.getByText('BLOG')

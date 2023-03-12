@@ -5,16 +5,16 @@ import {
     where,
     orderBy,
     limit,
-    onSnapshot,
     updateDoc,
     getDoc,
+    getDocs,
     QuerySnapshot,
     DocumentData,
-    FirestoreErrorCode
+    FirestoreErrorCode, FirestoreError, QueryDocumentSnapshot, startAfter
 } from "firebase/firestore";
-import {db, auth} from '../../index'
+import {db, auth} from '../../firebaseApp'
 import {useState, useEffect} from "react";
-import {articlePreview} from "./useArticle";
+import {ArticlePreview, articlePreviewTranslator} from "./useArticle";
 
 export interface UserData {
     role: string,
@@ -23,112 +23,143 @@ export interface UserData {
     uid: string
 }
 
-export const useUserDirectory = (n: number) => {
-    const [error, setError] = useState<FirestoreErrorCode>();
-    const [loading, setLoading] = useState(true);
-    const [users, setUsers] = useState<DocumentData[]>();
-
-    useEffect( () => {
-        const q = query(collection(db, "users"), where("contributor", "==", true), orderBy("username"), limit(n))
-
-        const unsubscribe = onSnapshot(q,
-            (docs: QuerySnapshot<DocumentData>) => {
-                const usersData: UserData[] = []
-                docs.forEach(doc => {
-                    usersData.push({
-                        role: doc.data().role,
-                        profile_image: doc.data().profile_image,
-                        username: doc.data().username,
-                        uid: doc.id
-                    })
-                })
-                setLoading(false);
-                setUsers(usersData);
-            }, (err) => {
-                setError(err.code)
-            })
-
-        return () => unsubscribe()
+export const userTranslator = (docs: QuerySnapshot<DocumentData>): UserData[] => {
+    const userData: UserData[] = []
+    docs.forEach((doc) => {
+        userData.push({
+            role: doc.data().role,
+            profile_image: doc.data().profile_image,
+            username: doc.data().username,
+            uid: doc.id
+        })
     })
 
-    return {error, loading, users};
+    return userData;
+}
+
+export const useUserRoleDirectory = (n: number | null, roles: string[]) => {
+    const [error, setError] = useState<FirestoreErrorCode>();
+    const [loading, setLoading] = useState(true);
+    const [loadingNext, setLoadingNext] = useState(false)
+    const [users, setUsers] = useState<DocumentData[]>([]);
+    const q = query(collection(db, "users"), where("role", "in", roles), orderBy("username"))
+
+    const [lastUser, setLastUser] = useState<QueryDocumentSnapshot<DocumentData>>();
+    const [endOfCollection, setEndOfCollection] = useState(false);
+
+    useEffect( () => {
+        getDocs(n !== null? query(q, limit(n)): q).then(
+            (docs: QuerySnapshot<DocumentData>) => {
+                setLoading(false);
+                setUsers(userTranslator(docs));
+                setLastUser(docs.docs[docs.docs.length - 1])
+                setEndOfCollection(n !== null? docs.docs.length < n: true)
+            }).catch((err) => {
+            setError(err.code)
+        })
+    },[])
+
+    const getNext = (n: number) => {
+        setLoadingNext(true)
+        getDocs(query(q, startAfter(lastUser), limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                setLoadingNext(false)
+                setUsers(users.concat(userTranslator(docs)))
+                setLastUser(docs.docs[docs.docs.length - 1])
+                setEndOfCollection(docs.docs.length < n)
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
+    }
+
+    return { getNext, error, loading, loadingNext, users, endOfCollection }
 }
 
 export const useUserArticles = (uid: string, n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
-    const [articles, setArticles] = useState<DocumentData[]>();
+    const [loadingNext, setLoadingNext] = useState(false)
+    const [articles, setArticles] = useState<ArticlePreview[]>([]);
+
+    const q = query(collection(db, "articles"), where("published", "==", true),
+        where("author_uid", "==", uid), orderBy("publish_time"))
+
+    const [lastArticle, setLastArticle] = useState<QueryDocumentSnapshot<DocumentData>>()
+    const [endOfCollection, setEndOfCollection] = useState(false);
 
     useEffect( () => {
-        const q = query(collection(db, "articles"), where("published", "==", true),
-            where("author_uid", "==", uid), orderBy("post_time"), limit(n))
-
-        const unsubscribe = onSnapshot(q,
-            (docs: QuerySnapshot<DocumentData>) => {
-                const articlesData: articlePreview[] = []
-                docs.forEach(doc => {
-                    articlesData.push({
-                        title: doc.data().title,
-                        content: doc.data().content,
-                        header_image: doc.data().header_image,
-                        author_image: doc.data().author_image,
-                        author_username: doc.data().author_username,
-                        publish_time: doc.data().publish_time,
-                        articleId: doc.id
-                    })
-                })
-                setLoading(false),
-                    setArticles(articlesData);
-            }, (err) => {
-                setError(err.code)
-            })
-
-        return () => unsubscribe()
+        getDocs(query(q, limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                setLoading(false);
+                setArticles(articlePreviewTranslator(docs))
+                setLastArticle(docs.docs[docs.docs.length - 1])
+                setEndOfCollection(docs.docs.length < n)
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
     },[uid])
 
-    return {error, loading, articles};
+    const getNext = (n: number) => {
+        setLoadingNext(true)
+        getDocs(query(q, startAfter(lastArticle), limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                setLoadingNext(false)
+                setArticles(articles.concat(articlePreviewTranslator(docs)))
+                setLastArticle(docs.docs[docs.docs.length - 1])
+                setEndOfCollection(docs.docs.length < n)
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
+    }
+
+    return { getNext, error, loading, loadingNext, articles, endOfCollection }
 }
 
 export const useUserDrafts = (n: number) => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
-    const [articles, setArticles] = useState<DocumentData[]>();
+    const [loadingNext, setLoadingNext] = useState(false)
+    const [articles, setArticles] = useState<ArticlePreview[]>([]);
+
+    const q = query(collection(db, "articles"), where("published", "==", false),
+        where("author_uid", "==", auth.currentUser), orderBy("edit_time"));
+
+    const [lastArticle, setLastArticle] = useState<QueryDocumentSnapshot<DocumentData>>()
+    const [endOfCollection, setEndOfCollection] = useState(false);
 
     useEffect( () => {
-        const q = query(collection(db, "articles"), where("published", "==", false),
-            where("author_uid", "==", auth.currentUser), orderBy("post_time"), limit(n))
-
-        const unsubscribe = onSnapshot(q,
-            (docs: QuerySnapshot<DocumentData>) => {
-                const articlesData: articlePreview[] = []
-                docs.forEach(doc => {
-                    articlesData.push({
-                        title: doc.data().title,
-                        content: doc.data().content,
-                        header_image: doc.data().header_image,
-                        author_image: doc.data().author_image,
-                        author_username: doc.data().author_username,
-                        publish_time: doc.data().edit_time,
-                        articleId: doc.id
-                    })
-                })
-                setLoading(false),
-                    setArticles(articlesData);
-            }, (err) => {
-                setError(err.code)
-            })
-
-        return () => unsubscribe()
+        getDocs(query(q, limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                setLoading(false);
+                setArticles(articlePreviewTranslator(docs))
+                setLastArticle(docs.docs[docs.docs.length - 1])
+                setEndOfCollection(docs.docs.length < n)
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
     },[auth.currentUser])
 
-    return {error, loading, articles};
+    const getNext = (n: number) => {
+        setLoadingNext(true)
+        getDocs(query(q, startAfter(lastArticle), limit(n)))
+            .then((docs: QuerySnapshot<DocumentData>) => {
+                setLoadingNext(false)
+                setArticles(articles.concat(articlePreviewTranslator(docs)))
+                setLastArticle(docs.docs[docs.docs.length - 1])
+                setEndOfCollection(docs.docs.length < n)
+            }).catch((err: FirestoreError) => {
+            setError(err.code)
+        })
+    }
+
+    return { getNext, error, loading, loadingNext, articles, endOfCollection }
 }
 
 export const useApplyPromotion = () => {
     const [error, setError] = useState<FirestoreErrorCode>();
     const [loading, setLoading] = useState(true);
 
-    const applyContributor = () => {
+    const applyPromotion = () => {
         if (auth.currentUser !== null) {
             updateDoc(doc(db, "users", auth.currentUser.uid), "promotion_request", "requested").then(
                 () => {
@@ -141,7 +172,27 @@ export const useApplyPromotion = () => {
         }
     };
 
-    return {applyContributor, error, loading};
+    return {applyPromotion, error, loading};
+}
+
+export const useSetRole = () => {
+    const [error, setError] = useState<FirestoreErrorCode>();
+    const [loading, setLoading] = useState(true);
+
+    const setRole = (uid: string, role: string) => {
+        if (role == "reader" || role == "contributor" || role == "admin" || role == "banned"){
+            updateDoc(doc(db, "users", uid), "role", role)
+                .then(() => {
+                    setLoading(false);
+                }).catch((err) => {
+                setError(err.code)
+            })
+        } else {
+            setError("invalid-argument")
+        }
+    };
+
+    return {setRole, error, loading};
 }
 
 export const useUser = () => {
@@ -155,25 +206,13 @@ export const useUser = () => {
     });
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(doc(db, "users", (auth.currentUser !== null)? auth.currentUser.uid : ""),
-            (doc) => {
-            const data = doc.data();
-                if (data === undefined) {
-                    setError("not-found")
-                } else {
-                    setLoading(false);
-                    setQueriedUser({
-                        role: data.role,
-                        profile_image: data.profile_image,
-                        username: data.username,
-                        uid: doc.id
-                    })
-                }
-            }, (err) => {
-                setError(err.code)
-            })
-
-        return () => unsubscribe()
+        getUser((auth.currentUser !== null)? auth.currentUser.uid : "").then((user) => {
+            setQueriedUser(user)
+            setLoading(false)
+            }
+        ).catch((err: FirestoreErrorCode) => {
+            setError(err)
+        })
     }, [auth.currentUser])
 
     return {error, loading, queriedUser};
