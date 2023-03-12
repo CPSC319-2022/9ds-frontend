@@ -52,9 +52,13 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const article = !rest.article?.content ? "" : rest.article?.content
-  const [editorState, setEditorState] = ArticleFormPurpose.UPDATE ? useState(() => convertFromRaw(JSON.parse(article))) : useState(() => EditorState.createEmpty())
-  const editorInfo: TextEditorInfo = {editorState, setEditorState}
+  const article = !rest.article?.content ? '' : rest.article?.content
+  const [editorState, setEditorState] = ArticleFormPurpose.UPDATE
+    ? useState(() =>
+        EditorState.createWithContent(convertFromRaw(JSON.parse(article))),
+      )
+    : useState(() => EditorState.createEmpty())
+  const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
@@ -74,22 +78,24 @@ export const ArticleForm = ({
         setIsTitleError(false)
         setTitleHelperText('')
       }
-    const bodyText = editorState.getCurrentContent().getPlainText()
-    if (bodyText.length === 0 || bodyText.length > 250) {
+      const bodyText = editorState.getCurrentContent().getPlainText()
+      if (bodyText.length === 0 || bodyText.length > 250) {
         isInvalid = true
         setIsBodyError(true)
         if (bodyText.length === 0) {
-        setBodyHelperText("Body can't be empty.")
+          setBodyHelperText("Body can't be empty.")
         } else {
-        setIsBodyError(false)
-        setBodyHelperText('')
+          setIsBodyError(false)
+          setBodyHelperText('')
         }
-    } else {
+      } else {
         setIsBodyError(false)
         setBodyHelperText('')
-    }
-    if (!isInvalid) {
-        const encodedText = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+      }
+      if (!isInvalid) {
+        const encodedText = JSON.stringify(
+          convertToRaw(editorState.getCurrentContent()),
+        )
         if (rest.articleId !== undefined) {
           onSubmit(
             title,
@@ -250,7 +256,11 @@ export const ArticleForm = ({
             helperText={titleHelperText}
             value={title}
           />
-          <TextEditor editorInfo={editorInfo} error={isBodyError} errorMsg={bodyHelperText}/>
+          <TextEditor
+            editorInfo={editorInfo}
+            error={isBodyError}
+            errorMsg={bodyHelperText}
+          />
         </Stack>
         <Button
           type='submit'
