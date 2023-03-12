@@ -79,7 +79,7 @@ export const ArticleForm = ({
         setTitleHelperText('')
       }
       const bodyText = editorState.getCurrentContent().getPlainText()
-      if (bodyText.length === 0 || bodyText.length > 250) {
+      if (bodyText.length === 0 || countWords(bodyText) > 250) {
         isInvalid = true
         setIsBodyError(true)
         if (bodyText.length === 0) {
