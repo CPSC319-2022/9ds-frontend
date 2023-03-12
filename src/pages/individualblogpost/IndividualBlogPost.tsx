@@ -5,9 +5,8 @@ import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
-import { TEST_ARTICLE } from '../../configs/testArticle'
 import { useArticleRead } from '../../hooks/firebase/useArticle'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -15,8 +14,10 @@ import { useParams } from 'react-router-dom'
 const PAGINATION_COUNT = 5
 
 export const IndividualBlogPost = () => {
+  const navigate = useNavigate()
+
   const { articleId } = useParams()
-  const { loading, article } = useArticleRead(articleId || '')
+  const { loading, error, article } = useArticleRead(articleId || '')
 
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
@@ -33,6 +34,13 @@ export const IndividualBlogPost = () => {
       }
     }
   }, [loading])
+
+  useEffect(() => {
+    if (error) {
+      navigate('/')
+      throw Error('Article does not exist')
+    }
+  }, [error])
 
   return (
     <Stack
