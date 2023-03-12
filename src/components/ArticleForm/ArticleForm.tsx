@@ -53,18 +53,16 @@ export const ArticleForm = ({
 
   const [isBodyError, setIsBodyError] = useState(false)
   const article = !rest.article?.content ? '' : rest.article?.content
-//   const [editorState, setEditorState] = ArticleFormPurpose.UPDATE === purpose
-//     ? useState(() =>
-//         EditorState.createWithContent(convertFromRaw(JSON.parse(article))),
-//       )
-//     : useState(() => EditorState.createEmpty())
-//   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+
+  const editState = ArticleFormPurpose.UPDATE === purpose ? EditorState.createWithContent(convertFromRaw(JSON.parse(article))) : EditorState.createEmpty()
+//   const [editorState, setEditorState] = useState(() => editState)
 //   const editorInfo: TextEditorInfo = { editorState, setEditorState }
 //   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
 
-  const handleSubmit = useCallback(
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const handleSubmit = useCallback(() => {} , [])
 //     (e: FormEvent<HTMLElement>, published: boolean) => {
 //       let isInvalid = false
 //       if (title.length === 0 || countWords(title) > 60) {
@@ -123,15 +121,15 @@ export const ArticleForm = ({
 //     [title, editorState, customLink],
 //   )
 
-//   useEffect(() => {
-//     const { article } = rest
-//     if (article !== undefined) {
-//       setTitle(article.title)
-//       setCustomLink(article.header_image)
-//     //   setEditorState(editorState)
-//     }
- // eslint-disable-next-line @typescript-eslint/no-empty-function
- () => {} , [])
+  useEffect(() => {
+    const { article } = rest
+    if (article !== undefined) {
+      setTitle(article.title)
+      setCustomLink(article.header_image)
+    //   setEditorState(editorState)
+    }
+}, [])
+
 
   return (
     <Container>
