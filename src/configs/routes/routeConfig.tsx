@@ -6,6 +6,7 @@ import { ConfirmPassword } from '../../pages/confirmpassword/ConfirmPasswordRese
 import { Login } from '../../pages/login/Login'
 import { Profile } from '../../pages/profile/Profile'
 import { UpdateArticle } from '../../pages/updatearticle'
+import { IndividualBlogPost } from '../../pages/individualblogpost'
 
 export interface RouteConfig {
   path: string
@@ -43,5 +44,9 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     path: '/update/:articleId',
     component: <UpdateArticle />,
     isProtected: false,
+  },
+  individualBlogPost: {
+    path: '/blog/:articleId',
+    component: <IndividualBlogPost />,
   },
 }
