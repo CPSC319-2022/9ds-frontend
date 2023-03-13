@@ -3,6 +3,14 @@
 FROM node:14-alpine as react-build
 WORKDIR /app
 COPY . ./
+
+# declare required arguments to pass into Docker for build
+ARG REACT_APP_ENV
+
+# set arguments as build time env variables
+ENV REACT_APP_ENV=${REACT_APP_ENV}
+
+# build react app
 RUN yarn
 RUN yarn build
 

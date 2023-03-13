@@ -6,6 +6,7 @@ import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import profile from '../../assets/profile.png'
 import { LabeledTextField } from '../../components/LabeledTextField'
+import { TEST_ARTICLE } from '../../configs/testArticle'
 
 export const Profile: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -76,7 +77,7 @@ export const Profile: FC = () => {
       </Typography>
       <Stack direction='row' spacing={16} justifyContent='flex-start'>
         {[...Array(4).keys()].map((key) => (
-          <Article key={key} size='small' />
+          <Article key={key} size='small' article={TEST_ARTICLE} />
         ))}
       </Stack>
       <Typography variant='h5' color='black.main' sx={{ paddingLeft: '32px' }}>
@@ -84,7 +85,7 @@ export const Profile: FC = () => {
       </Typography>
       <Stack direction='row' spacing={16} justifyContent='flex-start'>
         {[...Array(4).keys()].map((key) => (
-          <Article key={key} size='small' />
+          <Article key={key} article={TEST_ARTICLE} />
         ))}
       </Stack>
       <Footer />

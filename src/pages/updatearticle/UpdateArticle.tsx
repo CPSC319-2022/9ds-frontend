@@ -1,42 +1,52 @@
+import { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
 import { useArticleEdit, useArticleRead } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-interface UpdateArticleProps {
-  articleIdForUpdate: string
-}
-
-export const UpdateArticle = ({ articleIdForUpdate }: UpdateArticleProps) => {
-  const {
-    editArticle,
-    error: errorArticleUpdate,
-    loading: loadingArticleUpdate,
-  } = useArticleEdit()
+export const UpdateArticle = () => {
+  const { articleId } = useParams()
+  const navigate = useNavigate()
+  const { editArticle, error: errorArticleUpdate } = useArticleEdit()
   const {
     error: errorArticleRead,
     loading: loadingArticleRead,
     article,
-  } = useArticleRead(articleIdForUpdate)
+  } = useArticleRead(articleId || '')
+
+  useEffect(() => {
+    if (errorArticleRead) {
+      navigate('/profile')
+      throw new Error('Article does not exist.')
+    } else if (errorArticleUpdate) {
+      navigate('/profile')
+      throw new Error('Error updating article')
+    }
+  })
   return (
     <AppWrapper>
-      <ArticleForm
-        purpose={ArticleFormPurpose.UPDATE}
-        onSubmit={(
-          title: string,
-          body: string,
-          imagelink: string,
-          published: boolean,
-          articleId?: string,
-        ) => {
-          if (articleId !== undefined) {
-            editArticle(articleId, title, body, imagelink, published)
-          } else {
-            // TODO add error handling
-          }
-        }}
-      />
+      {!loadingArticleRead && article && (
+        <ArticleForm
+          purpose={ArticleFormPurpose.UPDATE}
+          onSubmit={(
+            title: string,
+            body: string,
+            imagelink: string,
+            published: boolean,
+            articleId?: string,
+          ) => {
+            if (articleId) {
+              editArticle(articleId, title, body, imagelink, published)
+            } else {
+              throw Error('Error editing article. Please try again later!')
+            }
+          }}
+          article={article}
+          articleId={articleId}
+        />
+      )}
     </AppWrapper>
   )
 }
