@@ -80,6 +80,7 @@ const paletteObject = {
     light: '#F8F8FA',
     grey: '#EAEAEA'
   },
+
 }
 
 export const theme = createTheme({
