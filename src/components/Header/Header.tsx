@@ -5,6 +5,7 @@ import React, { FC } from 'react'
 import { Button } from '../Button'
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { ROUTE_CONFIG } from '../../configs'
 
 export const Header: FC = () => {
   return (
@@ -31,7 +32,7 @@ export const Header: FC = () => {
           <Typography variant='subheading' color="black.main">BLOG</Typography>
           <KeyboardArrowDownIcon />
         </Stack>
-        <Link to={"/ROUTE_CONFIG.aboutUs.path"} style={{ textDecoration: 'none' }}>
+        <Link to={ROUTE_CONFIG.aboutUs.path} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color="black.main">ABOUT US</Typography>
         </Link>
       </Stack>

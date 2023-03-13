@@ -5,6 +5,7 @@ import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
 import { Link } from "react-router-dom";
 import { Button } from '../Button/Button'
+import { ROUTE_CONFIG } from '../../configs'
 
 export const Footer: FC = () => {
   return (
@@ -57,7 +58,7 @@ export const Footer: FC = () => {
             Home
           </Typography>
         </Link>
-       <Link to={"/ROUTE_CONFIG.aboutUs.path"} style={{ textDecoration: 'none' }}>
+       <Link to={ROUTE_CONFIG.aboutUs.path} style={{ textDecoration: 'none' }}>
           <Typography variant='caption' color='white.main'>
             About Us
           </Typography>
