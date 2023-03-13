@@ -39,7 +39,7 @@ export const AboutUs: FC = () => {
                             picture ={catProfilePic}
                             fullName ={"Andy Dong"}
                             title = {"Testing Lead"}
-                            description = {""}
+                            description = {"I love dogs more"}
                         />
                         <AboutUsCard
                             picture ={catProfilePic}
