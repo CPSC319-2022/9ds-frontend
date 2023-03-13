@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Stack from '@mui/material/Stack'
 import { Typography, Box, FormHelperText } from '@mui/material'
-import { convertToRaw, EditorState } from 'draft-js'
+import { EditorState } from 'draft-js'
 import 'draft-js/dist/Draft.css'
 import bold from '../../assets/bold.svg'
 import italic from '../../assets/italic.svg'
 import underline from '../../assets/underline.svg'
 import { Editor } from 'react-draft-wysiwyg'
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import React, { FC, useState } from 'react'
-import { Button } from '../Button/Button'
+import { FC, useState } from 'react'
+import { purple, grey } from '@mui/material/colors';
 
 export interface TextEditorInfo {
   editorState: EditorState
@@ -29,6 +30,8 @@ export const TextEditor: FC<TextEditorProps> = ({
     editorInfo === undefined
       ? useState(() => EditorState.createEmpty())
       : [editorInfo.editorState, editorInfo.setEditorState]
+  
+  const [focus, setFocus] = useState(false)
 
   const toolbarConfig = {
     options: ['inline'],
@@ -57,19 +60,22 @@ export const TextEditor: FC<TextEditorProps> = ({
             padding: '16.5px 14px',
             wordBreak: 'break-all',
             overflowY: 'scroll',
-            border: 1,
-            borderColor: error ? 'error.main' : 'grey.500',
+            border: focus ? 2 : 1,
+            borderColor: error ? 'error.main' : focus ? purple[800] : grey[500],
           }}
         >
           <Editor
+            placeholder={"250 words or less"}
             editorStyle={{ font: 'Roboto', maxLines: 7 }}
             toolbar={toolbarConfig}
             editorState={editState}
             onEditorStateChange={setEditState}
+            onFocus={(_event) => setFocus(true)}
+            onBlur={(_event) => setFocus(false)}
           />
         </Box>
       </Stack>
-      {error && <FormHelperText sx={{pl: "85px"}} error={true}>{errorMsg}</FormHelperText>}
+      {error && <FormHelperText sx={{pl: "120px"}} error={true}>{errorMsg}</FormHelperText>}
     </Box>
   )
 }

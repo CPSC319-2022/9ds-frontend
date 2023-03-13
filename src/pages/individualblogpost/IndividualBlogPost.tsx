@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { Footer } from '../../components/Footer'
@@ -28,15 +28,16 @@ export const IndividualBlogPost = () => {
     { profilePic: sample, comment: 'blasdlklsadads' },
   ])
 
-  const editState = EditorState.createWithContent(convertFromRaw(JSON.parse(article?.content as string)))
-  const [editorState, setEditorState] = useState(() => editState)
+//   const editState = EditorState.createWithContent(convertFromRaw(JSON.parse(article?.content as string)))
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
 
   useEffect(() => {
     if (!loading) {
       if (article !== undefined) {
         setTitle(article.title)
-        setBody(article.content)
-        setEditorState(() => EditorState.createWithContent(convertFromRaw(JSON.parse(article.content))))
+        // setBody(article.content)
+        const editState = EditorState.createWithContent(convertFromRaw(JSON.parse(article.content)))
+        setEditorState(() => editState)
       }
     }
   }, [loading])
@@ -81,7 +82,10 @@ export const IndividualBlogPost = () => {
             paddingRight={'32px'}
           >
             <Typography variant='h3'>{title}</Typography>
-            <Typography variant='body1'>{body}</Typography>{' '}
+            {/* <Typography variant='body1'>{body}</Typography>{' '} */}
+            <Box sx={{wordBreak: 'break-all'}}>
+              <Editor editorState={editorState} readOnly/>
+              </Box>
             <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
               Comments
             </Typography>
@@ -124,22 +128,21 @@ export const IndividualBlogPost = () => {
                 height='42px'
                 style={{ borderRadius: '50%' }}
               />
-              {/* <Paper
+              <Paper
                 style={{
                   borderBottomLeftRadius: 25,
                   borderTopRightRadius: 25,
                   padding: 15,
                   backgroundColor: theme.palette.black['50%'],
                 }}
-              > */}
-              <Editor editorState={editorState} readOnly/>
+              >
                 <TextField
                   multiline
                   variant='standard'
                   placeholder='Comment away...'
                   color='primary'
                 />
-              {/* </Paper> */}
+              </Paper>
             </Stack>
           </Stack>
         </>
