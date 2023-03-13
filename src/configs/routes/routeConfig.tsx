@@ -28,7 +28,7 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     component: <Login />,
   },
   aboutUs: {
-      path: '/aboutUs',
+      path: '/about-us',
       component: <AboutUs />,
   },
   resendEmail: {
