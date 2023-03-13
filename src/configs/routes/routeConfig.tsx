@@ -4,6 +4,7 @@ import { Home } from '../../pages/home'
 import { EmailVerification } from '../../pages/sendemail/EmailVerification'
 import { ConfirmPassword } from '../../pages/confirmpassword/ConfirmPasswordReset'
 import { Login } from '../../pages/login/Login'
+import { AboutUs } from '../../pages/aboutUs/AboutUs'
 import { Profile } from '../../pages/profile/Profile'
 import { UpdateArticle } from '../../pages/updatearticle'
 import { IndividualBlogPost } from '../../pages/individualblogpost'
@@ -27,6 +28,10 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   login: {
     path: '/login',
     component: <Login />,
+  },
+  aboutUs: {
+      path: '/about-us',
+      component: <AboutUs />,
   },
   resendEmail: {
     path: '/reset/email',
