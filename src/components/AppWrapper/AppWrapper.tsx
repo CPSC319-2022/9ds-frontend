@@ -2,16 +2,17 @@ import React, {FC, ReactNode} from 'react'
 import { Header } from "../Header";
 import { Footer } from '../Footer';
 import Stack from '@mui/material/Stack'
-import {useAuth} from '../../hooks/firebase/useAuth'
+import {useUser} from '../../hooks/firebase/useUser'
 
 export interface IProps {
   children: ReactNode;
   spacing?: number
 }
 
+// eslint-disable-next-line
 const renderFooter: any = () => {
-    const state = useAuth()
-    if (!state.user) {
+    const user = useUser().queriedUser
+    if (user.username === "") {
         return (<Footer/>)
     }
 }

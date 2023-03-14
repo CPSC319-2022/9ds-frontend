@@ -5,6 +5,35 @@ import React, { FC } from 'react'
 import { Button } from '../Button'
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { useUser } from '../../hooks/firebase/useUser'
+
+const renderButtonOrProfileImage: FC = () => {
+    const user = useUser().queriedUser
+    if (user.username !== "") {
+        return (
+            <img
+            src={user.profile_image}
+            width='55px'
+            height='55px'
+            style={{borderRadius: '50%', objectFit: 'cover'}}
+            />
+        )
+    } else {
+        return (
+            <Stack
+                direction='row'
+                spacing={12}
+                sx={{ justifyContent: 'center', alignItems: 'center' }}
+            ><Link to={'/login'} style={{textDecoration: 'none'}}>
+                <Button variant="outlined" text="Login" dark size="large"/>
+            </Link><Link to={'/login'} style={{textDecoration: 'none'}}>
+                <Button dark text="Sign up" size="large"/>
+            </Link>
+            </Stack>
+        )
+    }
+}
+
 
 export const Header: FC = () => {
   return (
@@ -31,22 +60,11 @@ export const Header: FC = () => {
           <Typography variant='subheading' color="black.main">BLOG</Typography>
           <KeyboardArrowDownIcon />
         </Stack>
-        <Link to={"/ROUTE_CONFIG.aboutUs.path"} style={{ textDecoration: 'none' }}>
+        <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color="black.main">ABOUT US</Typography>
         </Link>
       </Stack>
-      <Stack
-        direction='row'
-        spacing={12}
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
-      >
-        <Link to={"/login"} style={{ textDecoration: 'none' }}>
-            <Button variant='outlined' text='Login' dark size='large' />
-        </Link>
-        <Link to={"/login"} style={{ textDecoration: 'none' }}>
-            <Button dark text='Sign up' size='large' />
-        </Link>
-      </Stack>
+      {renderButtonOrProfileImage({})}
     </Stack>
   )
 }
