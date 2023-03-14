@@ -1,96 +1,141 @@
-import { FC, useState } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Article } from '../../components/Article'
-import { Footer } from '../../components/Footer'
-import { Header } from '../../components/Header'
-import profile from '../../assets/profile.png'
 import { LabeledTextField } from '../../components/LabeledTextField'
+import {
+  useUser,
+  useUserArticles,
+  useUserDrafts,
+} from '../../hooks/firebase/useUser'
+import { CircularProgress, Box } from '@mui/material'
+import { Header } from '../../components/Header'
+import { Footer } from '../../components/Footer'
+import { NotificationContext } from '../../context'
 import { UserType } from '../../components/UserType'
 
 export const Profile: FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [profileInfo, setProfileInfo] = useState('') // temp hook
+  const { error, loading, queriedUser } = useUser()
+  const {
+    articles: UserArticles,
+    loading: loadingArticles,
+    error: articleError,
+  } = useUserArticles(queriedUser.uid, 4)
+  const {
+    articles: UserDrafts,
+    loading: loadingDrafts,
+    error: draftError,
+  } = useUserDrafts(4)
+  const { dispatch } = useContext(NotificationContext)
+
+  useEffect(() => {
+    if (error || articleError || draftError) {
+      dispatch({
+        notificationActionType: 'error',
+        message: `Error fetching profile information: ${error}`,
+      })
+    }
+  }, [error, articleError, draftError])
 
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
-      <Typography variant='h4' color='black.main' sx={{ paddingLeft: '32px' }}>
-        Profile
-      </Typography>
-      <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
-        <img
-          src={profile}
-          width='140px'
-          height='140px'
-          style={{ borderRadius: '50%' }}
-        />
-        <Stack direction='column' spacing={32} width={'auto'}>
-          <LabeledTextField
-            variant='standard'
-            onTextChange={setProfileInfo}
-            placeholder='Contributor'
-            label='Account type'
-            multiline={false}
-            labelWidth={4}
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                Account Type
+      {loading || loadingArticles || loadingDrafts ? (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+          }}
+        >
+          <CircularProgress color='secondary' />
+        </Box>
+      ) : (
+        <>
+          <Typography
+            variant='h4'
+            color='black.main'
+            sx={{ paddingLeft: '32px' }}
+          >
+            Profile
+          </Typography>
+          <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
+            <img
+              src={queriedUser.profile_image}
+              width='140px'
+              height='140px'
+              style={{ borderRadius: '50%' }}
+            />
+            <Stack direction='column' spacing={32} width={'auto'}>
+              <LabeledTextField
+                variant='standard'
+                placeholder={queriedUser.role}
+                label='Account type'
+                multiline={false}
+                labelWidth={5}
+                text={
+                  <Typography variant='title' sx={{ color: 'black' }}>
+                    Account Type
+                  </Typography>
+                }
+              />
+              <LabeledTextField
+                variant='standard'
+                placeholder={queriedUser.username}
+                label='Name'
+                multiline={false}
+                labelWidth={5}
+                text={
+                  <Typography variant='title' sx={{ color: 'black' }}>
+                    Name
+                  </Typography>
+                }
+              />
+            </Stack>
+          </Stack>
+          {queriedUser.role != 'contributor' ? (
+            <Stack
+              direction='row'
+              sx={{ display: 'flex', justifyContent: 'center' }}
+            >
+              <UserType type='contributor' />
+            </Stack>
+          ) : (
+            <>
+              <Typography
+                variant='h5'
+                color='black.main'
+                justifyItems='flex-start'
+                sx={{ paddingLeft: '32px' }}
+              >
+                Posts
               </Typography>
-            }
-          />
-          <LabeledTextField
-            variant='standard'
-            onTextChange={setProfileInfo}
-            placeholder='Emma Watson'
-            label='Name'
-            multiline={false}
-            labelWidth={4}
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                Name
+              <Stack direction='row' spacing={16} justifyContent='flex-start'>
+                {[...UserArticles].map((article) => (
+                  <Article
+                    key={article.articleId}
+                    size='small'
+                    article={article}
+                  />
+                ))}
+              </Stack>
+              <Typography
+                variant='h5'
+                color='black.main'
+                sx={{ paddingLeft: '32px' }}
+              >
+                Drafts
               </Typography>
-            }
-          />
-          <LabeledTextField
-            variant='standard'
-            onTextChange={setProfileInfo}
-            placeholder='emma@watson.com'
-            label='Email'
-            multiline={false}
-            labelWidth={4}
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                Email
-              </Typography>
-            }
-          />
-        </Stack>
-        <Stack  maxWidth='390px' width='100%'>
-          <UserType type='contributor' />
-        </Stack>
-      </Stack>
-      <Typography
-        variant='h5'
-        color='black.main'
-        justifyItems='flex-start'
-        sx={{ paddingLeft: '32px' }}
-      >
-        Posts
-      </Typography>
-      <Stack direction='row' spacing={16} justifyContent='flex-start'>
-        {[...Array(4).keys()].map((key) => (
-          <Article key={key} size='small' />
-        ))}
-      </Stack>
-      <Typography variant='h5' color='black.main' sx={{ paddingLeft: '32px' }}>
-        Drafts
-      </Typography>
-      <Stack direction='row' spacing={16} justifyContent='flex-start'>
-        {[...Array(4).keys()].map((key) => (
-          <Article key={key} size='small' />
-        ))}
-      </Stack>
+              <Stack direction='row' spacing={16} justifyContent='flex-start'>
+                {[...UserDrafts].map((draft) => (
+                  <Article key={draft.articleId} article={draft} />
+                ))}
+              </Stack>
+            </>
+          )}
+        </>
+      )}
       <Footer />
     </Stack>
   )

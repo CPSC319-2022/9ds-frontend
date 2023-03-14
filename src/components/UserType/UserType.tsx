@@ -14,7 +14,7 @@ export const UserType: FC<UserTypeProps> = ({ type }) => {
     <Stack
       direction='column'
       alignItems='center'
-      width='100%'
+      width='374px'
       boxSizing='border-box'
       p='32px'
       sx={{
