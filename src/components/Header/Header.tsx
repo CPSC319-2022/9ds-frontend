@@ -5,7 +5,6 @@ import React, { FC } from 'react'
 import { Button } from '../Button'
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { ROUTE_CONFIG } from '../../configs'
 
 export const Header: FC = () => {
   return (
