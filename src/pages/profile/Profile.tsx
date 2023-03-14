@@ -34,7 +34,7 @@ export const Profile: FC = () => {
         message: `Error fetching profile information: ${error}`,
       })
     }
-  }, [error])
+  }, [error, articleError, draftError])
 
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
