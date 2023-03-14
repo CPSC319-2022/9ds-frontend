@@ -20,16 +20,11 @@ const renderButtonOrProfileImage: FC = () => {
         )
     } else {
         return (
-            <Stack
-                direction='row'
-                spacing={12}
-                sx={{ justifyContent: 'center', alignItems: 'center' }}
-            ><Link to={'/login'} style={{textDecoration: 'none'}}>
-                <Button variant="outlined" text="Login" dark size="large"/>
-            </Link><Link to={'/login'} style={{textDecoration: 'none'}}>
-                <Button dark text="Sign up" size="large"/>
-            </Link>
-            </Stack>
+            <>
+                <Link to={'/login'} style={{textDecoration: 'none'}}>
+                <Button dark text="LOGIN/SIGN UP" size="large"/>
+                </Link>
+            </>
         )
     }
 }
