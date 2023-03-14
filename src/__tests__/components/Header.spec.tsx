@@ -37,26 +37,16 @@ describe('Header Styling', () => {
       'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
-    const [loginButton, signUpButton] = screen.getAllByRole('button')
+    const [loginAndSignUpButton] = screen.getAllByRole('button')
 
-    expect(signUpButton).toBeInTheDocument()
-    expect(signUpButton).toBeEnabled()
-    expect(signUpButton).toHaveClass(
+    expect(loginAndSignUpButton).toBeInTheDocument()
+    expect(loginAndSignUpButton).toBeEnabled()
+    expect(loginAndSignUpButton).toHaveClass(
       'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge css-1clz53t-MuiButtonBase-root-MuiButton-root',
     )
-    expect(signUpButton).toContainElement(screen.getByText('Sign up'))
-    expect(screen.getByText('Sign up')).toHaveClass(
+    expect(loginAndSignUpButton).toContainElement(screen.getByText('LOGIN/SIGN UP'))
+    expect(screen.getByText('LOGIN/SIGN UP')).toHaveClass(
       'MuiTypography-root MuiTypography-button MuiTypography-noWrap css-17bkmi9-MuiTypography-root',
-    )
-
-    expect(loginButton).toBeInTheDocument()
-    expect(loginButton).toBeEnabled()
-    expect(loginButton).toHaveClass(
-      'MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeLarge MuiButton-outlinedSizeLarge MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeLarge MuiButton-outlinedSizeLarge css-7t08c-MuiButtonBase-root-MuiButton-root',
-    )
-    expect(loginButton).toContainElement(screen.getByText('Login'))
-    expect(screen.getByText('Login')).toHaveClass(
-      'MuiTypography-root MuiTypography-button MuiTypography-noWrap css-o6aqg8-MuiTypography-root',
     )
   })
 })
