@@ -94,7 +94,7 @@ export const Profile: FC = () => {
               />
             </Stack>
           </Stack>
-          {queriedUser.role != 'contributor' ? (
+          {queriedUser.role !== 'contributor' ? (
             <Stack
               direction='row'
               sx={{ display: 'flex', justifyContent: 'center' }}
