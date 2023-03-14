@@ -11,7 +11,21 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add('login', (email, password) => {
+  cy.get('input[id="signInEmail"]').type(email)
+
+  // {enter} causes the form to submit
+  cy.get('input[id="login-outlined-adornment-password"]').type(`${password}{enter}`, { log: false })
+
+  // we should be redirected to /dashboard
+  // cy.url().should('include', '/profile')
+
+  // our auth cookie should be present
+  // cy.getCookie('your-session-cookie').should('exist')
+  //
+  // // UI should reflect this user being logged in
+  // cy.get('h1').should('contain', username)
+})
 //
 //
 // -- This is a child command --

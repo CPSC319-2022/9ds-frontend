@@ -5,5 +5,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
+    baseUrl: 'https://pwcblog-6nztykyxiq-uw.a.run.app/',
+    defaultCommandTimeout: 10000
   },
 });
