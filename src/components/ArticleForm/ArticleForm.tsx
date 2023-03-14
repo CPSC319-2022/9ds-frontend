@@ -51,13 +51,6 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-
-//   const editState =
-//     ArticleFormPurpose.UPDATE === purpose
-//       ? EditorState.createWithContent(
-//           convertFromRaw(JSON.parse(rest.article?.content as string)),
-//         )
-//       : EditorState.createEmpty()
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
   const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
