@@ -28,15 +28,17 @@ export const IndividualBlogPost = () => {
     { profilePic: sample, comment: 'blasdlklsadads' },
   ])
 
-//   const editState = EditorState.createWithContent(convertFromRaw(JSON.parse(article?.content as string)))
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  )
 
   useEffect(() => {
     if (!loading) {
       if (article !== undefined) {
         setTitle(article.title)
-        // setBody(article.content)
-        const editState = EditorState.createWithContent(convertFromRaw(JSON.parse(article.content)))
+        const editState = EditorState.createWithContent(
+          convertFromRaw(JSON.parse(article.content)),
+        )
         setEditorState(() => editState)
       }
     }
@@ -82,10 +84,21 @@ export const IndividualBlogPost = () => {
             paddingRight={'32px'}
           >
             <Typography variant='h3'>{title}</Typography>
-            {/* <Typography variant='body1'>{body}</Typography>{' '} */}
-            <Box sx={{wordBreak: 'break-all'}}>
-              <Editor editorState={editorState} readOnly/>
-              </Box>
+            <Box
+              width={'100%'}
+              sx={{
+                wordBreak: 'normal',
+                padding: '2px 2px',
+                alignSelf: 'flex-start',
+              }}
+            >
+              <Editor
+                toolbarHidden
+                editorState={editorState}
+                editorStyle={{ fontFamily: 'Roboto', fontSize: '18px' }}
+                readOnly
+              />
+            </Box>
             <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
               Comments
             </Typography>

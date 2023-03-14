@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Stack from '@mui/material/Stack'
 import { Typography, Box, FormHelperText } from '@mui/material'
-import { EditorState } from 'draft-js'
+import { convertFromRaw, EditorState } from 'draft-js'
 import 'draft-js/dist/Draft.css'
 import bold from '../../assets/bold.svg'
 import italic from '../../assets/italic.svg'
@@ -19,6 +19,16 @@ interface TextEditorProps {
   editorInfo?: TextEditorInfo
   error?: boolean
   errorMsg?: string
+}
+
+export function convertToPlainText(articleContent: string) {
+    let output: string
+    try {
+        output = convertFromRaw(JSON.parse(articleContent)).getPlainText()   
+    } catch (error) {
+        output = articleContent
+    }
+    return output
 }
 
 export const TextEditor: FC<TextEditorProps> = ({
@@ -66,7 +76,7 @@ export const TextEditor: FC<TextEditorProps> = ({
         >
           <Editor
             placeholder={"250 words or less"}
-            editorStyle={{ font: 'Roboto', maxLines: 7 }}
+            editorStyle={{ fontFamily: 'Roboto', maxLines: 10, fontSize: "18px" }}
             toolbar={toolbarConfig}
             editorState={editState}
             onEditorStateChange={setEditState}

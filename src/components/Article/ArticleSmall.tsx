@@ -4,7 +4,7 @@ import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
 import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
-import { convertFromRaw } from 'draft-js'
+import { convertToPlainText } from '../TextEditor'
 
 export interface ArticleSmallProps {
   article: ArticlePreview
@@ -65,7 +65,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
               variant='caption'
               color='black.main'
             >
-              {convertFromRaw(JSON.parse(article.content)).getPlainText()}
+              {convertToPlainText(article.content)}
             </Typography>
           </Stack>
           <Avatar
