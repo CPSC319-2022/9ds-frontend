@@ -28,7 +28,7 @@ export function convertToPlainText(articleContent: string) {
     } catch (error) {
         output = articleContent
     }
-    return output
+    return output.trim()
 }
 
 export const TextEditor: FC<TextEditorProps> = ({

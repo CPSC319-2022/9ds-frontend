@@ -38,6 +38,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
             display: 'flex',
             height: '100%',
             justifyContent: 'space-between',
+            textAlign: 'left',
           }}
         >
           <img
