@@ -4,7 +4,6 @@ import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
 import { Button } from '../Button'
 import { Link } from "react-router-dom";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useUser } from '../../hooks/firebase/useUser'
 import { useSignOut } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
