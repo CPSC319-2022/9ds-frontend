@@ -14,17 +14,18 @@ export const UserType: FC<UserTypeProps> = ({ type }) => {
     <Stack
       direction='column'
       alignItems='center'
-      width='374px'
+      width='374'
+      height='150px'
       boxSizing='border-box'
       p='32px'
       sx={{
         borderRadius: '12px',
         border: '3px solid',
         borderColor: 'primary.50%',
-        gap: '32px',
+        gap:'8px'
       }}
     >
-      <Typography variant='h5' color='black.main'>
+      <Typography variant='title' color='black.main'>
         Become a {reader ? ' Reader' : ' Contributor'}
       </Typography>
       {reader ? <Glasses /> : <Pencil />}

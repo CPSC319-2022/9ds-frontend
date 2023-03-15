@@ -66,50 +66,50 @@ export const Profile: FC = () => {
           >
             Profile
           </Typography>
-          <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
-            <img
-              src={queriedUser.profile_image}
-              width='140px'
-              height='140px'
-              style={{ borderRadius: '50%' }}
-            />
-            <Stack direction='column' spacing={32} width={'auto'}>
-              <LabeledTextField
-                variant='standard'
-                placeholder={queriedUser.role}
-                label='Account type'
-                multiline={false}
-                labelWidth={5}
-                text={
-                  <Typography variant='title' sx={{ color: 'black' }}>
-                    Account Type
-                  </Typography>
-                }
+          <Stack direction='row' spacing={200} boxSizing='border-box' p='24px'>
+            <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
+              <img
+                src={queriedUser.profile_image}
+                width='140px'
+                height='140px'
+                style={{ borderRadius: '50%' }}
               />
-              <LabeledTextField
-                variant='standard'
-                placeholder={queriedUser.username}
-                label='Name'
-                multiline={false}
-                labelWidth={5}
-                text={
-                  <Typography variant='title' sx={{ color: 'black' }}>
-                    Name
-                  </Typography>
-                }
-              />
+              <Stack direction='column' spacing={32} width={'auto'}>
+                <LabeledTextField
+                  variant='standard'
+                  placeholder={queriedUser.role}
+                  label='Account type'
+                  multiline={false}
+                  labelWidth={5}
+                  text={
+                    <Typography variant='title' sx={{ color: 'black' }}>
+                      Account Type
+                    </Typography>
+                  }
+                />
+                <LabeledTextField
+                  variant='standard'
+                  placeholder={queriedUser.username}
+                  label='Name'
+                  multiline={false}
+                  labelWidth={5}
+                  text={
+                    <Typography variant='title' sx={{ color: 'black' }}>
+                      Name
+                    </Typography>
+                  }
+                />
+              </Stack>
             </Stack>
+            {queriedUser.role !== 'contributor' && (
+              <Stack direction='row'>
+                <Button onClick={handleButtonClick}>
+                  <UserType type='contributor' />
+                </Button>
+              </Stack>
+            )}
           </Stack>
-          {queriedUser.role !== 'contributor' ? (
-            <Stack
-              direction='row'
-              sx={{ display: 'flex', justifyContent: 'center' }}
-            >
-              <Button onClick={handleButtonClick}>
-                <UserType type='contributor' />
-              </Button>
-            </Stack>
-          ) : (
+          {queriedUser.role === 'contributor' && (
             <>
               <Typography
                 variant='h5'
