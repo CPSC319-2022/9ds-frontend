@@ -24,7 +24,7 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   create: {
     path: '/create',
     component: <CreateArticle />,
-    isProtected: false,
+    isProtected: false
   },
   login: {
     path: '/login',

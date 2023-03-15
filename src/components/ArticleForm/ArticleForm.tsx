@@ -1,9 +1,11 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { useState, FormEvent, useEffect, useCallback } from 'react'
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
+import { useState, FormEvent, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Article } from '../../hooks/firebase/useArticle'
 import { LabeledTextField } from '../LabeledTextField'
+import { TextEditor, TextEditorInfo } from '../TextEditor'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -49,7 +51,8 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const [body, setBody] = useState('')
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+  const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
@@ -69,23 +72,28 @@ export const ArticleForm = ({
         setIsTitleError(false)
         setTitleHelperText('')
       }
-      if (body.length === 0 || countWords(body) > 250) {
+      const bodyText = editorState.getCurrentContent().getPlainText()
+      if (bodyText.length === 0 || countWords(bodyText) > 250) {
         isInvalid = true
         setIsBodyError(true)
-        if (body.length === 0) {
+        if (bodyText.length === 0) {
           setBodyHelperText("Body can't be empty.")
         } else {
-          setBodyHelperText('Body must be 250 words or less.')
+          setIsBodyError(false)
+          setBodyHelperText('')
         }
       } else {
         setIsBodyError(false)
         setBodyHelperText('')
       }
       if (!isInvalid) {
+        const encodedText = JSON.stringify(
+          convertToRaw(editorState.getCurrentContent()),
+        )
         if (rest.articleId !== undefined) {
           onSubmit(
             title,
-            body,
+            encodedText,
             customLink.length > 0
               ? customLink
               : pictureUrls[selectedPictureIndex],
@@ -95,7 +103,7 @@ export const ArticleForm = ({
         } else {
           onSubmit(
             title,
-            body,
+            encodedText,
             customLink.length > 0
               ? customLink
               : pictureUrls[selectedPictureIndex],
@@ -104,19 +112,19 @@ export const ArticleForm = ({
         }
         navigate('/profile')
       }
-
       e.preventDefault()
     },
-    [title, body, customLink],
+    [title, editorState, customLink],
   )
 
   useEffect(() => {
     const { article } = rest
-
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
-      setBody(article.content)
+      if (purpose === ArticleFormPurpose.UPDATE) {
+        setEditorState(() => EditorState.createWithContent(convertFromRaw(JSON.parse(article.content))))
+      }
     }
   }, [])
 
@@ -246,21 +254,10 @@ export const ArticleForm = ({
             helperText={titleHelperText}
             value={title}
           />
-          <LabeledTextField
-            variant='outlined'
-            onTextChange={setBody}
-            placeholder='250 words or less'
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                Body
-              </Typography>
-            }
-            labelWidth={1}
-            multiline={true}
-            rows={7}
+          <TextEditor
+            editorInfo={editorInfo}
             error={isBodyError}
-            helperText={bodyHelperText}
-            value={body}
+            errorMsg={bodyHelperText}
           />
         </Stack>
         <Button

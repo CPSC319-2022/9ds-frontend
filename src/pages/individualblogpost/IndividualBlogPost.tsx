@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { Footer } from '../../components/Footer'
@@ -7,6 +7,8 @@ import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
 import { useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
+import { convertFromRaw, EditorState } from 'draft-js'
+import { Editor } from 'react-draft-wysiwyg'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -26,11 +28,18 @@ export const IndividualBlogPost = () => {
     { profilePic: sample, comment: 'blasdlklsadads' },
   ])
 
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  )
+
   useEffect(() => {
     if (!loading) {
       if (article !== undefined) {
         setTitle(article.title)
-        setBody(article.content)
+        const editState = EditorState.createWithContent(
+          convertFromRaw(JSON.parse(article.content)),
+        )
+        setEditorState(() => editState)
       }
     }
   }, [loading])
@@ -75,7 +84,21 @@ export const IndividualBlogPost = () => {
             paddingRight={'32px'}
           >
             <Typography variant='h3'>{title}</Typography>
-            <Typography variant='body1'>{body}</Typography>{' '}
+            <Box
+              width={'100%'}
+              sx={{
+                wordBreak: 'normal',
+                padding: '2px 2px',
+                alignSelf: 'flex-start',
+              }}
+            >
+              <Editor
+                toolbarHidden
+                editorState={editorState}
+                editorStyle={{ fontFamily: 'Roboto', fontSize: '18px' }}
+                readOnly
+              />
+            </Box>
             <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
               Comments
             </Typography>
