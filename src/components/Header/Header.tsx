@@ -31,7 +31,7 @@ export const Header: FC = () => {
           <Typography variant='subheading' color="black.main">BLOG</Typography>
           <KeyboardArrowDownIcon />
         </Stack>
-        <Link to={"/ROUTE_CONFIG.aboutUs.path"} style={{ textDecoration: 'none' }}>
+        <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color="black.main">ABOUT US</Typography>
         </Link>
       </Stack>
