@@ -200,37 +200,6 @@ export const useUserDrafts = (n: number) => {
     }
   }
 
-  const [lastArticle, setLastArticle] =
-    useState<QueryDocumentSnapshot<DocumentData>>()
-  const [endOfCollection, setEndOfCollection] = useState(false)
-
-  useEffect(() => {
-    getDocs(query(q, limit(n)))
-      .then((docs: QuerySnapshot<DocumentData>) => {
-        setLoading(false)
-        setArticles(articlePreviewTranslator(docs))
-        setLastArticle(docs.docs[docs.docs.length - 1])
-        setEndOfCollection(docs.docs.length < n)
-      })
-      .catch((err: FirestoreError) => {
-        setError(err.code)
-      })
-  }, [auth.currentUser])
-
-  const getNext = (n: number) => {
-    setLoadingNext(true)
-    getDocs(query(q, startAfter(lastArticle), limit(n)))
-      .then((docs: QuerySnapshot<DocumentData>) => {
-        setLoadingNext(false)
-        setArticles(articles.concat(articlePreviewTranslator(docs)))
-        setLastArticle(docs.docs[docs.docs.length - 1])
-        setEndOfCollection(docs.docs.length < n)
-      })
-      .catch((err: FirestoreError) => {
-        setError(err.code)
-      })
-  }
-
   return { getNext, error, loading, loadingNext, articles, endOfCollection }
 }
 

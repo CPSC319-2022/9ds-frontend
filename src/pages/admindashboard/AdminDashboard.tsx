@@ -1,9 +1,15 @@
-import { Button, Stack, Typography } from '@mui/material'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import { useEffect } from 'react'
+import { Button, IconButton, Stack, Typography } from '@mui/material'
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+  useGridApiRef,
+} from '@mui/x-data-grid'
+import { DocumentData } from 'firebase/firestore'
+import { useEffect, useState } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { useSetRole, useUserRoleDirectory } from '../../hooks/firebase/useUser'
-import { theme } from '../../theme'
+import BlockIcon from '@mui/icons-material/Block'
 
 enum PromoteButtonRoles {
   CONTRIBUTOR = 'contributor',
@@ -26,8 +32,12 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <PromoteButton
+          index={params.row.id - 1}
           uid={params.row.uid}
           role={PromoteButtonRoles.CONTRIBUTOR}
+          userCurrentRole={params.row.status}
+          setUsersSessionCopy={params.row.setUsersSessionCopy}
+          users={params.row.users}
         />
       )
     },
@@ -38,19 +48,41 @@ const columns: GridColDef[] = [
     flex: 1,
     renderCell: (params) => {
       return (
-        <PromoteButton uid={params.row.uid} role={PromoteButtonRoles.ADMIN} />
+        <PromoteButton
+          index={params.row.id - 1}
+          uid={params.row.uid}
+          role={PromoteButtonRoles.ADMIN}
+          userCurrentRole={params.row.status}
+          setUsersSessionCopy={params.row.setUsersSessionCopy}
+          users={params.row.users}
+        />
       )
     },
   },
 ]
 
 export const AdminDashboard = () => {
+  const apiRef = useGridApiRef()
   const { users, loading } = useUserRoleDirectory(null, [
     'reader',
     'contributor',
     'admin',
     'banned',
   ])
+  const { setRole } = useSetRole()
+  const [usersSessionCopy, setUsersSessionCopy] = useState<Array<DocumentData>>(
+    [],
+  )
+  const [selectedRows, setSelectedRows] = useState<Array<DocumentData>>([])
+  const [selectedRowsIndexes, setSelectedRowsIndexes] = useState<Array<number>>(
+    [],
+  )
+
+  useEffect(() => {
+    if (users) {
+      setUsersSessionCopy(users)
+    }
+  }, [users])
 
   return (
     <AppWrapper>
@@ -60,7 +92,18 @@ export const AdminDashboard = () => {
         </Typography>
         {!loading && (
           <DataGrid
-            rows={users.map((v, i) => {
+            apiRef={apiRef}
+            onRowSelectionModelChange={(rowSelectModel) => {
+              setSelectedRowsIndexes(
+                rowSelectModel.map((v) => parseInt(v as string)),
+              )
+              setSelectedRows(
+                usersSessionCopy.filter((_, i) => {
+                  return rowSelectModel.includes(i + 1)
+                }),
+              )
+            }}
+            rows={usersSessionCopy.map((v, i) => {
               return {
                 id: i + 1,
                 user: v.username,
@@ -70,12 +113,39 @@ export const AdminDashboard = () => {
                   v.promotion_request === undefined ? 'no' : 'yes',
                 makeContributor: v.role !== 'contributor',
                 makeAdmin: v.role !== 'admin',
+                setUsersSessionCopy: setUsersSessionCopy,
+                users: usersSessionCopy,
               }
             })}
             autoHeight
             checkboxSelection
             disableRowSelectionOnClick
             columns={columns}
+            hideFooterSelectedRowCount={true}
+            slots={{
+              toolbar: selectedRows.length === 0 ? null : ToolBar,
+            }}
+            slotProps={{
+              toolbar: {
+                numSelected: selectedRows.length,
+                onBan: () => {
+                  selectedRows.forEach((v) => {
+                    setRole(v.uid, 'banned')
+                  })
+                  console.log(selectedRowsIndexes)
+                  const newUsersSessionCopy: DocumentData[] =
+                    usersSessionCopy.map((v, i) =>
+                      selectedRowsIndexes.includes(i + 1)
+                        ? { ...v, role: 'banned' }
+                        : v,
+                    )
+                  setUsersSessionCopy(newUsersSessionCopy)
+                  setSelectedRows([])
+                  setSelectedRowsIndexes([])
+                  apiRef.current.setRowSelectionModel([])
+                },
+              },
+            }}
           />
         )}
       </Stack>
@@ -84,11 +154,22 @@ export const AdminDashboard = () => {
 }
 
 interface PromoteButtonProps {
+  index: number
   uid: string
+  userCurrentRole: string
   role: PromoteButtonRoles
+  users: DocumentData[]
+  setUsersSessionCopy: React.Dispatch<React.SetStateAction<DocumentData[]>>
 }
 
-const PromoteButton = ({ uid, role }: PromoteButtonProps) => {
+const PromoteButton = ({
+  index,
+  uid,
+  userCurrentRole,
+  role,
+  users,
+  setUsersSessionCopy,
+}: PromoteButtonProps) => {
   const { setRole, error } = useSetRole()
 
   useEffect(() => {
@@ -98,13 +179,55 @@ const PromoteButton = ({ uid, role }: PromoteButtonProps) => {
   }, [error])
   return (
     <Button
+      disabled={userCurrentRole === role}
       onClick={() => {
         setRole(uid, role)
+        let newUsersSessionCopy: DocumentData[] = []
+        if (role === PromoteButtonRoles.ADMIN) {
+          newUsersSessionCopy = users.map((v, i) =>
+            i === index ? { ...v, role: 'admin' } : v,
+          )
+        } else {
+          newUsersSessionCopy = users.map((v, i) =>
+            i === index ? { ...v, role: 'contributor' } : v,
+          )
+        }
+        setUsersSessionCopy(newUsersSessionCopy)
       }}
       variant='contained'
       color={role === PromoteButtonRoles.ADMIN ? 'secondary' : 'primary'}
     >
       Promote
     </Button>
+  )
+}
+
+interface ToolBarProps {
+  numSelected: number
+  onBan: () => void
+}
+
+const ToolBar = ({ numSelected, onBan }: ToolBarProps) => {
+  return (
+    <GridToolbarContainer
+      sx={{
+        backgroundColor: '#007DFF1A',
+        marginBottom: 10,
+        marginTop: 10,
+        paddingLeft: 25,
+        paddingRight: 25,
+        paddingTop: 25,
+        paddingBottom: 25,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Typography color={'#007DFF'}>{numSelected} selected</Typography>
+      <IconButton aria-label='ban' onClick={onBan}>
+        <BlockIcon />
+      </IconButton>
+    </GridToolbarContainer>
   )
 }
