@@ -20,7 +20,7 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
         if (user.role === "" || user.role === "reader") {
             return (<Header/>)
         }
-        if (user.role === "contributor") {
+        if (user.role === "contributor" || user.role === "admin") {
             return (<HeaderAsContributor/>)
         }
     }
@@ -33,7 +33,7 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
         if (user.role === "reader") {
             return (<FooterAsReader/>)
         }
-        if (user.role === "contributor") {
+        if (user.role === "contributor" || user.role === "admin") {
             return (<FooterAsContributor/>)
         }
     }

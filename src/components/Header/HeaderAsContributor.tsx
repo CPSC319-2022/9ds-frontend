@@ -35,10 +35,9 @@ export const HeaderAsContributor: FC = () => {
                 <Link to={"/"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">HOME</Typography>
                 </Link>
-                <Stack direction='row' spacing={4} alignItems='center'>
+                <Link to={"/create"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">BLOG</Typography>
-                    <KeyboardArrowDownIcon />
-                </Stack>
+                </Link>
                 <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">ABOUT US</Typography>
                 </Link>
@@ -51,8 +50,13 @@ export const HeaderAsContributor: FC = () => {
             >
                 <Link to={'/create'}>
                     <Button
-                        dark text="CREATE BLOG POST"
+                        dark
+                        text="CREATE BLOG POST"
                         size="large"
+                        onClick={() => {
+                            signOut.signOutWrapper()
+                            navigate("/login")
+                        }}
                     />
                 </Link>
                 <Link to={'/profile'}>

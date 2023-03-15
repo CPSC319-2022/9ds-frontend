@@ -65,9 +65,6 @@ export const FooterAsReader: FC = () => {
                             About Us
                         </Typography>
                     </Link>
-                    <Typography variant='caption' color='white.main'>
-                        Blog
-                    </Typography>
                     <Link to={"/profile"} style={{ textDecoration: 'none' }}>
                         <Typography variant='caption' color='white.main'>
                             Profile
