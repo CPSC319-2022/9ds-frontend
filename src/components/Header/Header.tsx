@@ -5,10 +5,10 @@ import React, { FC } from 'react'
 import { Button } from '../Button'
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useUser } from '../../hooks/firebase/useUser'
+import { UserData, useUser } from '../../hooks/firebase/useUser'
 
 const renderButtonOrProfileImage: FC = () => {
-    const user = useUser().queriedUser
+    const user: UserData = useUser().queriedUser
     if (user.username !== "") {
         return (
             <img

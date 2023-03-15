@@ -1,5 +1,5 @@
 import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import {FC, FormEvent, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
@@ -7,7 +7,10 @@ import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
 import { useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
-
+import { useCommentCreate, comment } from '../../hooks/firebase/useComment'
+import { UserData, useUser } from '../../hooks/firebase/useUser'
+import { collection, getDocs, Timestamp } from 'firebase/firestore'
+import { db } from "../../firebaseApp";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
 
@@ -15,16 +18,59 @@ const PAGINATION_COUNT = 5
 
 export const IndividualBlogPost = () => {
   const navigate = useNavigate()
+  const currUser: UserData = useUser().queriedUser
 
   const { articleId } = useParams()
   const { loading, error, article } = useArticleRead(articleId || '')
 
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [commentCount, setCommentCount] = useState(1)
-  const [comments, setComments] = useState<Array<CommentProps>>([
-    { profilePic: sample, comment: 'blasdlklsadads' },
-  ])
+
+  const [currComment, setCurrComment] = useState('')
+  const [isCurrCommentError, setIsCurrCommentError] = useState(false)
+  const [commentHelperText, setCommentHelperText] = useState('')
+
+    // load comments from firestore
+  const [comments, setComments] = useState<Array<CommentProps>>(
+      []
+      // getDocs(collection(db,`article/${articleID}/comments`)).data()
+  )
+    // should be comments.length
+  const [commentCount, setCommentCount] = useState(0)
+
+  const commentCreate = useCommentCreate()
+
+  const handleSubmitComment = (e: FormEvent<HTMLElement>) => {
+      const commentToSubmit: comment = {
+          commenter_uid: currUser.uid,
+          commenter_image: currUser.profile_image,
+          commenter_username: currUser.username,
+          content: currComment,
+          post_time: Timestamp.now()
+      }
+      const commentLocal: CommentProps = {
+          profilePic: currUser.profile_image,
+          comment: currComment
+      }
+      if (!currComment.length){
+          setIsCurrCommentError(true)
+          setCommentHelperText("Comment cannot be empty.")
+      } else {
+          // eslint-disable-next-line
+          commentCreate.createComment(articleId!, commentToSubmit)
+          setComments((comments) => [...comments, commentLocal])
+          setCommentCount(commentCount => commentCount + 1)
+          setIsCurrCommentError(false)
+          setCommentHelperText("")
+          setCurrComment("")
+      }
+  }
+
+    // useEffect for rerendering the comment pushed
+    useEffect(() => {
+        // rerender
+        console.log("comment updated")
+    }, comments)
 
   useEffect(() => {
     if (!loading) {
@@ -126,12 +172,19 @@ export const IndividualBlogPost = () => {
                   backgroundColor: theme.palette.black['50%'],
                 }}
               >
+              <form
+                  onSubmit={(event) => handleSubmitComment(event)}
+              >
                 <TextField
                   multiline
                   variant='standard'
                   placeholder='Comment away...'
                   color='primary'
+                  onChange={(event) =>  setCurrComment(event.target.value)}
+                  error={isCurrCommentError}
+                  helperText={commentHelperText}
                 />
+              </form>
               </Paper>
             </Stack>
           </Stack>
