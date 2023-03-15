@@ -1,5 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { useEffect } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { useSetRole, useUserRoleDirectory } from '../../hooks/firebase/useUser'
 import { theme } from '../../theme'
@@ -63,6 +64,7 @@ export const AdminDashboard = () => {
               return {
                 id: i + 1,
                 user: v.username,
+                uid: v.uid,
                 status: v.role,
                 contribStatusReq:
                   v.promotion_request === undefined ? 'no' : 'yes',
@@ -87,14 +89,20 @@ interface PromoteButtonProps {
 }
 
 const PromoteButton = ({ uid, role }: PromoteButtonProps) => {
-  const { setRole, error, loading } = useSetRole()
+  const { setRole, error } = useSetRole()
+
+  useEffect(() => {
+    if (error) {
+      throw new Error('Something wrong happened. Try again later!')
+    }
+  }, [error])
   return (
     <Button
       onClick={() => {
         setRole(uid, role)
       }}
       variant='contained'
-      color='secondary'
+      color={role === PromoteButtonRoles.ADMIN ? 'secondary' : 'primary'}
     >
       Promote
     </Button>
