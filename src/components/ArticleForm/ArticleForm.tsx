@@ -1,6 +1,7 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Article } from '../../hooks/firebase/useArticle'
 import { LabeledTextField } from '../LabeledTextField'
 
@@ -39,6 +40,7 @@ export const ArticleForm = ({
   onSubmit,
   ...rest
 }: ArticleFormProps) => {
+  const navigate = useNavigate()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
 
@@ -52,58 +54,71 @@ export const ArticleForm = ({
 
   const [customLink, setCustomLink] = useState('')
 
-  const handleSubmit = (e: FormEvent<HTMLElement>, published: boolean) => {
-    let isInvalid = false
-    if (title.length === 0 || countWords(title) > 60) {
-      isInvalid = true
-      setIsTitleError(true)
-      if (title.length === 0) {
-        setTitleHelperText("Title can't be empty.")
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLElement>, published: boolean) => {
+      let isInvalid = false
+      if (title.length === 0 || countWords(title) > 60) {
+        isInvalid = true
+        setIsTitleError(true)
+        if (title.length === 0) {
+          setTitleHelperText("Title can't be empty.")
+        } else {
+          setBodyHelperText('Title must be 60 words or less.')
+        }
       } else {
-        setBodyHelperText('Title must be 60 words or less.')
+        setIsTitleError(false)
+        setTitleHelperText('')
       }
-    } else {
-      setIsTitleError(false)
-      setTitleHelperText('')
-    }
-    if (body.length === 0 || countWords(body) > 250) {
-      isInvalid = true
-      setIsBodyError(true)
-      if (body.length === 0) {
-        setBodyHelperText("Body can't be empty.")
+      if (body.length === 0 || countWords(body) > 250) {
+        isInvalid = true
+        setIsBodyError(true)
+        if (body.length === 0) {
+          setBodyHelperText("Body can't be empty.")
+        } else {
+          setBodyHelperText('Body must be 250 words or less.')
+        }
       } else {
-        setBodyHelperText('Body must be 250 words or less.')
+        setIsBodyError(false)
+        setBodyHelperText('')
       }
-    } else {
-      console.log(countWords(body))
-      setIsBodyError(false)
-      setBodyHelperText('')
-    }
-    if (!isInvalid) {
-      if (rest.articleId !== undefined) {
-        onSubmit(
-          title,
-          body,
-          customLink.length > 0
-            ? customLink
-            : pictureUrls[selectedPictureIndex],
-          published,
-          rest.articleId,
-        )
-      } else {
-        onSubmit(
-          title,
-          body,
-          customLink.length > 0
-            ? customLink
-            : pictureUrls[selectedPictureIndex],
-          published,
-        )
+      if (!isInvalid) {
+        if (rest.articleId !== undefined) {
+          onSubmit(
+            title,
+            body,
+            customLink.length > 0
+              ? customLink
+              : pictureUrls[selectedPictureIndex],
+            published,
+            rest.articleId,
+          )
+        } else {
+          onSubmit(
+            title,
+            body,
+            customLink.length > 0
+              ? customLink
+              : pictureUrls[selectedPictureIndex],
+            published,
+          )
+        }
+        navigate('/profile')
       }
-    }
 
-    e.preventDefault()
-  }
+      e.preventDefault()
+    },
+    [title, body, customLink],
+  )
+
+  useEffect(() => {
+    const { article } = rest
+
+    if (article !== undefined) {
+      setTitle(article.title)
+      setCustomLink(article.header_image)
+      setBody(article.content)
+    }
+  }, [])
 
   return (
     <Container>
@@ -214,6 +229,7 @@ export const ArticleForm = ({
             }
             labelWidth={1}
             multiline={false}
+            value={customLink}
           />
           <LabeledTextField
             variant='outlined'
@@ -228,9 +244,7 @@ export const ArticleForm = ({
             multiline={false}
             error={isTitleError}
             helperText={titleHelperText}
-            value={
-              purpose === ArticleFormPurpose.UPDATE ? rest.article?.title : null
-            }
+            value={title}
           />
           <LabeledTextField
             variant='outlined'
@@ -246,6 +260,7 @@ export const ArticleForm = ({
             rows={7}
             error={isBodyError}
             helperText={bodyHelperText}
+            value={body}
           />
         </Stack>
         <Button

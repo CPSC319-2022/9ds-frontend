@@ -14,10 +14,15 @@ import {
   FirestoreError,
   QueryDocumentSnapshot,
   startAfter,
+  Query,
 } from 'firebase/firestore'
 import { db, auth } from '../../firebaseApp'
 import { useState, useEffect } from 'react'
-import { ArticlePreview, articlePreviewTranslator } from './useArticle'
+import {
+  articleDraftTranslator,
+  ArticlePreview,
+  articlePreviewTranslator,
+} from './useArticle'
 
 export interface UserData {
   role: string
@@ -94,28 +99,35 @@ export const useUserArticles = (uid: string, n: number) => {
   const [loadingNext, setLoadingNext] = useState(false)
   const [articles, setArticles] = useState<ArticlePreview[]>([])
 
-  const q = query(
-    collection(db, 'articles'),
-    where('published', '==', true),
-    where('author_uid', '==', uid),
-    orderBy('publish_time'),
-  )
+  let q: Query<DocumentData>
 
   const [lastArticle, setLastArticle] =
     useState<QueryDocumentSnapshot<DocumentData>>()
   const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {
-    getDocs(query(q, limit(n)))
-      .then((docs: QuerySnapshot<DocumentData>) => {
-        setLoading(false)
-        setArticles(articlePreviewTranslator(docs))
-        setLastArticle(docs.docs[docs.docs.length - 1])
-        setEndOfCollection(docs.docs.length < n)
-      })
-      .catch((err: FirestoreError) => {
-        setError(err.code)
-      })
+    if (auth.currentUser === null) {
+      setError('unauthenticated')
+    } else {
+      q = query(
+        query(
+          collection(db, 'article'),
+          where('author_uid', '==', uid),
+          where('published', '==', true),
+        ),
+        orderBy('publish_time', 'desc'),
+      )
+      getDocs(query(q, limit(n)))
+        .then((docs: QuerySnapshot<DocumentData>) => {
+          setLoading(false)
+          setArticles(articlePreviewTranslator(docs))
+          setLastArticle(docs.docs[docs.docs.length - 1])
+          setEndOfCollection(docs.docs.length < n)
+        })
+        .catch((err: FirestoreError) => {
+          setError(err.code)
+        })
+    }
   }, [uid])
 
   const getNext = (n: number) => {
@@ -141,12 +153,52 @@ export const useUserDrafts = (n: number) => {
   const [loadingNext, setLoadingNext] = useState(false)
   const [articles, setArticles] = useState<ArticlePreview[]>([])
 
-  const q = query(
-    collection(db, 'articles'),
-    where('published', '==', false),
-    where('author_uid', '==', auth.currentUser),
-    orderBy('edit_time'),
-  )
+  let q: Query
+
+  const [lastArticle, setLastArticle] =
+    useState<QueryDocumentSnapshot<DocumentData>>()
+  const [endOfCollection, setEndOfCollection] = useState(false)
+
+  useEffect(() => {
+    if (auth.currentUser === null) {
+      setError('unauthenticated')
+    } else {
+      q = query(
+        collection(db, 'article'),
+        where('author_uid', '==', auth.currentUser.uid),
+        where('published', '==', false),
+        orderBy('edit_time', 'desc'),
+      )
+      getDocs(query(q, limit(n)))
+        .then((docs: QuerySnapshot<DocumentData>) => {
+          setLoading(false)
+          setArticles(articleDraftTranslator(docs))
+          setLastArticle(docs.docs[docs.docs.length - 1])
+          setEndOfCollection(docs.docs.length < n)
+        })
+        .catch((err: FirestoreError) => {
+          setError(err.code)
+        })
+    }
+  }, [auth.currentUser])
+
+  const getNext = (n: number) => {
+    if (auth.currentUser === null) {
+      setError('unauthenticated')
+    } else {
+      setLoadingNext(true)
+      getDocs(query(q, startAfter(lastArticle), limit(n)))
+        .then((docs: QuerySnapshot<DocumentData>) => {
+          setLoadingNext(false)
+          setArticles(articles.concat(articleDraftTranslator(docs)))
+          setLastArticle(docs.docs[docs.docs.length - 1])
+          setEndOfCollection(docs.docs.length < n)
+        })
+        .catch((err: FirestoreError) => {
+          setError(err.code)
+        })
+    }
+  }
 
   const [lastArticle, setLastArticle] =
     useState<QueryDocumentSnapshot<DocumentData>>()
@@ -245,7 +297,7 @@ export const useUser = () => {
   })
 
   useEffect(() => {
-    getUser(auth.currentUser !== null ? auth.currentUser.uid : '')
+    getUser(auth.currentUser !== null ? auth.currentUser.uid : null)
       .then((user) => {
         setQueriedUser(user)
         setLoading(false)
