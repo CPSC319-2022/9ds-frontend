@@ -1,16 +1,16 @@
 import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
-import {FC, FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
-import { useArticleRead } from '../../hooks/firebase/useArticle'
+import { useArticleComments, useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCommentCreate, comment } from '../../hooks/firebase/useComment'
 import { UserData, useUser } from '../../hooks/firebase/useUser'
-import { collection, getDocs, Timestamp } from 'firebase/firestore'
-import { db } from "../../firebaseApp";
+import { Timestamp } from 'firebase/firestore'
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
 
@@ -30,13 +30,10 @@ export const IndividualBlogPost = () => {
   const [isCurrCommentError, setIsCurrCommentError] = useState(false)
   const [commentHelperText, setCommentHelperText] = useState('')
 
-    // load comments from firestore
-  const [comments, setComments] = useState<Array<CommentProps>>(
-      []
-      // getDocs(collection(db,`article/${articleID}/comments`)).data()
-  )
-    // should be comments.length
-  const [commentCount, setCommentCount] = useState(0)
+  // eslint-disable-next-line
+  const articleComments = useArticleComments(articleId!, PAGINATION_COUNT)
+  const [comments, setComments] = useState<Array<comment>>(articleComments.comments)
+  const [commentCount, setCommentCount] = useState(comments.length)
 
   const commentCreate = useCommentCreate()
 
@@ -48,17 +45,14 @@ export const IndividualBlogPost = () => {
           content: currComment,
           post_time: Timestamp.now()
       }
-      const commentLocal: CommentProps = {
-          profilePic: currUser.profile_image,
-          comment: currComment
-      }
+
       if (!currComment.length){
           setIsCurrCommentError(true)
           setCommentHelperText("Comment cannot be empty.")
       } else {
           // eslint-disable-next-line
           commentCreate.createComment(articleId!, commentToSubmit)
-          setComments((comments) => [...comments, commentLocal])
+          setComments((comments) => [...comments, commentToSubmit])
           setCommentCount(commentCount => commentCount + 1)
           setIsCurrCommentError(false)
           setCommentHelperText("")
@@ -129,8 +123,8 @@ export const IndividualBlogPost = () => {
               return (
                 <Comment
                   key={i}
-                  profilePic={comments[i].profilePic}
-                  comment={comments[i].comment}
+                  profilePic={comments[i].commenter_image}
+                  comment={comments[i].content}
                 />
               )
             })}
