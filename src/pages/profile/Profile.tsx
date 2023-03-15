@@ -4,11 +4,12 @@ import Typography from '@mui/material/Typography'
 import { Article } from '../../components/Article'
 import { LabeledTextField } from '../../components/LabeledTextField'
 import {
+  useApplyPromotion,
   useUser,
   useUserArticles,
   useUserDrafts,
 } from '../../hooks/firebase/useUser'
-import { CircularProgress, Box } from '@mui/material'
+import { CircularProgress, Box, Button } from '@mui/material'
 import { Header } from '../../components/Header'
 import { Footer } from '../../components/Footer'
 import { NotificationContext } from '../../context'
@@ -27,6 +28,7 @@ export const Profile: FC = () => {
     error: draftError,
   } = useUserDrafts(4)
   const { dispatch } = useContext(NotificationContext)
+  const { applyPromotion } = useApplyPromotion()
 
   useEffect(() => {
     if (error || articleError || draftError) {
@@ -36,6 +38,10 @@ export const Profile: FC = () => {
       })
     }
   }, [error, articleError, draftError])
+
+  const handleButtonClick = () => {
+    applyPromotion()
+  }
 
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
@@ -99,7 +105,9 @@ export const Profile: FC = () => {
               direction='row'
               sx={{ display: 'flex', justifyContent: 'center' }}
             >
-              <UserType type='contributor' />
+              <Button onClick={handleButtonClick}>
+                <UserType type='contributor' />
+              </Button>
             </Stack>
           ) : (
             <>
