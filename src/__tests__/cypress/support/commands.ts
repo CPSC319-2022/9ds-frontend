@@ -15,10 +15,10 @@ Cypress.Commands.add('login', (email, password) => {
   cy.get('input[id="signInEmail"]').type(email)
 
   // {enter} causes the form to submit
-  cy.get('input[id="login-outlined-adornment-password"]').type(`${password}{enter}`, { log: false })
+  cy.get('input[id="login-outlined-adornment-password"]').type(`${password}{enter}`, {log: false})
 
   // we should be redirected to /dashboard
-  // cy.url().should('include', '/profile')
+  cy.url().should('include', '/profile')
 
   // our auth cookie should be present
   // cy.getCookie('your-session-cookie').should('exist')
@@ -39,13 +39,12 @@ Cypress.Commands.add('login', (email, password) => {
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare namespace Cypress {
+  interface Chainable {
+    login(email: string, password: string): Chainable<void>
+    // drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+    // dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+    // visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
+  }
+}
+
