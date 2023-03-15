@@ -6,6 +6,7 @@ import { ConfirmPassword } from '../../pages/confirmpassword/ConfirmPasswordRese
 import { Login } from '../../pages/login/Login'
 import { AboutUs } from '../../pages/aboutUs/AboutUs'
 import { Profile } from '../../pages/profile/Profile'
+import { AdminDashboard } from '../../pages/admindashboard'
 import { UpdateArticle } from '../../pages/updatearticle'
 import { IndividualBlogPost } from '../../pages/individualblogpost'
 
@@ -30,8 +31,8 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     component: <Login />,
   },
   aboutUs: {
-      path: '/about-us',
-      component: <AboutUs />,
+    path: '/about-us',
+    component: <AboutUs />,
   },
   resendEmail: {
     path: '/reset/email',
@@ -44,6 +45,11 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   profile: {
     path: '/profile',
     component: <Profile />,
+  },
+  adminDashboard: {
+    path: '/admin',
+    component: <AdminDashboard />,
+    isProtected: false,
   },
   edit: {
     path: '/update/:articleId',

@@ -4,7 +4,17 @@
 
 import * as firebase from "@firebase/rules-unit-testing";
 import * as fs from "fs";
-import {addDoc, collection, deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc} from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc, getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc
+} from "firebase/firestore";
 import {
   adminComment,
   adminCommentId,
@@ -93,6 +103,10 @@ describe('Testing firestore security rules', () => {
         await firebase.assertSucceeds(getDoc(doc(admin, "users", adminData.uid)))
         await firebase.assertSucceeds(getDoc(doc(admin, "users", contributorData.uid)))
         await firebase.assertSucceeds(getDoc(doc(admin, "users", readerData.uid)))
+      })
+
+      it("should let admins query any user", async() => {
+        await firebase.assertSucceeds(getDocs(query(collection(admin, "users"))))
       })
 
       //Decided not to have an author directory, so relevant security rules have been disabled.
