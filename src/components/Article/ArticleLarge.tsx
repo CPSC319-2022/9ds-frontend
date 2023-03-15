@@ -4,6 +4,7 @@ import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
 import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
+import { convertToPlainText } from '../TextEditor'
 
 export interface ArticleLargeProps {
   article: ArticlePreview
@@ -53,6 +54,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
             justifyContent='flex-end'
             boxSizing='border-box'
             p='12px'
+            textAlign="left"
           >
             <Typography variant='h5' color='white.main'>
               Featured
@@ -69,7 +71,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
                 overflow: 'hidden',
               }}
             >
-              {article.content}
+              {convertToPlainText(article.content)}
             </Typography>
           </Stack>
           <Avatar
