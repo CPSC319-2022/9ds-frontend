@@ -8,17 +8,24 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useUser } from '../../hooks/firebase/useUser'
 import { useSignOut } from '../../hooks/firebase/useAuth'
 
-
+import { useNavigate } from 'react-router-dom'
 
 
 export const Header: FC = () => {
     const user = useUser().queriedUser
     const signOut = useSignOut()
 
+    const navigate = useNavigate()
+
     const renderButtonOrProfileImage: FC = () => {
         if (user.username !== "") {
             return (
-                <>
+                <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={20}
+                >
                     <Link to={'/profile'}>
                         <img
                             src={user.profile_image}
@@ -26,12 +33,17 @@ export const Header: FC = () => {
                             height="55px"
                             style={{borderRadius: '50%', objectFit: 'cover'}}/>
                     </Link>
+                    <Link to={'/login'}>
                     <Button
                         dark text="SIGN OUT"
                         size="large"
-                        onClick={() => signOut.signOutWrapper()}
+                        onClick={() => {
+                            signOut.signOutWrapper()
+                            navigate("/login")
+                        }}
                     />
-                </>
+                    </Link>
+                </Stack>
             )
         } else {
             return (
