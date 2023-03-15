@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useUser } from '../../hooks/firebase/useUser'
 import { useSignOut } from '../../hooks/firebase/useAuth'
-
 import { useNavigate } from 'react-router-dom'
 
 
@@ -18,7 +17,7 @@ export const Header: FC = () => {
     const navigate = useNavigate()
 
     const renderButtonOrProfileImage: FC = () => {
-        if (user.username !== "") {
+        if (user.role !== "") {
             return (
                 <Stack
                     direction="row"
@@ -33,7 +32,6 @@ export const Header: FC = () => {
                             height="55px"
                             style={{borderRadius: '50%', objectFit: 'cover'}}/>
                     </Link>
-                    <Link to={'/login'}>
                     <Button
                         dark text="SIGN OUT"
                         size="large"
@@ -42,7 +40,6 @@ export const Header: FC = () => {
                             navigate("/login")
                         }}
                     />
-                    </Link>
                 </Stack>
             )
         } else {
