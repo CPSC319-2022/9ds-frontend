@@ -6,31 +6,44 @@ import { Button } from '../Button'
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useUser } from '../../hooks/firebase/useUser'
+import { useSignOut } from '../../hooks/firebase/useAuth'
 
-const renderButtonOrProfileImage: FC = () => {
-    const user = useUser().queriedUser
-    if (user.username !== "") {
-        return (
-            <img
-            src={user.profile_image}
-            width='55px'
-            height='55px'
-            style={{borderRadius: '50%', objectFit: 'cover'}}
-            />
-        )
-    } else {
-        return (
-            <>
-                <Link to={'/login'} style={{textDecoration: 'none'}}>
-                <Button dark text="LOGIN/SIGN UP" size="large"/>
-                </Link>
-            </>
-        )
-    }
-}
+
 
 
 export const Header: FC = () => {
+    const user = useUser().queriedUser
+    const signOut = useSignOut()
+
+    const renderButtonOrProfileImage: FC = () => {
+        if (user.username !== "") {
+            return (
+                <>
+                    <Link to={'/profile'}>
+                        <img
+                            src={user.profile_image}
+                            width="55px"
+                            height="55px"
+                            style={{borderRadius: '50%', objectFit: 'cover'}}/>
+                    </Link>
+                    <Button
+                        dark text="SIGN OUT"
+                        size="large"
+                        onClick={() => signOut.signOutWrapper()}
+                    />
+                </>
+            )
+        } else {
+            return (
+                <>
+                    <Link to={'/login'} style={{textDecoration: 'none'}}>
+                        <Button dark text="LOGIN/SIGN UP" size="large"/>
+                    </Link>
+                </>
+            )
+        }
+    }
+
   return (
     <Stack
       border='2px solid black'
