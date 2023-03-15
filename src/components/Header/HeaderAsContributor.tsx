@@ -47,17 +47,6 @@ export const HeaderAsContributor: FC = () => {
                 alignItems="center"
                 spacing={20}
             >
-                <Link to={'/create'}>
-                    <Button
-                        dark
-                        text="CREATE BLOG POST"
-                        size="large"
-                        onClick={() => {
-                            signOut.signOutWrapper()
-                            navigate("/login")
-                        }}
-                    />
-                </Link>
                 <Link to={'/profile'}>
                     <img
                         src={user.profile_image}

@@ -25,12 +25,6 @@ describe('Header Styling', () => {
       'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
-    const blogHeading = screen.getByText('BLOG')
-    expect(blogHeading).toBeInTheDocument()
-    expect(blogHeading).toHaveClass(
-      'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
-    )
-
     const aboutUsHeading = screen.getByText('ABOUT US')
     expect(aboutUsHeading).toBeInTheDocument()
     expect(aboutUsHeading).toHaveClass(
