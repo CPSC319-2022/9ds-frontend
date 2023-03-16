@@ -4,6 +4,7 @@ import {Typography, Stack} from '@mui/material';
 import { AboutUsCard } from '../../components/AboutUsCard';
 import catProfilePic from '../../assets/catProfilePic.png'
 import brianPic from '../../assets/brian.jpg'
+import ahnafPic from '../../assets/ahnaf.png'
 
 export const AboutUs: FC = () => {
     return (
@@ -30,7 +31,7 @@ export const AboutUs: FC = () => {
                         spacing={57}
                     >
                         <AboutUsCard
-                            picture ={catProfilePic}
+                            picture ={ahnafPic}
                             fullName ={"Ahnaf Muqset Haque"}
                             title = {"Design and Frontend Lead"}
                             description = {""}

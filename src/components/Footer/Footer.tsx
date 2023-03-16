@@ -62,9 +62,6 @@ export const Footer: FC = () => {
             About Us
           </Typography>
        </Link>
-          <Typography variant='caption' color='white.main'>
-            Blog
-          </Typography>
         </Stack>
         <Typography variant='small' color='white.main'>
           @2023
