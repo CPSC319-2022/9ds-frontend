@@ -1,4 +1,4 @@
-import { Grid, TextField, TextFieldProps } from '@mui/material'
+import { Grid, InputProps, TextField, TextFieldProps } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
@@ -7,6 +7,7 @@ type LabeledTextFieldProps = TextFieldProps & {
   labelWidth: number
   columnSpacing?: number
   text: React.ReactNode
+  inputProps?: InputProps
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
@@ -21,6 +22,8 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   labelWidth,
   text,
   value,
+  inputProps,
+
 }: LabeledTextFieldProps) => {
   return (
     <Grid container columnSpacing={columnSpacing} alignSelf={'stretch'}>
@@ -37,6 +40,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
           placeholder={placeholder}
           error={error}
           helperText={helperText}
+          InputProps={inputProps}
           onChange={(event) => {
             if(onTextChange) {
               onTextChange(event.target.value)

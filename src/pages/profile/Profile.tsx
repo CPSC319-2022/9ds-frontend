@@ -43,6 +43,14 @@ export const Profile: FC = () => {
     applyPromotion()
   }
 
+  const inputProps = {
+    readOnly: true,
+    style: {
+      color: 'rgba(0, 0, 0, 0.54)',
+      borderBottom: '1px solid rgba(0, 0, 0, 0.42)'
+    }
+  };
+
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
       <Header />
@@ -81,6 +89,7 @@ export const Profile: FC = () => {
                   label='Account type'
                   multiline={false}
                   labelWidth={5}
+                  inputProps={inputProps}
                   text={
                     <Typography variant='title' sx={{ color: 'black' }}>
                       Account Type
@@ -93,6 +102,7 @@ export const Profile: FC = () => {
                   label='Name'
                   multiline={false}
                   labelWidth={5}
+                  inputProps={inputProps}
                   text={
                     <Typography variant='title' sx={{ color: 'black' }}>
                       Name
