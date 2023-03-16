@@ -7,7 +7,7 @@ import { Footer } from '../Footer';
 import { FooterAsReader } from '../Footer/FooterAsReader'
 import { FooterAsContributor } from '../Footer/FooterAsContributor'
 import Stack from '@mui/material/Stack'
-import {UserData, useUser} from '../../hooks/firebase/useUser'
+import { useUser } from '../../hooks/firebase/useUser'
 
 export interface IProps {
     children: ReactNode;
