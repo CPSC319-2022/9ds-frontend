@@ -108,8 +108,6 @@ describe('Testing firestore security rules', () => {
       it("should let admins query any user", async() => {
         await firebase.assertSucceeds(getDocs(query(collection(admin, "users"))))
       })
-
-      //Decided not to have an author directory, so relevant security rules have been disabled.
     })
 
     describe("create requests", () => {
@@ -132,8 +130,6 @@ describe('Testing firestore security rules', () => {
         await firebase.assertFails(setDoc(doc(visitor, "users", newUserData.uid),
             {username: newUserData.username, profile_image: newUserData.profile_image, role: newUserData.role}))
       })
-
-      //field control, for later robustness
     })
 
     describe("update requests", () => {
@@ -177,8 +173,6 @@ describe('Testing firestore security rules', () => {
       it("should not allow visitors to update users", async() => {
         await firebase.assertFails(updateDoc(doc(visitor, "users", readerData.uid), {username: "newName"}))
       })
-
-      //field control, for later robustness
     })
 
     describe("delete requests", () => {
@@ -197,9 +191,7 @@ describe('Testing firestore security rules', () => {
       it("should not allow visitors to delete users", async() => {
         await firebase.assertFails(deleteDoc(doc(visitor, `users/`, contributorData.uid)))
       })
-
     })
-
   });
 
   describe('Articles', () => {
@@ -296,8 +288,6 @@ describe('Testing firestore security rules', () => {
       it('should not allow admins to post an article as another user', async () => {
         await firebase.assertFails(addDoc(collection(admin, "article"), contributorPublishedArticle))
       })
-
-      // field control, for later robustness
     })
 
     describe('update requests', () => {
@@ -340,9 +330,6 @@ describe('Testing firestore security rules', () => {
       it("should not allow edits on a non-existant article", async() => {
         await firebase.assertFails(updateDoc(doc(admin, "article", "-1"), adminPublishedArticle))
       })
-
-      //not worth testing visitor/reader, no interesting behaviour
-      //field control for later robustness
     })
 
     describe("delete requests", () => {
@@ -432,8 +419,6 @@ describe('Testing firestore security rules', () => {
       it("should not allow visitors to post comments", async() => {
         await firebase.assertFails(addDoc(collection(visitor, `article/${contributorPublishedArticleID}/comments/`), contributorComment));
       })
-
-      //field control, for later robustness
     })
 
     describe('update requests', () => {
@@ -458,8 +443,6 @@ describe('Testing firestore security rules', () => {
       it("should not allow visitors to edit comments", async() => {
         await firebase.assertFails(updateDoc(doc(visitor, `article/${contributorPublishedArticleID}/comments`, adminCommentId), {content: "New comment"}))
       })
-
-      //field control, for later robustness
     })
 
     describe('delete requests', () => {
@@ -487,7 +470,6 @@ describe('Testing firestore security rules', () => {
         await firebase.assertSucceeds(deleteDoc(doc(admin, `article/${contributorPublishedArticleID}/comments`, "-1")))
       })
     })
-
   });
 
   it("should reject requests to any other data location", async () => {
