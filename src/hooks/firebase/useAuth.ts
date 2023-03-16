@@ -234,5 +234,5 @@ export const useSignOut = () => {
       })
   }
 
-  return { signOutWrapper, error, loading, signedOut }
+  return [signOutWrapper, error, loading, signedOut]
 }
