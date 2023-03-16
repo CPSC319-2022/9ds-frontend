@@ -36,6 +36,9 @@ describe('Footer Styling', () => {
     const aboutUsCaption = screen.getByText('About Us')
     expect(aboutUsCaption).toBeInTheDocument()
 
+    const blogCaption = screen.getByText('Blog')
+    expect(blogCaption).toBeInTheDocument()
+
     const copyright = screen.getByText('@2023')
     expect(copyright).toBeInTheDocument()
 
