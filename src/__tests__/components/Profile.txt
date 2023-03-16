@@ -1,0 +1,127 @@
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { NotificationContext } from '../../context'
+import { Profile } from '../../pages/profile/Profile'
+
+// Mock the firebase hooks
+jest.mock('../../hooks/firebase/useUser', () => ({
+  useUser: jest.fn(() => ({
+    error: undefined,
+    loading: false,
+    queriedUser: {
+      uid: '123',
+      profile_image: 'https://myprofileimage.com',
+      role: 'editor',
+      username: 'John Doe',
+    },
+  })),
+  useUserArticles: jest.fn(() => ({
+    articles: [
+      {
+        articleId: '123',
+        title: 'My Article',
+        content: 'Lorem ipsum',
+        authorId: '123',
+        date: new Date(),
+      },
+    ],
+    loading: false,
+    error: undefined,
+  })),
+  useUserDrafts: jest.fn(() => ({
+    articles: [
+      {
+        articleId: '456',
+        title: 'My Draft',
+        content: 'Dolor sit amet',
+        authorId: '123',
+        date: new Date(),
+      },
+    ],
+    loading: false,
+    error: undefined,
+  })),
+}))
+
+// Mock the NotificationContext provider
+const mockDispatch = jest.fn()
+jest.mock('../../context', () => ({
+  ...jest.requireActual('../../context'),
+  NotificationContext: {
+    Consumer: ({ children }) => children({ dispatch: mockDispatch }),
+  },
+}))
+
+describe('Profile', () => {
+  it('renders the user profile information', () => {
+    render(<Profile />)
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('editor')).toBeInTheDocument()
+  })
+
+  it('renders the user articles', () => {
+    render(<Profile />)
+    expect(screen.getByText('My Article')).toBeInTheDocument()
+  })
+
+  it('renders the user drafts', () => {
+    render(<Profile />)
+    expect(screen.getByText('My Draft')).toBeInTheDocument()
+  })
+
+  it('dispatches an error notification if there is an error', () => {
+    const error = 'Error fetching profile information'
+    jest.mock('../../hooks/firebase/useUser', () => ({
+      useUser: jest.fn(() => ({
+        error,
+        loading: false,
+        queriedUser: undefined,
+      })),
+      useUserArticles: jest.fn(() => ({
+        articles: [],
+        loading: false,
+        error: undefined,
+      })),
+      useUserDrafts: jest.fn(() => ({
+        articles: [],
+        loading: false,
+        error: undefined,
+      })),
+    }))
+    render(
+      <NotificationContext.Provider value={{ dispatch: mockDispatch }}>
+        <Profile />
+      </NotificationContext.Provider>,
+    )
+    expect(mockDispatch).toHaveBeenCalledWith({
+      notificationActionType: 'error',
+      message: `Error fetching profile information: ${error}`,
+    })
+  })
+
+  it('dispatches an error notification if there is an article error', () => {
+    const articleError = 'Error fetching user articles'
+    jest.mock('../../hooks/firebase/useUser', () => ({
+      useUser: jest.fn(() => ({
+        error: undefined,
+        loading: false,
+        queriedUser: {
+          uid: '123',
+          profile_image: 'https://myprofileimage.com',
+          role: 'editor',
+          username: 'John Doe',
+        },
+      })),
+      useUserArticles: jest.fn(() => ({
+        articles: [],
+        loading: false,
+        error: articleError,
+      })),
+      useUserDrafts: jest.fn(() => ({
+        articles: [],
+        loading: false,
+        error: undefined,
+      })),
+    }))
+  })
+})

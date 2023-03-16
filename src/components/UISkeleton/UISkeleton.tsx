@@ -22,6 +22,7 @@ export const UISkeleton: FC<UISkeletonProps> = ({
           <Grid key={index} item>
             <Skeleton
               variant='rectangular'
+              role="progressbar" //for testing
               width={elemWidth}
               height={elemHeight}
               sx={{ borderRadius: '12px' }}
