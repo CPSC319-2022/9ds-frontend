@@ -36,7 +36,7 @@ export const FooterAsReader: FC = () => {
             </Stack>
                 <Button
                     variant='outlined'
-                    style={{ color: 'white.main', height: '66px', width: '235.67px' }}
+                    style={{ color: 'white.main', height: '66px', width: '266.67px' }}
                     text='BECOME A CONTRIBUTOR'
                     size='large'
                     onClick ={ () => applyContributor.applyPromotion()}

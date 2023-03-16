@@ -1,5 +1,6 @@
 import React, {FC, ReactNode} from 'react'
 import { Header } from "../Header";
+import { HeaderAsAdmin } from "../Header/HeaderAsAdmin"
 import { HeaderAsContributor } from "../Header/HeaderAsContributor"
 import { Footer } from '../Footer';
 import { FooterAsReader } from '../Footer/FooterAsReader'
@@ -20,8 +21,11 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
         if (user.role === "" || user.role === "reader") {
             return (<Header/>)
         }
-        if (user.role === "contributor" || user.role === "admin") {
+        if (user.role === "contributor") {
             return (<HeaderAsContributor/>)
+        }
+        if (user.role === "admin") {
+            return (<HeaderAsAdmin/>)
         }
     }
 
