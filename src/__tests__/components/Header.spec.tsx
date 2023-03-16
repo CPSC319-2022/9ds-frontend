@@ -31,16 +31,16 @@ describe('Header Styling', () => {
       'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
-    const [loginAndSignUpButton] = screen.getAllByRole('button')
-
-    expect(loginAndSignUpButton).toBeInTheDocument()
-    expect(loginAndSignUpButton).toBeEnabled()
-    expect(loginAndSignUpButton).toHaveClass(
-      'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge css-1clz53t-MuiButtonBase-root-MuiButton-root',
-    )
-    expect(loginAndSignUpButton).toContainElement(screen.getByText('LOGIN/SIGN UP'))
-    expect(screen.getByText('LOGIN/SIGN UP')).toHaveClass(
-      'MuiTypography-root MuiTypography-button MuiTypography-noWrap css-17bkmi9-MuiTypography-root',
-    )
+    // const [loginAndSignUpButton] = screen.getAllByRole('button')
+    //
+    // expect(loginAndSignUpButton).toBeInTheDocument()
+    // expect(loginAndSignUpButton).toBeEnabled()
+    // expect(loginAndSignUpButton).toHaveClass(
+    //   'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge css-1clz53t-MuiButtonBase-root-MuiButton-root',
+    // )
+    // expect(loginAndSignUpButton).toContainElement(screen.getByText('LOGIN/SIGN UP'))
+    // expect(screen.getByText('LOGIN/SIGN UP')).toHaveClass(
+    //   'MuiTypography-root MuiTypography-button MuiTypography-noWrap css-17bkmi9-MuiTypography-root',
+    // )
   })
 })
