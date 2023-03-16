@@ -4,15 +4,9 @@ import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
 import Button from '@mui/material/Button'
 import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom'
 
 
 export const Header: FC = () => {
-    const navigate = useNavigate()
-
-    const handleClick = () => {
-        navigate("/")
-    }
 
     return (
         <Stack
@@ -34,16 +28,17 @@ export const Header: FC = () => {
                 <Link to={"/"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">HOME</Typography>
                 </Link>
+                <a href="/#recentPosts" style={{ textDecoration: 'none' }}>
                 <Button
                     variant="text"
                     size="large"
                     sx={{
                         textTransform: 'none',
                     }}
-                    onClick = {() => handleClick()}
                 >
                     <Typography variant='subheading' color="black.main">BLOG</Typography>
                 </Button>
+                </a>
                 <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">ABOUT US</Typography>
                 </Link>

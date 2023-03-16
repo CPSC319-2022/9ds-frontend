@@ -62,7 +62,7 @@ export const FooterAsContributor: FC = () => {
                             About Us
                         </Typography>
                     </Link>
-                    <Link to={"/create"}>
+                    <Link to={"/create"} style={{ textDecoration: 'none' }}>
                         <Typography variant='caption' color='white.main'>
                             Blog
                         </Typography>
