@@ -2,54 +2,16 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
-import { Button } from '../Button'
+import Button from '@mui/material/Button'
 import { Link } from "react-router-dom";
-import { useUser } from '../../hooks/firebase/useUser'
-import { useSignOut } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
 
 
 export const Header: FC = () => {
-    const user = useUser().queriedUser
-    const signOut = useSignOut()
+  const navigate = useNavigate()
 
-    const navigate = useNavigate()
-
-    const renderButtonOrProfileImage: FC = () => {
-        if (user.role !== "") {
-            return (
-                <Stack
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    spacing={20}
-                >
-                    <Link to={'/profile'}>
-                        <img
-                            src={user.profile_image}
-                            width="55px"
-                            height="55px"
-                            style={{borderRadius: '50%', objectFit: 'cover'}}/>
-                    </Link>
-                    <Button
-                        dark text="SIGN OUT"
-                        size="large"
-                        onClick={() => {
-                            signOut.signOutWrapper()
-                            navigate("/login")
-                        }}
-                    />
-                </Stack>
-            )
-        } else {
-            return (
-                <>
-                    <Link to={'/login'} style={{textDecoration: 'none'}}>
-                        <Button dark text="LOGIN/SIGN UP" size="large"/>
-                    </Link>
-                </>
-            )
-        }
+  const handleClick = () => {
+       navigate("/")
     }
 
   return (
@@ -72,11 +34,36 @@ export const Header: FC = () => {
         <Link to={"/"} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color="black.main">HOME</Typography>
         </Link>
+          <Button
+              variant="text"
+              size="large"
+              sx={{
+                  textTransform: 'none',
+              }}
+              onClick = {() => handleClick()}
+          >
+              <Typography variant='subheading' color="black.main">BLOG</Typography>
+          </Button>
         <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color="black.main">ABOUT US</Typography>
         </Link>
       </Stack>
-      {renderButtonOrProfileImage({})}
+        <Link to={'/login'} style={{textDecoration: 'none'}}>
+            <Button
+                variant="outlined"
+                size="large"
+                sx={{
+                    backgroundColor: 'black.main',
+                    textTransform: 'none',
+                    border: `2px solid 'black'`,
+                    ':hover': {
+                        bgcolor: '#4D3188'
+                    }
+                }}
+            >
+                <Typography variant='button' color="white.main">LOGIN/SIGN UP</Typography>
+            </Button>
+        </Link>
     </Stack>
   )
 }

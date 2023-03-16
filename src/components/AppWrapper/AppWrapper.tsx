@@ -1,7 +1,8 @@
 import React, {FC, ReactNode} from 'react'
-import { Header } from "../Header";
-import { HeaderAsAdmin } from "../Header/HeaderAsAdmin"
+import { Header } from "../Header"
+import { HeaderAsReader } from "../Header/HeaderAsReader"
 import { HeaderAsContributor } from "../Header/HeaderAsContributor"
+import { HeaderAsAdmin } from "../Header/HeaderAsAdmin"
 import { Footer } from '../Footer';
 import { FooterAsReader } from '../Footer/FooterAsReader'
 import { FooterAsContributor } from '../Footer/FooterAsContributor'
@@ -18,8 +19,11 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
     const user = useUser().queriedUser
     // eslint-disable-next-line
     const renderHeader: any = () => {
-        if (user.role === "" || user.role === "reader") {
+        if (user.role === "") {
             return (<Header/>)
+        }
+        if (user.role === "reader") {
+            return (<HeaderAsReader/>)
         }
         if (user.role === "contributor") {
             return (<HeaderAsContributor/>)
@@ -41,6 +45,7 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
             return (<FooterAsContributor/>)
         }
     }
+
   return (
     <Stack
       direction='column'

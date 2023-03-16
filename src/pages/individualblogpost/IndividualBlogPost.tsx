@@ -1,14 +1,14 @@
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
-import { Footer } from '../../components/Footer'
-import { Header } from '../../components/Header'
+
 import sample from '../../assets/sample.jpg'
 import { theme } from '../../theme/Theme'
 import { useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
 import { convertFromRaw, EditorState } from 'draft-js'
 import { Editor } from 'react-draft-wysiwyg'
+import { AppWrapper } from '../../components/AppWrapper'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -59,7 +59,7 @@ export const IndividualBlogPost = () => {
       boxSizing='border-box'
       p='24px'
     >
-      <Header />
+      <AppWrapper>
       {!loading && article && (
         <>
           <Article
@@ -160,7 +160,7 @@ export const IndividualBlogPost = () => {
           </Stack>
         </>
       )}
-      <Footer />
+      </AppWrapper>
     </Stack>
   )
 }
