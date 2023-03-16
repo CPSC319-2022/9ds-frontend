@@ -2,13 +2,16 @@ import {Typography} from '@mui/material'
 import {Stack} from '@mui/system'
 import feather from '../../assets/feather.png'
 import logo from '../../assets/logo.png'
-import React, {FC} from 'react'
+import React, {FC, useContext} from 'react'
 import {Link} from 'react-router-dom';
 import {Button} from '../Button/Button'
 import {useApplyPromotion} from '../../hooks/firebase/useUser'
+import { NotificationContext } from '../../context'
+
 
 export const FooterAsReader: FC = () => {
     const applyContributor = useApplyPromotion()
+    const { dispatch } = useContext(NotificationContext)
 
     return (
         <Stack
@@ -39,8 +42,14 @@ export const FooterAsReader: FC = () => {
                 style={{color: 'white.main', height: '66px', width: '266.67px'}}
                 text="BECOME A CONTRIBUTOR"
                 size="large"
-                onClick={() => applyContributor.applyPromotion()}
-                // alert user request sent, awaiting admin to approve
+                onClick={() => {
+                    applyContributor.applyPromotion()
+                    dispatch({
+                        notificationActionType: 'success',
+                        message: `Successfully applied to become contributor!`,
+                    })
+                }}
+
             />
 
             <Stack
