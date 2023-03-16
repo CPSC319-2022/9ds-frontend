@@ -6,39 +6,38 @@ import { useForgotPasswordEmail } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
 
 enum ForgotPasswordErrors {
-    invalidEmail = "auth/invalid-email",
-    userNotFound = "auth/user-not-found"
+  invalidEmail = 'auth/invalid-email',
+  userNotFound = 'auth/user-not-found',
 }
 
-
 export const EmailVerificationForm: FC = () => {
-    const [emailError, setEmailError] = useState('')
-    const [email, setEmail] = useState('')
-    
-    const navigate = useNavigate();
-    const forgotPasswordHandler = useForgotPasswordEmail()
-    
-    const sendEmailLink = (event: FormEvent<HTMLElement>) => {
-        event.preventDefault()
-    
-        forgotPasswordHandler.sendEmail(email.trim())
-        const error = forgotPasswordHandler.error?.code ?? "success"
-    
-        switch(error) {
-            case "success":
-                navigate("/login")
-                break
-            case ForgotPasswordErrors.invalidEmail:
-                setEmailError("Invalid email")
-                break
-            case ForgotPasswordErrors.userNotFound:
-                setEmailError("User was not found")
-                break
-            default:
-                setEmailError("Unable to send email link")
-                break
-        }
+  const [emailError, setEmailError] = useState('')
+  const [email, setEmail] = useState('')
+
+  const navigate = useNavigate()
+  const forgotPasswordHandler = useForgotPasswordEmail()
+
+  const sendEmailLink = (event: FormEvent<HTMLElement>) => {
+    event.preventDefault()
+
+    forgotPasswordHandler.sendEmail(email.trim())
+    const error = forgotPasswordHandler.error?.code ?? 'success'
+
+    switch (error) {
+      case 'success':
+        navigate('/get-started')
+        break
+      case ForgotPasswordErrors.invalidEmail:
+        setEmailError('Invalid email')
+        break
+      case ForgotPasswordErrors.userNotFound:
+        setEmailError('User was not found')
+        break
+      default:
+        setEmailError('Unable to send email link')
+        break
     }
+  }
   return (
     <form onSubmit={sendEmailLink}>
       <Stack
@@ -57,7 +56,9 @@ export const EmailVerificationForm: FC = () => {
             label='Email'
             variant='outlined'
             error={emailError.length > 0}
-            onChange={(event) => {setEmail(event.target.value)}}
+            onChange={(event) => {
+              setEmail(event.target.value)
+            }}
             sx={{ width: '100%' }}
           />
           {emailError.length > 0 && (
@@ -69,8 +70,8 @@ export const EmailVerificationForm: FC = () => {
         <Button
           dark={true}
           text='SEND RESET PASSWORD LINK'
-          type={"submit"}
-          style={{ color: 'white.main'}}
+          type={'submit'}
+          style={{ color: 'white.main' }}
         />
       </Stack>
     </form>
