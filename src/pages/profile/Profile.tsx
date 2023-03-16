@@ -100,7 +100,7 @@ export const Profile: FC = () => {
                 />
               </Stack>
             </Stack>
-            {queriedUser.role !== 'contributor' && (
+            {queriedUser.role == 'reader' && (
               <Stack direction='row'>
                 <Button onClick={handleButtonClick}>
                   <UserType type='contributor' />
@@ -108,7 +108,7 @@ export const Profile: FC = () => {
               </Stack>
             )}
           </Stack>
-          {queriedUser.role === 'contributor' && (
+          {queriedUser.role !== 'reader' && (
             <>
               <Typography
                 variant='h5'

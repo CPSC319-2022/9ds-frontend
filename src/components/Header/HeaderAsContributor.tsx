@@ -5,7 +5,6 @@ import React, {FC} from 'react'
 import {Link, useNavigate} from 'react-router-dom';
 import {useUser} from '../../hooks/firebase/useUser'
 import {useSignOut} from '../../hooks/firebase/useAuth'
-
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';

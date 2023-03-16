@@ -5,9 +5,7 @@ import React, {FC} from 'react'
 import Button from '@mui/material/Button'
 import {Link} from 'react-router-dom';
 
-
 export const Header: FC = () => {
-
     return (
         <Stack
             border="2px solid black"

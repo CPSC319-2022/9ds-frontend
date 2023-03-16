@@ -11,12 +11,14 @@ import { TextEditor, TextEditorInfo } from '../TextEditor'
 /* eslint-disable security/detect-object-injection */
 
 const pictureUrls = [
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
+  'https://media.itpro.co.uk/image/upload/v1570816541/itpro/2018/12/bigdata_shutterstock_1142996930.jpg', // Tech
+  'https://www.camera-rumors.com/wp-content/uploads/2015/01/nikon-d750-sample-images.jpg', //Nature
+  'https://www.pixelstalk.net/wp-content/uploads/2016/05/New-York-City-Backgrounds-HD-Pictures.jpg', //City
+  'https://www.locumjobsonline.com/blog/wp-content/uploads/2018/03/what-doctors-wish-their-patients-knew.jpg', //Health
+  'https://i.huffpost.com/gen/1956226/images/o-MEDITATION-facebook.jpg', //Mindfulness
+  'https://dailyamazingthings.com/wp-content/uploads/2021/06/EARTH.jpg?x84511', //Earth
+  'https://g.foolcdn.com/editorial/images/515923/getty-stock-market-data.jpg', //Stocks
+  'https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/EPaNPEEwl/videoblocks-shot-of-stressed-business-man-in-the-office_sjv1u69im_thumbnail-1080_01.png' //Office
 ]
 
 export enum ArticleFormPurpose {
@@ -202,6 +204,7 @@ export const ArticleForm = ({
                         sx={{
                           width: 150,
                           height: 150,
+                          backgroundSize: 'cover',
                           backgroundImage: `url(${
                             pictureUrls[pictureIndexStart + index]
                           })`,
