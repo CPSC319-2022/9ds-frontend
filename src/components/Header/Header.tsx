@@ -8,62 +8,64 @@ import { useNavigate } from 'react-router-dom'
 
 
 export const Header: FC = () => {
-  const navigate = useNavigate()
+    const navigate = useNavigate()
 
-  const handleClick = () => {
-       navigate("/")
+    const handleClick = () => {
+        navigate("/")
     }
 
-  return (
-    <Stack
-      border='2px solid black'
-      width='100%'
-      borderRadius='12px'
-      height='84px'
-      direction='row'
-      p='16px 32px'
-      boxSizing='border-box'
-      sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-    >
-      <img src={logo} width='100px' height='50px' />
-      <Stack
-        spacing={32}
-        direction='row'
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
-      >
-        <Link to={"/"} style={{ textDecoration: 'none' }}>
-            <Typography variant='subheading' color="black.main">HOME</Typography>
-        </Link>
-          <Button
-              variant="text"
-              size="large"
-              sx={{
-                  textTransform: 'none',
-              }}
-              onClick = {() => handleClick()}
-          >
-              <Typography variant='subheading' color="black.main">BLOG</Typography>
-          </Button>
-        <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
-            <Typography variant='subheading' color="black.main">ABOUT US</Typography>
-        </Link>
-      </Stack>
-        <Link to={'/login'} style={{textDecoration: 'none'}}>
-            <Button
-                variant="outlined"
-                size="large"
-                sx={{
-                    backgroundColor: 'black.main',
-                    textTransform: 'none',
-                    border: `2px solid 'black'`,
-                    ':hover': {
-                        bgcolor: '#4D3188'
-                    }
-                }}
+    return (
+        <Stack
+            border='2px solid black'
+            width='100%'
+            borderRadius='12px'
+            height='84px'
+            direction='row'
+            p='16px 32px'
+            boxSizing='border-box'
+            sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+        >
+            <img src={logo} width='100px' height='50px' />
+            <Stack
+                spacing={32}
+                direction='row'
+                sx={{ justifyContent: 'center', alignItems: 'center' }}
             >
-                <Typography variant='button' color="white.main">LOGIN/SIGN UP</Typography>
-            </Button>
-        </Link>
-    </Stack>
-  )
+                <Link to={"/"} style={{ textDecoration: 'none' }}>
+                    <Typography variant='subheading' color="black.main">HOME</Typography>
+                </Link>
+                <Button
+                    variant="text"
+                    size="large"
+                    sx={{
+                        textTransform: 'none',
+                    }}
+                    onClick = {() => handleClick()}
+                >
+                    <Typography variant='subheading' color="black.main">BLOG</Typography>
+                </Button>
+                <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
+                    <Typography variant='subheading' color="black.main">ABOUT US</Typography>
+                </Link>
+            </Stack>
+            <Link to={'/login'} style={{textDecoration: 'none'}}>
+                <Button
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                        backgroundColor: 'black.main',
+                        textTransform: 'none',
+                        border: `2px solid 'black'`,
+                        ':hover': {
+                            bgcolor: '#4D3188'
+                        }
+                    }}
+                >
+                    <Typography variant='button' color="white.main">LOGIN/SIGN UP</Typography>
+                </Button>
+            </Link>
+        </Stack>
+    )
 }
+
+

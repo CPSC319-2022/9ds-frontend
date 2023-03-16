@@ -104,24 +104,24 @@ export const HeaderAsContributor: FC = () => {
                         height="55px"
                         style={{borderRadius: '50%', objectFit: 'cover'}}/>
                 </Link>
-                    <Button
-                        variant="outlined"
-                        size="large"
-                        sx={{
-                            backgroundColor: 'black.main',
-                            textTransform: 'none',
-                            border: `2px solid 'black'`,
-                            ':hover': {
-                                bgcolor: '#4D3188'
-                            }
-                        }}
-                        onClick={() => {
-                            signOut.signOutWrapper()
-                            navigate("/login")
-                        }}
-                    >
-                        <Typography variant='button' color="white.main">SIGN OUT</Typography>
-                    </Button>
+                <Button
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                        backgroundColor: 'black.main',
+                        textTransform: 'none',
+                        border: `2px solid 'black'`,
+                        ':hover': {
+                            bgcolor: '#4D3188'
+                        }
+                    }}
+                    onClick={() => {
+                        signOut.signOutWrapper()
+                        navigate("/login")
+                    }}
+                >
+                    <Typography variant='button' color="white.main">SIGN OUT</Typography>
+                </Button>
             </Stack>
         </Stack>
     )

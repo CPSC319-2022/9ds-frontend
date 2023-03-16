@@ -10,8 +10,8 @@ import Stack from '@mui/material/Stack'
 import {useUser} from '../../hooks/firebase/useUser'
 
 export interface IProps {
-  children: ReactNode;
-  spacing?: number
+    children: ReactNode;
+    spacing?: number
 }
 
 export const AppWrapper: FC<IProps> = ({children, spacing}) => {
@@ -46,17 +46,17 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
         }
     }
 
-  return (
-    <Stack
-      direction='column'
-      alignItems='center'
-      spacing={space}
-      boxSizing='border-box'
-      p='24px'
-    >
-      {renderHeader()}
-      {children}
-      {renderFooter()}
-    </Stack>
-  )
+    return (
+        <Stack
+            direction='column'
+            alignItems='center'
+            spacing={space}
+            boxSizing='border-box'
+            p='24px'
+        >
+            {renderHeader()}
+            {children}
+            {renderFooter()}
+        </Stack>
+    )
 }
