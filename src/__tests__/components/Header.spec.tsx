@@ -31,16 +31,27 @@ describe('Header Styling', () => {
             'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
         )
 
-        // const [loginAndSignUpButton] = screen.getAllByRole('button')
-        //
-        // expect(loginAndSignUpButton).toBeInTheDocument()
-        // expect(loginAndSignUpButton).toBeEnabled()
-        // expect(loginAndSignUpButton).toHaveClass(
-        //   'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge css-1clz53t-MuiButtonBase-root-MuiButton-root',
-        // )
-        // expect(loginAndSignUpButton).toContainElement(screen.getByText('LOGIN/SIGN UP'))
-        // expect(screen.getByText('LOGIN/SIGN UP')).toHaveClass(
-        //   'MuiTypography-root MuiTypography-button MuiTypography-noWrap css-17bkmi9-MuiTypography-root',
-        // )
+        const [blogButton, loginAndSignUpButton] = screen.getAllByRole('button')
+
+        expect(blogButton).toBeInTheDocument()
+        expect(blogButton).toBeEnabled()
+        expect(blogButton).toHaveClass(
+            'MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeLarge MuiButton-textSizeLarge MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeLarge MuiButton-textSizeLarge css-1b4y6jr-MuiButtonBase-root-MuiButton-root'
+        )
+        expect(blogButton).toContainElement(screen.getByText('BLOG'))
+        expect(screen.getByText('BLOG')).toHaveClass(
+            'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root'
+        )
+
+
+        expect(loginAndSignUpButton).toBeInTheDocument()
+        expect(loginAndSignUpButton).toBeEnabled()
+        expect(loginAndSignUpButton).toHaveClass(
+            'MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeLarge MuiButton-outlinedSizeLarge MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeLarge MuiButton-outlinedSizeLarge css-fu2vjb-MuiButtonBase-root-MuiButton-root'
+        )
+        expect(loginAndSignUpButton).toContainElement(screen.getByText('LOGIN/SIGN UP'))
+        expect(screen.getByText('LOGIN/SIGN UP')).toHaveClass(
+          'MuiTypography-root MuiTypography-button css-dk2pix-MuiTypography-root',
+        )
     })
 })

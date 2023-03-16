@@ -1,11 +1,10 @@
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
-import React, { FC } from 'react'
-import { Link } from "react-router-dom"
-import { useUser } from '../../hooks/firebase/useUser'
-import { useSignOut } from '../../hooks/firebase/useAuth'
-import { useNavigate } from 'react-router-dom'
+import React, {FC} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import {useUser} from '../../hooks/firebase/useUser'
+import {useSignOut} from '../../hooks/firebase/useAuth'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -27,23 +26,23 @@ export const HeaderAsReader: FC = () => {
 
     return (
         <Stack
-            border='2px solid black'
-            width='100%'
-            borderRadius='12px'
-            height='84px'
-            direction='row'
-            p='16px 32px'
-            boxSizing='border-box'
-            sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+            border="2px solid black"
+            width="100%"
+            borderRadius="12px"
+            height="84px"
+            direction="row"
+            p="16px 32px"
+            boxSizing="border-box"
+            sx={{justifyContent: 'space-between', alignItems: 'center'}}
         >
-            <img src={logo} width='100px' height='50px' />
+            <img src={logo} width="100px" height="50px"/>
             <Stack
                 spacing={32}
-                direction='row'
-                sx={{ justifyContent: 'center', alignItems: 'center' }}
+                direction="row"
+                sx={{justifyContent: 'center', alignItems: 'center'}}
             >
-                <Link to={"/"} style={{ textDecoration: 'none' }}>
-                    <Typography variant='subheading' color="black.main">HOME</Typography>
+                <Link to={'/'} style={{textDecoration: 'none'}}>
+                    <Typography variant="subheading" color="black.main">HOME</Typography>
                 </Link>
                 <Button
                     id="basic-button"
@@ -51,9 +50,9 @@ export const HeaderAsReader: FC = () => {
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
-                    endIcon={<KeyboardArrowDownIcon />}
+                    endIcon={<KeyboardArrowDownIcon/>}
                 >
-                    <Typography variant='subheading' color="black.main">BLOG</Typography>
+                    <Typography variant="subheading" color="black.main">BLOG</Typography>
 
                 </Button>
                 <Menu
@@ -66,16 +65,16 @@ export const HeaderAsReader: FC = () => {
                     }}
                 >
                     <MenuItem
-                        sx ={{
+                        sx={{
                             ':hover': {
                                 bgcolor: '#A292C5'
                             }
                         }}
-                        onClick={()=> navigate("/profile")}
+                        onClick={() => navigate('/profile')}
                     >Profile</MenuItem>
                 </Menu>
-                <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
-                    <Typography variant='subheading' color="black.main">ABOUT US</Typography>
+                <Link to={'/about-us'} style={{textDecoration: 'none'}}>
+                    <Typography variant="subheading" color="black.main">ABOUT US</Typography>
                 </Link>
             </Stack>
             <Stack
@@ -104,10 +103,10 @@ export const HeaderAsReader: FC = () => {
                     }}
                     onClick={() => {
                         signOut.signOutWrapper()
-                        navigate("/login")
+                        navigate('/login')
                     }}
                 >
-                    <Typography variant='subheading' color="white.main">SIGN OUT</Typography>
+                    <Typography variant="subheading" color="white.main">SIGN OUT</Typography>
                 </Button>
             </Stack>
         </Stack>
