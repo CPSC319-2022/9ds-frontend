@@ -37,6 +37,9 @@ export const HeaderAsAdmin: FC = () => {
                 <Link to={"/create"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">BLOG</Typography>
                 </Link>
+                <Link to={"/admin"} style={{ textDecoration: 'none' }}>
+                    <Typography variant='subheading' color="black.main">ADMIN PANEL</Typography>
+                </Link>
                 <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
                     <Typography variant='subheading' color="black.main">ABOUT US</Typography>
                 </Link>
@@ -47,12 +50,7 @@ export const HeaderAsAdmin: FC = () => {
                 alignItems="center"
                 spacing={20}
             >
-                <Link to={'/admin'}>
-                    <Button
-                        dark text="ADMIN"
-                        size="large"
-                    />
-                </Link>
+
                 <Link to={'/profile'}>
                     <img
                         src={user.profile_image}
