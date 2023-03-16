@@ -204,6 +204,7 @@ export const ArticleForm = ({
                         sx={{
                           width: 150,
                           height: 150,
+                          backgroundSize: 'cover',
                           backgroundImage: `url(${
                             pictureUrls[pictureIndexStart + index]
                           })`,
