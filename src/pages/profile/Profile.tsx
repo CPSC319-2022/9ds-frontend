@@ -40,6 +40,10 @@ export const Profile: FC = () => {
 
   const handleButtonClick = () => {
     applyPromotion()
+    dispatch({
+      notificationActionType: 'success',
+      message: `Successfully applied to become contributor!`,
+    })
   }
 
   return (
