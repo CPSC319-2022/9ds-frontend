@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent, FC, useEffect } from 'react'
+import React, { useState, MouseEvent, FC } from 'react'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useNavigate } from 'react-router-dom'
