@@ -10,10 +10,9 @@ import {
   useUserDrafts,
 } from '../../hooks/firebase/useUser'
 import { CircularProgress, Box, Button } from '@mui/material'
-import { Header } from '../../components/Header'
-import { Footer } from '../../components/Footer'
 import { NotificationContext } from '../../context'
 import { UserType } from '../../components/UserType'
+import { AppWrapper } from '../../components/AppWrapper'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
@@ -41,11 +40,15 @@ export const Profile: FC = () => {
 
   const handleButtonClick = () => {
     applyPromotion()
+    dispatch({
+      notificationActionType: 'success',
+      message: `Successfully applied to become contributor!`,
+    })
   }
 
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
-      <Header />
+      <AppWrapper>
       {loading || loadingArticles || loadingDrafts ? (
         <Box
           sx={{
@@ -144,7 +147,7 @@ export const Profile: FC = () => {
           )}
         </>
       )}
-      <Footer />
+      </AppWrapper>
     </Stack>
   )
 }

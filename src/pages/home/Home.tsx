@@ -11,7 +11,6 @@ import { NotificationContext } from '../../context'
 
 export const Home: FC = () => {
   const { dispatch } = useContext(NotificationContext)
-
   const [featuredArticle, setFeaturedArticle] = useState<
     ArticlePreview | undefined
   >()
