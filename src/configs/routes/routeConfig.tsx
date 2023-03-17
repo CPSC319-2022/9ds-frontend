@@ -14,6 +14,8 @@ export interface RouteConfig {
   path: string
   component: JSX.Element
   isProtected?: boolean
+  isProtectedAdmin?: boolean
+  isProtectedOwnerUser?: boolean
 }
 
 export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
@@ -50,11 +52,13 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     path: '/admin',
     component: <AdminDashboard />,
     isProtected: true,
+    isProtectedAdmin: true,
   },
   edit: {
     path: '/update/:articleId',
     component: <UpdateArticle />,
     isProtected: true,
+    isProtectedOwnerUser: true,
   },
   individualBlogPost: {
     path: '/blog/:articleId',

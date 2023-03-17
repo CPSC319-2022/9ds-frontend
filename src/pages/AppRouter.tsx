@@ -7,9 +7,20 @@ export const AppRouter = () => {
   const buildRoutes = () => (
     <Routes>
       {Object.values(ROUTE_CONFIG).map(
-        ({ path, component, isProtected }: RouteConfig) => {
+        ({
+          path,
+          component,
+          isProtected,
+          isProtectedAdmin,
+          isProtectedOwnerUser,
+        }: RouteConfig) => {
           const element = isProtected ? (
-            <ProtectedRoute>{component}</ProtectedRoute>
+            <ProtectedRoute
+              isProtectedAdmin={isProtectedAdmin}
+              isProtectedOwnerUser={isProtectedOwnerUser}
+            >
+              {component}
+            </ProtectedRoute>
           ) : (
             component
           )
