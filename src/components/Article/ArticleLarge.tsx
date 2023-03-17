@@ -54,7 +54,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
             justifyContent='flex-end'
             boxSizing='border-box'
             p='12px'
-            textAlign="left"
+            textAlign='left'
           >
             <Typography variant='h5' color='white.main'>
               Featured
