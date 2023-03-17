@@ -44,12 +44,13 @@ export const Profile: FC = () => {
   }
 
   const inputProps = {
-    readOnly: true,
     style: {
       color: 'rgba(0, 0, 0, 0.54)',
-      borderBottom: '1px solid rgba(0, 0, 0, 0.42)'
-    }
-  };
+      borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+      outline: 'none',
+    },
+    disabled: true,
+  }
 
   return (
     <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>

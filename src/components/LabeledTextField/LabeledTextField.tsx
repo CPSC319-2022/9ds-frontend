@@ -23,7 +23,6 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   text,
   value,
   inputProps,
-
 }: LabeledTextFieldProps) => {
   return (
     <Grid container columnSpacing={columnSpacing} alignSelf={'stretch'}>
@@ -32,6 +31,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
       </Grid>
       <Grid item xs={12 - labelWidth}>
         <TextField
+          disabled={inputProps?.disabled === true ? true : false}
           value={value}
           fullWidth
           multiline={multiline}
@@ -42,7 +42,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
           helperText={helperText}
           InputProps={inputProps}
           onChange={(event) => {
-            if(onTextChange) {
+            if (onTextChange) {
               onTextChange(event.target.value)
             }
           }}
