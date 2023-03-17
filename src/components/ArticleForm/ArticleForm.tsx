@@ -18,7 +18,7 @@ const pictureUrls = [
   'https://i.huffpost.com/gen/1956226/images/o-MEDITATION-facebook.jpg', //Mindfulness
   'https://dailyamazingthings.com/wp-content/uploads/2021/06/EARTH.jpg?x84511', //Earth
   'https://g.foolcdn.com/editorial/images/515923/getty-stock-market-data.jpg', //Stocks
-  'https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/EPaNPEEwl/videoblocks-shot-of-stressed-business-man-in-the-office_sjv1u69im_thumbnail-1080_01.png' //Office
+  'https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/EPaNPEEwl/videoblocks-shot-of-stressed-business-man-in-the-office_sjv1u69im_thumbnail-1080_01.png', //Office
 ]
 
 export enum ArticleFormPurpose {
@@ -53,7 +53,9 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  )
   const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
@@ -125,7 +127,11 @@ export const ArticleForm = ({
       setTitle(article.title)
       setCustomLink(article.header_image)
       if (purpose === ArticleFormPurpose.UPDATE) {
-        setEditorState(() => EditorState.createWithContent(convertFromRaw(JSON.parse(article.content))))
+        setEditorState(() =>
+          EditorState.createWithContent(
+            convertFromRaw(JSON.parse(article.content)),
+          ),
+        )
       }
     }
   }, [])
@@ -197,6 +203,7 @@ export const ArticleForm = ({
                       disabled={!pictureUrls[pictureIndexStart + index]}
                       key={index}
                       onClick={() => {
+                        console.log(pictureUrls[pictureIndexStart + index])
                         setSelectedPictureIndex(pictureIndexStart + index)
                       }}
                     >

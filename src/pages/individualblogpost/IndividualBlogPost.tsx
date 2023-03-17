@@ -52,14 +52,7 @@ export const IndividualBlogPost = () => {
   }, [error])
 
   return (
-    <Stack
-      direction='column'
-      alignItems='center'
-      spacing={32}
-      boxSizing='border-box'
-      p='24px'
-    >
-      <AppWrapper>
+    <AppWrapper>
       {!loading && article && (
         <>
           <Article
@@ -160,8 +153,7 @@ export const IndividualBlogPost = () => {
           </Stack>
         </>
       )}
-      </AppWrapper>
-    </Stack>
+    </AppWrapper>
   )
 }
 interface CommentProps {
