@@ -6,7 +6,7 @@ import  { FC, ReactNode } from "react";
 export const Spinner: FC = () => {
     return (
         <Box sx={{color: purple[800]}}>
-            <CircularProgress sx={{width: "15%"}} />
+            <CircularProgress sx={{width: "30%"}} />
         </Box>
     )
 }
