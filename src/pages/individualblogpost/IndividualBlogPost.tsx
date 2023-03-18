@@ -10,6 +10,7 @@ import { convertFromRaw, EditorState } from 'draft-js'
 import { Editor } from 'react-draft-wysiwyg'
 import { AppWrapper } from '../../components/AppWrapper'
 import { BlogMenu } from '../../components/BlogMenu/BlogMenu'
+import { handleLoading } from '../../components/Spinner/Spinner'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -52,6 +53,115 @@ export const IndividualBlogPost = () => {
     }
   }, [error])
 
+  const component = article && (
+        <>
+          <Stack
+            style={{ position: 'relative', width: '100%', height: '100%' }}
+          >
+            <BlogMenu
+              articleId={articleId ?? ''}
+              author_uid={article.author_uid}
+            />
+            <Article
+              clickDisabled={true}
+              size={'large'}
+              article={{
+                title: article.title,
+                content: article.content,
+                header_image: article.header_image,
+                author_image: article.author_image,
+                author_username: article.author_username,
+                publish_time: article.publish_time,
+                articleId: articleId || '',
+              }}
+            />
+          </Stack>
+          <Stack
+            direction='column'
+            alignItems='flex-start'
+            spacing={32}
+            alignSelf='stretch'
+            paddingLeft={'32px'}
+            paddingRight={'32px'}
+          >
+            <Typography variant='h3'>{title}</Typography>
+            <Box
+              width={'100%'}
+              sx={{
+                wordBreak: 'normal',
+                padding: '2px 2px',
+                alignSelf: 'flex-start',
+              }}
+            >
+              <Editor
+                toolbarHidden
+                editorState={editorState}
+                editorStyle={{ fontFamily: 'Roboto', fontSize: '18px' }}
+                readOnly
+              />
+            </Box>
+            <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
+              Comments
+            </Typography>
+            {new Array(commentCount).fill(0).map((_, i) => {
+              return (
+                <Comment
+                  key={i}
+                  profilePic={comments[i].profilePic}
+                  comment={comments[i].comment}
+                />
+              )
+            })}
+            <Button
+              variant='contained'
+              style={{
+                marginTop: 34,
+                backgroundColor: 'black',
+                alignSelf: 'center',
+                display: commentCount == comments.length ? 'none' : 'block',
+              }}
+              onClick={() => {
+                setCommentCount(
+                  commentCount + PAGINATION_COUNT > comments.length
+                    ? comments.length
+                    : commentCount + PAGINATION_COUNT,
+                )
+              }}
+            >
+              LOAD MORE...
+            </Button>
+            <Stack
+              direction='row'
+              spacing={28}
+              boxSizing='border-box'
+              alignItems={'baseline'}
+            >
+              <img
+                src={sample}
+                width='42px'
+                height='42px'
+                style={{ borderRadius: '50%' }}
+              />
+              <Paper
+                style={{
+                  borderBottomLeftRadius: 25,
+                  borderTopRightRadius: 25,
+                  padding: 15,
+                  backgroundColor: theme.palette.black['50%'],
+                }}
+              >
+                <TextField
+                  multiline
+                  variant='standard'
+                  placeholder='Comment away...'
+                  color='primary'
+                />
+              </Paper>
+            </Stack>
+          </Stack>
+        </>
+  )
+
   return (
     <Stack
       direction='column'
@@ -61,114 +171,7 @@ export const IndividualBlogPost = () => {
       p='24px'
     >
       <AppWrapper>
-        {!loading && article && (
-          <>
-            <Stack
-              style={{ position: 'relative', width: '100%', height: '100%' }}
-            >
-              <BlogMenu
-                articleId={articleId ?? ''}
-                author_uid={article.author_uid}
-              />
-              <Article
-                clickDisabled={true}
-                size={'large'}
-                article={{
-                  title: article.title,
-                  content: article.content,
-                  header_image: article.header_image,
-                  author_image: article.author_image,
-                  author_username: article.author_username,
-                  publish_time: article.publish_time,
-                  articleId: articleId || '',
-                }}
-              />
-            </Stack>
-            <Stack
-              direction='column'
-              alignItems='flex-start'
-              spacing={32}
-              alignSelf='stretch'
-              paddingLeft={'32px'}
-              paddingRight={'32px'}
-            >
-              <Typography variant='h3'>{title}</Typography>
-              <Box
-                width={'100%'}
-                sx={{
-                  wordBreak: 'normal',
-                  padding: '2px 2px',
-                  alignSelf: 'flex-start',
-                }}
-              >
-                <Editor
-                  toolbarHidden
-                  editorState={editorState}
-                  editorStyle={{ fontFamily: 'Roboto', fontSize: '18px' }}
-                  readOnly
-                />
-              </Box>
-              <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
-                Comments
-              </Typography>
-              {new Array(commentCount).fill(0).map((_, i) => {
-                return (
-                  <Comment
-                    key={i}
-                    profilePic={comments[i].profilePic}
-                    comment={comments[i].comment}
-                  />
-                )
-              })}
-              <Button
-                variant='contained'
-                style={{
-                  marginTop: 34,
-                  backgroundColor: 'black',
-                  alignSelf: 'center',
-                  display: commentCount == comments.length ? 'none' : 'block',
-                }}
-                onClick={() => {
-                  setCommentCount(
-                    commentCount + PAGINATION_COUNT > comments.length
-                      ? comments.length
-                      : commentCount + PAGINATION_COUNT,
-                  )
-                }}
-              >
-                LOAD MORE...
-              </Button>
-              <Stack
-                direction='row'
-                spacing={28}
-                boxSizing='border-box'
-                alignItems={'baseline'}
-              >
-                <img
-                  src={sample}
-                  width='42px'
-                  height='42px'
-                  style={{ borderRadius: '50%' }}
-                />
-                <Paper
-                  style={{
-                    borderBottomLeftRadius: 25,
-                    borderTopRightRadius: 25,
-                    padding: 15,
-                    backgroundColor: theme.palette.black['50%'],
-                  }}
-                >
-                  <TextField
-                    multiline
-                    variant='standard'
-                    placeholder='Comment away...'
-                    color='primary'
-                  />
-                </Paper>
-              </Stack>
-            </Stack>
-          </>
-        )}
+        {handleLoading(loading || !article, component)}
       </AppWrapper>
     </Stack>
   )

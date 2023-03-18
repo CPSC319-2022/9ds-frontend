@@ -57,9 +57,9 @@ const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 const auth = getAuth(app)
 
-if (!process.env.REACT_APP_ENV) {
-  connectFirestoreEmulator(db, 'localhost', 8080)
-  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
-}
+// if (!process.env.REACT_APP_ENV) {
+//   connectFirestoreEmulator(db, 'localhost', 8080)
+//   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
+// }
 
 export { db, auth }

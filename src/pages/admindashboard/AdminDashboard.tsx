@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { useSetRole, useUserRoleDirectory } from '../../hooks/firebase/useUser'
 import BlockIcon from '@mui/icons-material/Block'
+import { handleLoading } from '../../components/Spinner/Spinner'
 
 enum PromoteButtonRoles {
   CONTRIBUTOR = 'contributor',
@@ -82,73 +83,75 @@ export const AdminDashboard = () => {
     if (users) {
       setUsersSessionCopy(users)
     }
-  }, [users])
-
+  }, [users])   
+  const component = (
+    <Stack direction={'column'} alignSelf={'stretch'} spacing={10}>
+    <Typography variant='h6' color='black.main'>
+      Admin Dashboard
+    </Typography>
+    {!loading && (
+      <DataGrid
+        apiRef={apiRef}
+        onRowSelectionModelChange={(rowSelectModel) => {
+          setSelectedRowsIndexes(
+            rowSelectModel.map((v) => parseInt(v as string)),
+          )
+          setSelectedRows(
+            usersSessionCopy.filter((_, i) => {
+              return rowSelectModel.includes(i + 1)
+            }),
+          )
+        }}
+        rows={usersSessionCopy.map((v, i) => {
+          return {
+            id: i + 1,
+            user: v.username,
+            uid: v.uid,
+            status: v.role,
+            contribStatusReq:
+              v.promotion_request === undefined ? 'no' : 'yes',
+            makeContributor: v.role !== 'contributor',
+            makeAdmin: v.role !== 'admin',
+            setUsersSessionCopy: setUsersSessionCopy,
+            users: usersSessionCopy,
+          }
+        })}
+        autoHeight
+        checkboxSelection
+        disableRowSelectionOnClick
+        columns={columns}
+        hideFooterSelectedRowCount={true}
+        slots={{
+          toolbar: selectedRows.length === 0 ? null : ToolBar,
+        }}
+        slotProps={{
+          toolbar: {
+            numSelected: selectedRows.length,
+            onBan: () => {
+              selectedRows.forEach((v) => {
+                setRole(v.uid, 'banned')
+              })
+              console.log(selectedRowsIndexes)
+              const newUsersSessionCopy: DocumentData[] =
+                usersSessionCopy.map((v, i) =>
+                  selectedRowsIndexes.includes(i + 1)
+                    ? { ...v, role: 'banned' }
+                    : v,
+                )
+              setUsersSessionCopy(newUsersSessionCopy)
+              setSelectedRows([])
+              setSelectedRowsIndexes([])
+              apiRef.current.setRowSelectionModel([])
+            },
+          },
+        }}
+      />
+    )}
+  </Stack>
+  )
   return (
     <AppWrapper>
-      <Stack direction={'column'} alignSelf={'stretch'} spacing={10}>
-        <Typography variant='h6' color='black.main'>
-          Admin Dashboard
-        </Typography>
-        {!loading && (
-          <DataGrid
-            apiRef={apiRef}
-            onRowSelectionModelChange={(rowSelectModel) => {
-              setSelectedRowsIndexes(
-                rowSelectModel.map((v) => parseInt(v as string)),
-              )
-              setSelectedRows(
-                usersSessionCopy.filter((_, i) => {
-                  return rowSelectModel.includes(i + 1)
-                }),
-              )
-            }}
-            rows={usersSessionCopy.map((v, i) => {
-              return {
-                id: i + 1,
-                user: v.username,
-                uid: v.uid,
-                status: v.role,
-                contribStatusReq:
-                  v.promotion_request === undefined ? 'no' : 'yes',
-                makeContributor: v.role !== 'contributor',
-                makeAdmin: v.role !== 'admin',
-                setUsersSessionCopy: setUsersSessionCopy,
-                users: usersSessionCopy,
-              }
-            })}
-            autoHeight
-            checkboxSelection
-            disableRowSelectionOnClick
-            columns={columns}
-            hideFooterSelectedRowCount={true}
-            slots={{
-              toolbar: selectedRows.length === 0 ? null : ToolBar,
-            }}
-            slotProps={{
-              toolbar: {
-                numSelected: selectedRows.length,
-                onBan: () => {
-                  selectedRows.forEach((v) => {
-                    setRole(v.uid, 'banned')
-                  })
-                  console.log(selectedRowsIndexes)
-                  const newUsersSessionCopy: DocumentData[] =
-                    usersSessionCopy.map((v, i) =>
-                      selectedRowsIndexes.includes(i + 1)
-                        ? { ...v, role: 'banned' }
-                        : v,
-                    )
-                  setUsersSessionCopy(newUsersSessionCopy)
-                  setSelectedRows([])
-                  setSelectedRowsIndexes([])
-                  apiRef.current.setRowSelectionModel([])
-                },
-              },
-            }}
-          />
-        )}
-      </Stack>
+        {handleLoading(loading, component)}
     </AppWrapper>
   )
 }
