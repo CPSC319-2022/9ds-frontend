@@ -24,7 +24,6 @@ export const IndividualBlogPost = () => {
   const { loading, error, article } = useArticleRead(articleId || '')
 
   const [title, setTitle] = useState('')
-  const [body, setBody] = useState('')
   const [commentCount, setCommentCount] = useState(1)
   const [comments, setComments] = useState<Array<CommentProps>>([
     { profilePic: sample, comment: 'blasdlklsadads' },
@@ -163,17 +162,9 @@ export const IndividualBlogPost = () => {
   )
 
   return (
-    <Stack
-      direction='column'
-      alignItems='center'
-      spacing={32}
-      boxSizing='border-box'
-      p='24px'
-    >
       <AppWrapper>
         {handleLoading(loading || !article, component)}
       </AppWrapper>
-    </Stack>
   )
 }
 interface CommentProps {

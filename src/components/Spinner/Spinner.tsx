@@ -5,13 +5,13 @@ import  { FC, ReactNode } from "react";
 
 export const Spinner: FC = () => {
     return (
-        <Box sx={{color: purple[800]}}>
-            <CircularProgress sx={{width: "30%"}} />
+        <Box sx={{color: purple[800], pt: "15%", pb: '15%'}}>
+            <CircularProgress size="5rem" color="inherit" />
         </Box>
     )
 }
 
-export function handleLoading(loading: boolean, component: ReactNode): ReactNode {
+export function handleLoading(loading: boolean, component: ReactNode) {
     if (loading) {
         return <Spinner />
     } else {
