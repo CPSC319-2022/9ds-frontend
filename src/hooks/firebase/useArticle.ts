@@ -211,7 +211,7 @@ export const useArticleComments = (articleID: string, n: number) => {
 
 export const useArticleCreate = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [articleId, setArticleId] = useState<string>()
 
   const createArticle = (
@@ -234,10 +234,11 @@ export const useArticleCreate = () => {
           title: title,
         }).then(
           (doc) => {
-            setLoading(false)
+            setLoading(true)
             setArticleId(doc.id)
           },
           (err) => {
+            setLoading(false)
             setError(err.code)
           },
         ),
@@ -252,7 +253,7 @@ export const useArticleCreate = () => {
 
 export const useArticleEdit = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const editArticle = (
     articleID: string,
@@ -261,6 +262,7 @@ export const useArticleEdit = () => {
     header_image: string,
     published: boolean,
   ) => {
+    setLoading(true)
     updateDoc(doc(db, 'article', articleID), {
       content: content,
       edit_time: serverTimestamp(),
@@ -276,6 +278,7 @@ export const useArticleEdit = () => {
         setError(err.code)
       },
     )
+    setLoading(false)
   }
 
   return { editArticle, error, loading }
