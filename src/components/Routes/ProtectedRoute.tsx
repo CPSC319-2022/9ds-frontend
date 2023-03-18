@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useEffect, FC, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { NotificationContext } from '../../context'
+import { NotificationContext } from '../../context/NotificationContext'
 import { useAuth } from '../../hooks/firebase/useAuth'
 
 interface ProtectedRouteProps {
