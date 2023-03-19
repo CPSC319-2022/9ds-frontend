@@ -12,3 +12,15 @@ provider "google" {
   project     = "ds-blog-dev"
   alias       = "dev"
 }
+
+provider "google" {
+  credentials = file("./gcp_keys/qa_tf_key.json")
+  project     = "ds-blog-qa"
+  alias       = "qa"
+}
+
+provider "google" {
+  credentials = file("./gcp_keys/prod_tf_key.json")
+  project     = "ds-blog-376905"
+  alias       = "prod"
+}
