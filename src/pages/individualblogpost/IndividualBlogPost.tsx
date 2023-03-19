@@ -85,6 +85,49 @@ export const IndividualBlogPost = () => {
                 padding: '2px 2px',
                 alignSelf: 'flex-start',
               }}
+<<<<<<< HEAD
+=======
+            >
+              <Editor
+                toolbarHidden
+                editorState={editorState}
+                editorStyle={{ fontFamily: 'Roboto', fontSize: '18px' }}
+                readOnly
+              />
+            </Box>
+            <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
+              Comments
+            </Typography>
+            {new Array(commentCount).fill(0).map((_, i) => {
+              return (
+                <Comment
+                  key={i}
+                  profilePic={comments[i].profilePic}
+                  comment={comments[i].comment}
+                />
+              )
+            })}
+            <Button
+              variant='contained'
+              style={{
+                marginTop: 34,
+                backgroundColor: 'black',
+                alignSelf: 'center',
+                display: commentCount == comments.length ? 'none' : 'block',
+              }}
+              onClick={() => {
+                setCommentCount(
+                  commentCount + PAGINATION_COUNT > comments.length
+                    ? comments.length
+                    : commentCount + PAGINATION_COUNT,
+                )
+              }}
+            >
+              LOAD MORE...
+            </Button>
+            <Stack
+              style={{ position: 'relative', width: '100%', height: '100%' }}
+>>>>>>> 219a0a31f472933722e7f06dba7a3a05217e69e3
             >
               <BlogMenu
                 articleId={articleId ?? ''}
