@@ -1,4 +1,3 @@
-
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
 import {useContext, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
@@ -19,6 +18,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import React from 'react'
+import { useAuth } from '../../hooks/firebase/useAuth'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -27,14 +27,15 @@ const PAGINATION_COUNT = 5
 
 export const IndividualBlogPost = () => {
   const navigate = useNavigate()
-  // load user for commenting
   const user: UserData = useUser().queriedUser
   const { articleId } = useParams()
   const { loading, error, article } = useArticleRead(articleId || '')
+  // eslint-disable-next-line
   const articleComments = useArticleComments(articleId!, PAGINATION_COUNT)
 
   const [title, setTitle] = useState('')
   // get ALL comments from firestore
+  // eslint-disable-next-line
   const [comments, setComments] = useState<comment[]>(useArticleComments(articleId!, 1000).comments)
   const [commentCount, setCommentCount] = useState(comments.length)
   const commentCreate = useCommentCreate()
@@ -46,17 +47,20 @@ export const IndividualBlogPost = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   )
+
+  const auth = useAuth()
   const handleSubmitComment = () => {
       const commentToSubmit: comment = {
           commenter_uid: user.uid,
           commenter_image: user.profile_image,
           commenter_username: user.username,
           content: currComment,
-          post_time: Timestamp.now()
+          post_time: Timestamp.now(),
+          commentID: ""
       }
 
-        // eslint-disable-next-line
-        // commentCreate.createComment(articleId!, commentToSubmit)
+      // eslint-disable-next-line
+      commentCreate.createComment(articleId!, commentToSubmit)
       setComments((comments) => [...comments, commentToSubmit])
       setCommentCount(commentCount => commentCount + 1)
       setIsCurrCommentError(false)
@@ -141,6 +145,8 @@ export const IndividualBlogPost = () => {
               key={i}
               profilePic={comments[i].commenter_image}
               comment={comments[i].content}
+              post_time={comments[i].post_time}
+              commenter_uid={comments[i].commenter_uid}
             />
           )
         })}
@@ -208,8 +214,13 @@ export const IndividualBlogPost = () => {
                               setIsCurrCommentError(true)
                               setCommentHelperText('Comment cannot be empty.')
                           } else {
-                              handleSubmitComment()
-                              setCurrComment('')
+                              if (user.role === "") {
+                                  setIsCurrCommentError(true)
+                                  setCommentHelperText('Please sign up or sign in first.')
+                              } else {
+                                  handleSubmitComment()
+                                  setCurrComment('')
+                              }
                           }
                       }}
                   >
@@ -221,7 +232,7 @@ export const IndividualBlogPost = () => {
       </Stack>
     </>
   )
-    const Comment = ({profilePic, comment}: CommentProps) => {
+    const Comment = ({profilePic, comment, post_time, commenter_uid}: CommentProps) => {
         const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
         const open = Boolean(anchorEl)
         const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -237,10 +248,14 @@ export const IndividualBlogPost = () => {
 
         const commentEdit = useCommentEdit()
         const commentDelete = useCommentDelete()
+        const filteredComment = comments.filter(com => (com.commenter_image === profilePic && com.content === comment && com.post_time === post_time))
+        const commentID = filteredComment[0].commentID
+
+        const ownedBySignedInUser = (auth.user && commenter_uid === auth.user.uid)
 
         const handleSave = () => {
-            commentEdit.editComment(articleId!, "commentID", commentContent)
-            // update local
+            // eslint-disable-next-line
+            commentEdit.editComment(articleId!, commentID, commentContent)
             const updatedComments = comments.map((obj) => {
                 if (obj.content === comment) {
                     return {...obj, content: commentContent}
@@ -253,10 +268,6 @@ export const IndividualBlogPost = () => {
             setCommentContentHelperText("")
         }
         const {dispatch} = useContext(NotificationContext)
-
-        useEffect(() => {
-
-        }, [commentEdit.loading])
 
         return (
             <Stack
@@ -332,63 +343,62 @@ export const IndividualBlogPost = () => {
                                 {comment}
                             </Typography>
                             </Stack>
-                            <Button
-                                id="basic-button"
-                                aria-controls={open ? 'basic-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
-                                onClick={handleClick}
-                                endIcon={<KeyboardArrowDownIcon/>}
-                            />
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                MenuListProps={{
-                                    'aria-labelledby': 'basic-button',
-                                }}
-                            >
-                                <MenuItem
-                                    sx={{
-                                        ':hover': {
-                                            bgcolor: '#A292C5',
-                                        },
-                                    }}
-                                    onClick={() => setIsEditing(true)}
-                                >
-                                    <Typography variant="subheading" color="black.main">
-                                        edit
-                                    </Typography>
-                                </MenuItem>
-                                <MenuItem
-                                    sx={{
-                                        ':hover': {
-                                            bgcolor: '#A292C5',
-                                        },
-                                    }}
-                                    onClick={() => {
+                            {ownedBySignedInUser ? (
+                                    <><Button
+                                        id="basic-button"
+                                        aria-controls={open ? 'basic-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={open ? 'true' : undefined}
+                                        onClick={handleClick}
+                                        endIcon={<KeyboardArrowDownIcon/>}/><Menu
+                                        id="basic-menu"
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'basic-button',
+                                        }}
+                                    >
+                                        <MenuItem
+                                            sx={{
+                                                ':hover': {
+                                                    bgcolor: '#A292C5',
+                                                },
+                                            }}
+                                            onClick={() => setIsEditing(true)}
+                                        >
+                                            <Typography variant="subheading" color="black.main">
+                                                edit
+                                            </Typography>
+                                        </MenuItem>
+                                        <MenuItem
+                                            sx={{
+                                                ':hover': {
+                                                    bgcolor: '#A292C5',
+                                                },
+                                            }}
+                                            onClick={() => {
 
-                                        const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
-                                        if (response) {
-                                            commentDelete.deleteComment(articleId!, "commentId")
-                                            // TODO if success, update local, else dispatch faillure
-                                            // update local
-                                            setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
-                                            setCommentCount(commentCount => commentCount - 1)
-                                            dispatch({
-                                                notificationActionType: 'success',
-                                                message: `Successfully applied to become contributor!`,
-                                            })
-                                        }
-                                    }}
-                                >
+                                                const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
+                                                if (response) {
+                                                    // eslint-disable-next-line
+                                                    commentDelete.deleteComment(articleId!, commentID)
+                                                    setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
+                                                    setCommentCount(commentCount => commentCount - 1)
+                                                    dispatch({
+                                                        notificationActionType: 'success',
+                                                        message: `Successfully applied to become contributor!`,
+                                                    })
+                                                }
+                                            }}
+                                        >
 
-                                    <Typography variant="subheading" color="black.main">
-                                        delete
-                                    </Typography>
-                                </MenuItem>
-                            </Menu>
+                                            <Typography variant="subheading" color="black.main">
+                                                delete
+                                            </Typography>
+                                        </MenuItem>
+                                    </Menu></>
+                                ) : (<></>)}
                         </Stack>
                     )}
                 </Paper>
@@ -402,6 +412,8 @@ export const IndividualBlogPost = () => {
 interface CommentProps {
   profilePic: string
   comment: string
+  post_time: Timestamp
+  commenter_uid: string
 }
 
 

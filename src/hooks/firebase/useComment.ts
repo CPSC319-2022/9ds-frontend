@@ -21,6 +21,7 @@ export interface comment {
   commenter_username: string
   content: string
   post_time: Timestamp
+  commentID: string
 }
 
 export const useCommentCreate = () => {
