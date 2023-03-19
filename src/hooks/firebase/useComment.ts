@@ -23,7 +23,7 @@ export const useCommentCreate = ()  => {
             .then((user) =>
                 addDoc(collection(db, `article/${articleID}/comments`), {
                     commenter_uid: user.uid,
-                    profile_image: user.profile_image,
+                    commenter_image: user.profile_image,
                     commenter_username: user.username,
                     content: comment,
                     post_time: serverTimestamp()

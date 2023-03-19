@@ -175,7 +175,14 @@ export const useArticleComments = (articleID: string, n: number) => {
       .then((docs: QuerySnapshot<DocumentData>) => {
         const commentsData: DocumentData[] = []
         docs.forEach((doc) => {
-          commentsData.push(doc.data)
+          commentsData.push({
+              commenter_uid: doc.data().commenter_uid,
+              commenter_image: doc.data().commenter_image,
+              commenter_username: doc.data().commenter_username,
+              content: doc.data().content,
+              post_time: doc.data().post_time,
+              commentID: doc.id
+          })
         })
         setLoading(false)
         setComments(commentsData as comment[])
