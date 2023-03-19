@@ -9,10 +9,11 @@ import {
   useUserArticles,
   useUserDrafts,
 } from '../../hooks/firebase/useUser'
-import { CircularProgress, Box, Button } from '@mui/material'
-import { NotificationContext } from '../../context'
+import { Button } from '@mui/material'
+import { NotificationContext } from '../../context/NotificationContext'
 import { UserType } from '../../components/UserType'
 import { AppWrapper } from '../../components/AppWrapper'
+import { handleLoading } from '../../components/Spinner/Spinner'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
@@ -46,72 +47,101 @@ export const Profile: FC = () => {
     })
   }
 
-  return (
-    <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
-      <AppWrapper>
-      {loading || loadingArticles || loadingDrafts ? (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-          }}
-        >
-          <CircularProgress color='secondary' />
-        </Box>
-      ) : (
-        <>
-          <Typography
-            variant='h4'
-            color='black.main'
-            sx={{ paddingLeft: '32px' }}
-          >
-            Profile
-          </Typography>
-          <Stack direction='row' spacing={200} boxSizing='border-box' p='24px'>
-            <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
-              <img
-                src={queriedUser.profile_image}
-                width='140px'
-                height='140px'
-                style={{ borderRadius: '50%' }}
-              />
-              <Stack direction='column' spacing={32} width={'auto'}>
-                <LabeledTextField
-                  variant='standard'
-                  placeholder={queriedUser.role}
-                  label='Account type'
-                  multiline={false}
-                  labelWidth={5}
-                  text={
-                    <Typography variant='title' sx={{ color: 'black' }}>
-                      Account Type
-                    </Typography>
-                  }
+  const component = (
+          <>
+            <Typography
+              variant='h4'
+              color='black.main'
+              sx={{ paddingLeft: '32px' }}
+            >
+              Profile
+            </Typography>
+            <Stack
+              direction='row'
+              spacing={200}
+              boxSizing='border-box'
+              p='24px'
+            >
+              <Stack
+                direction='row'
+                spacing={48}
+                boxSizing='border-box'
+                p='24px'
+              >
+                <img
+                  src={queriedUser.profile_image}
+                  width='140px'
+                  height='140px'
+                  style={{ borderRadius: '50%' }}
                 />
-                <LabeledTextField
-                  variant='standard'
-                  placeholder={queriedUser.username}
-                  label='Name'
-                  multiline={false}
-                  labelWidth={5}
-                  text={
-                    <Typography variant='title' sx={{ color: 'black' }}>
-                      Name
-                    </Typography>
-                  }
-                />
+                <Stack direction='column' spacing={32} width={'auto'}>
+                  <LabeledTextField
+                    variant='standard'
+                    placeholder={queriedUser.role}
+                    label='Account type'
+                    multiline={false}
+                    labelWidth={5}
+                    text={
+                      <Typography variant='title' sx={{ color: 'black' }}>
+                        Account Type
+                      </Typography>
+                    }
+                  />
+                  <LabeledTextField
+                    variant='standard'
+                    placeholder={queriedUser.username}
+                    label='Name'
+                    multiline={false}
+                    labelWidth={5}
+                    text={
+                      <Typography variant='title' sx={{ color: 'black' }}>
+                        Name
+                      </Typography>
+                    }
+                  />
+                </Stack>
               </Stack>
+              {queriedUser.role == 'reader' && (
+                <Stack direction='row'>
+                  <Button onClick={handleButtonClick}>
+                    <UserType type='contributor' />
+                  </Button>
+                </Stack>
+              )}
             </Stack>
-            {queriedUser.role == 'reader' && (
-              <Stack direction='row'>
-                <Button onClick={handleButtonClick}>
-                  <UserType type='contributor' />
-                </Button>
-              </Stack>
+            {queriedUser.role !== 'reader' && (
+              <>
+                <Typography
+                  variant='h5'
+                  color='black.main'
+                  justifyItems='flex-start'
+                  sx={{ paddingLeft: '32px' }}
+                >
+                  Posts
+                </Typography>
+                <Stack direction='row' spacing={16} justifyContent='flex-start'>
+                  {[...UserArticles].map((article) => (
+                    <Article
+                      key={article.articleId}
+                      size='small'
+                      article={article}
+                    />
+                  ))}
+                </Stack>
+                <Typography
+                  variant='h5'
+                  color='black.main'
+                  sx={{ paddingLeft: '32px' }}
+                >
+                  Drafts
+                </Typography>
+                <Stack direction='row' spacing={16} justifyContent='flex-start'>
+                  {[...UserDrafts].map((draft) => (
+                    <Article key={draft.articleId} article={draft} />
+                  ))}
+                </Stack>
+              </>
             )}
-          </Stack>
           {queriedUser.role !== 'reader' && (
             <>
               <Typography
@@ -146,8 +176,11 @@ export const Profile: FC = () => {
             </>
           )}
         </>
-      )}
+  )
+
+  return (
+      <AppWrapper>
+        {handleLoading(loading || loadingArticles || loadingDrafts, component)}
       </AppWrapper>
-    </Stack>
   )
 }

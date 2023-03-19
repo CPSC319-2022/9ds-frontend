@@ -7,7 +7,8 @@ import {
   useArticleRecents,
 } from '../../hooks/firebase/useArticle'
 import { UISkeleton } from '../../components/UISkeleton'
-import { NotificationContext } from '../../context'
+import { handleLoading } from '../../components/Spinner/Spinner'
+import { NotificationContext } from '../../context/NotificationContext'
 
 export const Home: FC = () => {
   const { dispatch } = useContext(NotificationContext)
@@ -33,8 +34,8 @@ export const Home: FC = () => {
     }
   }, [articles])
 
-  return (
-    <AppWrapper>
+  const component = (
+    <>
       {featuredArticle ? (
         <Article size='large' article={featuredArticle} />
       ) : (
@@ -49,6 +50,10 @@ export const Home: FC = () => {
         loadingNext={loadingNext}
         endOfCollection={endOfCollection}
       />
-    </AppWrapper>
+    </>
   )
+
+  return (<AppWrapper>
+    {handleLoading(loading, component)}
+  </AppWrapper>)
 }

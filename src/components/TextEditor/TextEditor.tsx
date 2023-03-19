@@ -10,15 +10,16 @@ import { Editor } from 'react-draft-wysiwyg'
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { FC, useState } from 'react'
 import { purple, grey } from '@mui/material/colors'
+import React from 'react'
 
 export interface TextEditorInfo {
   editorState: EditorState
   setEditorState: (editorState: EditorState) => void
 }
 interface TextEditorProps {
-  editorInfo?: TextEditorInfo
-  error?: boolean
-  errorMsg?: string
+  editorInfo: TextEditorInfo
+  error: boolean
+  errorMsg: string
 }
 
 export function convertToPlainText(articleContent: string) {
@@ -36,12 +37,10 @@ export const TextEditor: FC<TextEditorProps> = ({
   error,
   errorMsg,
 }) => {
-  const [editState, setEditState] =
-    editorInfo === undefined
-      ? useState(() => EditorState.createEmpty())
-      : [editorInfo.editorState, editorInfo.setEditorState]
 
-  const [focus, setFocus] = useState(false)
+    const {editorState: editState, setEditorState: setEditState} = editorInfo
+
+  const [focus, setFocus] = React.useState(false)
 
   const toolbarConfig = {
     options: ['inline'],
@@ -73,12 +72,13 @@ export const TextEditor: FC<TextEditorProps> = ({
           }}
         >
           <Editor
-            placeholder={'250 words or less'}
+            placeholder={'Start typing'}
             editorStyle={{
               fontFamily: 'Roboto',
               maxLines: 10,
               fontSize: '18px',
             }}
+            ariaLabel="editor"
             toolbar={toolbarConfig}
             editorState={editState}
             onEditorStateChange={setEditState}

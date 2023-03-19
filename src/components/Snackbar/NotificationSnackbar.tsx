@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert, { AlertProps } from '@mui/material/Alert'
-import { NotificationContext } from '../../context'
+import { NotificationContext } from '../../context/NotificationContext'
 import { useContext, forwardRef, SyntheticEvent } from 'react'
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(

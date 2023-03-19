@@ -1,5 +1,8 @@
 import React, { ErrorInfo, ReactElement } from 'react'
-import { NotificationActionType, NotificationContext } from '../../context'
+import {
+  NotificationActionType,
+  NotificationContext,
+} from '../../context/NotificationContext'
 
 interface ErrorBoundaryProps {
   children: ReactElement

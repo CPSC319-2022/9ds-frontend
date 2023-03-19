@@ -88,15 +88,10 @@ export const ArticleForm = ({
         setTitleHelperText('')
       }
       const bodyText = editorState.getCurrentContent().getPlainText()
-      if (bodyText.length === 0 || countWords(bodyText) > 250) {
+      if (bodyText.length === 0) {
         isInvalid = true
         setIsBodyError(true)
-        if (bodyText.length === 0) {
-          setBodyHelperText("Body can't be empty.")
-        } else {
-          setIsBodyError(false)
-          setBodyHelperText('')
-        }
+        setBodyHelperText("Body can't be empty.")
       } else {
         setIsBodyError(false)
         setBodyHelperText('')
