@@ -16,13 +16,14 @@ import {
   startAfter,
   Query,
 } from 'firebase/firestore'
-import { db, auth } from '../../firebaseApp'
+import { db } from '../../firebaseApp'
 import { useState, useEffect } from 'react'
 import {
   articleDraftTranslator,
   ArticlePreview,
   articlePreviewTranslator,
 } from './useArticle'
+import { useAuth } from './useAuth'
 
 export interface UserData {
   role: string
@@ -71,7 +72,6 @@ export const useUserRoleDirectory = (n: number | null, roles: string[]) => {
         setEndOfCollection(n !== null ? docs.docs.length < n : true)
       })
       .catch((err) => {
-        console.log(err)
         setError(err.code)
       })
   }, [])
@@ -94,6 +94,7 @@ export const useUserRoleDirectory = (n: number | null, roles: string[]) => {
 }
 
 export const useUserArticles = (uid: string, n: number) => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [loadingNext, setLoadingNext] = useState(false)
@@ -106,7 +107,7 @@ export const useUserArticles = (uid: string, n: number) => {
   const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {
-    if (auth.currentUser === null) {
+    if (!currentUser) {
       setError('unauthenticated')
     } else {
       q = query(
@@ -148,6 +149,7 @@ export const useUserArticles = (uid: string, n: number) => {
 }
 
 export const useUserDrafts = (n: number) => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [loadingNext, setLoadingNext] = useState(false)
@@ -160,12 +162,12 @@ export const useUserDrafts = (n: number) => {
   const [endOfCollection, setEndOfCollection] = useState(false)
 
   useEffect(() => {
-    if (auth.currentUser === null) {
+    if (!currentUser) {
       setError('unauthenticated')
     } else {
       q = query(
         collection(db, 'article'),
-        where('author_uid', '==', auth.currentUser.uid),
+        where('author_uid', '==', currentUser.uid),
         where('published', '==', false),
         orderBy('edit_time', 'desc'),
       )
@@ -180,10 +182,10 @@ export const useUserDrafts = (n: number) => {
           setError(err.code)
         })
     }
-  }, [auth.currentUser])
+  }, [currentUser])
 
   const getNext = (n: number) => {
-    if (auth.currentUser === null) {
+    if (!currentUser) {
       setError('unauthenticated')
     } else {
       setLoadingNext(true)
@@ -204,13 +206,14 @@ export const useUserDrafts = (n: number) => {
 }
 
 export const useApplyPromotion = () => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
   const applyPromotion = () => {
-    if (auth.currentUser !== null) {
+    if (currentUser) {
       updateDoc(
-        doc(db, 'users', auth.currentUser.uid),
+        doc(db, 'users', currentUser.uid),
         'promotion_request',
         'requested',
       ).then(
@@ -256,6 +259,7 @@ export const useSetRole = () => {
 }
 
 export const useUser = () => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [queriedUser, setQueriedUser] = useState<UserData>({
@@ -266,7 +270,7 @@ export const useUser = () => {
   })
 
   useEffect(() => {
-    getUser(auth.currentUser !== null ? auth.currentUser.uid : null)
+    getUser(currentUser?.uid ?? null)
       .then((user) => {
         setQueriedUser(user)
         setLoading(false)
@@ -274,7 +278,7 @@ export const useUser = () => {
       .catch((err: FirestoreErrorCode) => {
         setError(err)
       })
-  }, [auth.currentUser])
+  }, [currentUser])
 
   return { error, loading, queriedUser }
 }
