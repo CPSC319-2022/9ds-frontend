@@ -1,20 +1,26 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { useState, FormEvent, useEffect, useCallback } from 'react'
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
+import { useState, FormEvent, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Article } from '../../hooks/firebase/useArticle'
+import { useUser } from '../../hooks/firebase/useUser'
+import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
+import { TextEditor, TextEditorInfo } from '../TextEditor'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
 
 const pictureUrls = [
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
-  'https://via.placeholder.com/150',
+  'https://media.itpro.co.uk/image/upload/v1570816541/itpro/2018/12/bigdata_shutterstock_1142996930.jpg', // Tech
+  'https://www.camera-rumors.com/wp-content/uploads/2015/01/nikon-d750-sample-images.jpg', //Nature
+  'https://www.pixelstalk.net/wp-content/uploads/2016/05/New-York-City-Backgrounds-HD-Pictures.jpg', //City
+  'https://www.locumjobsonline.com/blog/wp-content/uploads/2018/03/what-doctors-wish-their-patients-knew.jpg', //Health
+  'https://i.huffpost.com/gen/1956226/images/o-MEDITATION-facebook.jpg', //Mindfulness
+  'https://dailyamazingthings.com/wp-content/uploads/2021/06/EARTH.jpg?x84511', //Earth
+  'https://g.foolcdn.com/editorial/images/515923/getty-stock-market-data.jpg', //Stocks
+  'https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/EPaNPEEwl/videoblocks-shot-of-stressed-business-man-in-the-office_sjv1u69im_thumbnail-1080_01.png', //Office
 ]
 
 export enum ArticleFormPurpose {
@@ -38,9 +44,11 @@ interface ArticleFormProps {
 export const ArticleForm = ({
   purpose,
   onSubmit,
-  ...rest
+  article,
+  articleId,
 }: ArticleFormProps) => {
   const navigate = useNavigate()
+  const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
 
@@ -49,10 +57,20 @@ export const ArticleForm = ({
   const [titleHelperText, setTitleHelperText] = useState('')
 
   const [isBodyError, setIsBodyError] = useState(false)
-  const [body, setBody] = useState('')
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  )
+  const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  const allowDelete =
+    articleId &&
+    purpose === ArticleFormPurpose.UPDATE &&
+    (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLElement>, published: boolean) => {
@@ -69,33 +87,33 @@ export const ArticleForm = ({
         setIsTitleError(false)
         setTitleHelperText('')
       }
-      if (body.length === 0 || countWords(body) > 250) {
+      const bodyText = editorState.getCurrentContent().getPlainText()
+      if (bodyText.length === 0) {
         isInvalid = true
         setIsBodyError(true)
-        if (body.length === 0) {
-          setBodyHelperText("Body can't be empty.")
-        } else {
-          setBodyHelperText('Body must be 250 words or less.')
-        }
+        setBodyHelperText("Body can't be empty.")
       } else {
         setIsBodyError(false)
         setBodyHelperText('')
       }
       if (!isInvalid) {
-        if (rest.articleId !== undefined) {
+        const encodedText = JSON.stringify(
+          convertToRaw(editorState.getCurrentContent()),
+        )
+        if (articleId !== undefined) {
           onSubmit(
             title,
-            body,
+            encodedText,
             customLink.length > 0
               ? customLink
               : pictureUrls[selectedPictureIndex],
             published,
-            rest.articleId,
+            articleId,
           )
         } else {
           onSubmit(
             title,
-            body,
+            encodedText,
             customLink.length > 0
               ? customLink
               : pictureUrls[selectedPictureIndex],
@@ -104,19 +122,22 @@ export const ArticleForm = ({
         }
         navigate('/profile')
       }
-
       e.preventDefault()
     },
-    [title, body, customLink],
+    [title, editorState, customLink],
   )
 
   useEffect(() => {
-    const { article } = rest
-
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
-      setBody(article.content)
+      if (purpose === ArticleFormPurpose.UPDATE) {
+        setEditorState(() =>
+          EditorState.createWithContent(
+            convertFromRaw(JSON.parse(article.content)),
+          ),
+        )
+      }
     }
   }, [])
 
@@ -194,6 +215,7 @@ export const ArticleForm = ({
                         sx={{
                           width: 150,
                           height: 150,
+                          backgroundSize: 'cover',
                           backgroundImage: `url(${
                             pictureUrls[pictureIndexStart + index]
                           })`,
@@ -246,30 +268,49 @@ export const ArticleForm = ({
             helperText={titleHelperText}
             value={title}
           />
-          <LabeledTextField
-            variant='outlined'
-            onTextChange={setBody}
-            placeholder='250 words or less'
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                Body
-              </Typography>
-            }
-            labelWidth={1}
-            multiline={true}
-            rows={7}
+          <TextEditor
+            editorInfo={editorInfo}
             error={isBodyError}
-            helperText={bodyHelperText}
-            value={body}
+            errorMsg={bodyHelperText}
           />
         </Stack>
-        <Button
-          type='submit'
-          variant='contained'
-          style={{ marginTop: 34, backgroundColor: 'black' }}
+        <Box
+          sx={{
+            marginTop: 34,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
         >
-          {purpose === ArticleFormPurpose.CREATE ? 'CREATE' : 'UPDATE'}
-        </Button>
+          <Button
+            type='submit'
+            variant='contained'
+            style={{ backgroundColor: 'black' }}
+          >
+            <Typography>
+              {purpose === ArticleFormPurpose.CREATE ? 'CREATE' : 'UPDATE'}
+            </Typography>
+          </Button>
+          {allowDelete && (
+            <>
+              <Button
+                sx={{ marginLeft: '8px' }}
+                variant='contained'
+                onClick={() => {
+                  setDeleteModalOpen(true)
+                }}
+              >
+                <Typography>DELETE</Typography>
+              </Button>
+              <DeleteModal
+                articleId={articleId}
+                open={deleteModalOpen}
+                handleClose={() => setDeleteModalOpen(false)}
+                redirect
+              />
+            </>
+          )}
+        </Box>
       </form>
     </Container>
   )

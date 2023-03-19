@@ -64,6 +64,13 @@ const paletteObject = {
     '25%': '#6E46C3',
     transparent: alpha('#6E46C3', 0.3),
   },
+  secondary: {
+    main: 'rgba(255, 0, 0, 0.33)',
+    '50%': 'rgba(255, 0, 0, 0.33)',
+    '30%': 'rgba(255, 0, 0, 0.33)',
+    '25%': 'rgba(255, 0, 0, 0.33)',
+    transparent: alpha('rgba(255, 0, 0, 0.33)', 0.3),
+  },
   black: {
     main: '#000000',
     '50%': alpha('#373737', 0.5),
