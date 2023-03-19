@@ -8,25 +8,25 @@ import { useUser } from '../../hooks/firebase/useUser'
 
 interface ProtectedRouteProps {
   children: ReactNode
-  isProtectedAdmin?: boolean
+  allowedRoles?: string[]
   isProtectedOwnerUser?: boolean
 }
 
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   children,
-  isProtectedAdmin,
+  allowedRoles,
   isProtectedOwnerUser,
 }) => {
   const navigate = useNavigate()
   const { articleId } = useParams()
   const article = articleId ? useArticleRead(articleId)?.article : undefined
 
-  const { user, initializing } = useAuth()
+  const { user, initializing: userInitializing } = useAuth()
   const { queriedUser, loading: queriedUserLoading } = useUser()
   const { dispatch } = useContext(NotificationContext)
 
   useEffect(() => {
-    if (!initializing) {
+    if (!userInitializing) {
       if (!user) {
         dispatch({
           notificationActionType: 'error',
@@ -36,13 +36,13 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
       }
 
       if (
-        isProtectedAdmin &&
+        allowedRoles &&
         !queriedUserLoading &&
-        queriedUser.role !== 'admin'
+        !allowedRoles.includes(queriedUser.role)
       ) {
         dispatch({
           notificationActionType: 'error',
-          message: 'Requires admin access',
+          message: 'No authorization to access this page',
         })
         return navigate('/')
       }
@@ -60,10 +60,9 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
         return navigate('/')
       }
     }
-  }, [user, initializing, article, queriedUser, queriedUserLoading])
+  }, [user, userInitializing, article, queriedUser, queriedUserLoading])
 
-  const hideContent =
-    !user || ((isProtectedAdmin || isProtectedOwnerUser) && queriedUserLoading)
+  const hideContent = userInitializing || queriedUserLoading
 
   return <>{hideContent ? null : children}</>
 }

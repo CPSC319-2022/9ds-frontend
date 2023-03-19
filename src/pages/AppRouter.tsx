@@ -11,12 +11,12 @@ export const AppRouter = () => {
           path,
           component,
           isProtected,
-          isProtectedAdmin,
+          allowedRoles,
           isProtectedOwnerUser,
         }: RouteConfig) => {
           const element = isProtected ? (
             <ProtectedRoute
-              isProtectedAdmin={isProtectedAdmin}
+              allowedRoles={allowedRoles}
               isProtectedOwnerUser={isProtectedOwnerUser}
             >
               {component}
