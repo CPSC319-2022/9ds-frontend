@@ -9,11 +9,13 @@ import { convertToPlainText } from '../TextEditor'
 export interface ArticleLargeProps {
   article: ArticlePreview
   clickDisabled?: boolean
+  notFeatured: boolean
 }
 
 export const ArticleLarge: FC<ArticleLargeProps> = ({
   article,
   clickDisabled,
+  notFeatured,
 }) => {
   const navigate = useNavigate()
   return (
@@ -56,9 +58,11 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
             p='12px'
             textAlign='left'
           >
-            <Typography variant='h5' color='white.main'>
-              Featured
-            </Typography>
+            {!notFeatured && (
+              <Typography variant='h5' color='white.main'>
+                Featured
+              </Typography>
+            )}
             <Typography variant='title' color='white.main'>
               {article.title}
             </Typography>

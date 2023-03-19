@@ -37,8 +37,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   error,
   errorMsg,
 }) => {
-
-    const {editorState: editState, setEditorState: setEditState} = editorInfo
+  const { editorState: editState, setEditorState: setEditState } = editorInfo
 
   const [focus, setFocus] = React.useState(false)
 
@@ -78,7 +77,7 @@ export const TextEditor: FC<TextEditorProps> = ({
               maxLines: 10,
               fontSize: '18px',
             }}
-            ariaLabel="editor"
+            ariaLabel='editor'
             toolbar={toolbarConfig}
             editorState={editState}
             onEditorStateChange={setEditState}
