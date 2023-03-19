@@ -53,7 +53,6 @@ export const IndividualBlogPost = () => {
   }, [error])
 
   return (
-<<<<<<< HEAD
     <AppWrapper>
       {!loading && article && (
         <>
@@ -86,20 +85,6 @@ export const IndividualBlogPost = () => {
                 padding: '2px 2px',
                 alignSelf: 'flex-start',
               }}
-=======
-    <Stack
-      direction='column'
-      alignItems='center'
-      spacing={32}
-      boxSizing='border-box'
-      p='24px'
-    >
-      <AppWrapper>
-        {!loading && article && (
-          <>
-            <Stack
-              style={{ position: 'relative', width: '100%', height: '100%' }}
->>>>>>> main
             >
               <BlogMenu
                 articleId={articleId ?? ''}
@@ -202,17 +187,10 @@ export const IndividualBlogPost = () => {
                 </Paper>
               </Stack>
             </Stack>
-<<<<<<< HEAD
           </Stack>
         </>
       )}
     </AppWrapper>
-=======
-          </>
-        )}
-      </AppWrapper>
-    </Stack>
->>>>>>> main
   )
 }
 interface CommentProps {
