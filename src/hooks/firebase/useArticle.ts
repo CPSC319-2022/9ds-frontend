@@ -19,10 +19,11 @@ import {
   getDocs,
   startAfter,
 } from 'firebase/firestore'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
 import { auth, db } from '../../firebaseApp'
+import { NotificationContext } from '../../context'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -56,22 +57,22 @@ export const articlePreviewTranslator = (
 }
 
 export const articleDraftTranslator = (
-    docs: QuerySnapshot<DocumentData>,
+  docs: QuerySnapshot<DocumentData>,
 ): ArticlePreview[] => {
-    const articlesData: ArticlePreview[] = []
-    docs.forEach((doc) => {
-        articlesData.push({
-            title: doc.data().title,
-            content: doc.data().content,
-            header_image: doc.data().header_image,
-            author_image: doc.data().author_image,
-            author_username: doc.data().author_username,
-            publish_time: doc.data().edit_time,
-            articleId: doc.id,
-        })
+  const articlesData: ArticlePreview[] = []
+  docs.forEach((doc) => {
+    articlesData.push({
+      title: doc.data().title,
+      content: doc.data().content,
+      header_image: doc.data().header_image,
+      author_image: doc.data().author_image,
+      author_username: doc.data().author_username,
+      publish_time: doc.data().edit_time,
+      articleId: doc.id,
     })
+  })
 
-    return articlesData
+  return articlesData
 }
 
 export interface Article {
@@ -303,19 +304,27 @@ export const useArticlePost = () => {
 }
 
 export const useArticleDelete = (articleID: string) => {
+  const { dispatch } = useContext(NotificationContext)
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
-  const deleteArticle = () => {
+  const deleteArticle = async () =>
     deleteDoc(doc(db, 'article', articleID)).then(
       () => {
+        dispatch({
+          notificationActionType: 'success',
+          message: `Successfuly deleted article`,
+        })
         setLoading(false)
       },
       (err) => {
+        dispatch({
+          notificationActionType: 'error',
+          message: `Error deleting article. Error code: ${err.code}`,
+        })
         setError(err.code)
       },
     )
-  }
 
   return { deleteArticle, error, loading }
 }
