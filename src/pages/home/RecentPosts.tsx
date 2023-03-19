@@ -31,7 +31,7 @@ export const RecentPosts: FC<RecentPostsProps> = ({
         color='black.main'
         sx={{ alignSelf: 'flex-start' }}
       >
-        Recent posts
+          <div id='recentPosts'>Recent posts</div>
       </Typography>
       <Grid
         container

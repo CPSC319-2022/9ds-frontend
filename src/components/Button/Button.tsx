@@ -5,7 +5,7 @@ import MuiButton from '@mui/material/Button'
 type ButtonProps = {
   dark?: boolean
   text: string
-  variant?: 'contained' | 'outlined'
+  variant?: 'contained' | 'outlined' | 'text'
   size?: 'large' | 'medium'
   style?: { [k: string]: unknown }
   href?: string

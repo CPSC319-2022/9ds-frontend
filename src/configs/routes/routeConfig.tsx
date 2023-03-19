@@ -24,10 +24,10 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   create: {
     path: '/create',
     component: <CreateArticle />,
-    isProtected: false
+    isProtected: true,
   },
-  login: {
-    path: '/login',
+  getStarted: {
+    path: '/get-started',
     component: <Login />,
   },
   aboutUs: {
@@ -49,12 +49,12 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   adminDashboard: {
     path: '/admin',
     component: <AdminDashboard />,
-    isProtected: false,
+    isProtected: true,
   },
   edit: {
     path: '/update/:articleId',
     component: <UpdateArticle />,
-    isProtected: false,
+    isProtected: true,
   },
   individualBlogPost: {
     path: '/blog/:articleId',

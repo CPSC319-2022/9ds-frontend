@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useEffect, FC, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ROUTE_CONFIG } from '../../configs'
+import { NotificationContext } from '../../context/NotificationContext'
 import { useAuth } from '../../hooks/firebase/useAuth'
 
 interface ProtectedRouteProps {
@@ -11,10 +11,15 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { dispatch } = useContext(NotificationContext)
 
   useEffect(() => {
     if (!user) {
-      return navigate(ROUTE_CONFIG.login.path)
+      dispatch({
+        notificationActionType: 'error',
+        message: 'Please login to access this page',
+      })
+      return navigate('/get-started')
     }
   }, [user])
 
