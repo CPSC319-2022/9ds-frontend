@@ -4,6 +4,8 @@ import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
 import { useState, FormEvent, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Article } from '../../hooks/firebase/useArticle'
+import { useUser } from '../../hooks/firebase/useUser'
+import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
 import { TextEditor, TextEditorInfo } from '../TextEditor'
 
@@ -42,9 +44,11 @@ interface ArticleFormProps {
 export const ArticleForm = ({
   purpose,
   onSubmit,
-  ...rest
+  article,
+  articleId,
 }: ArticleFormProps) => {
   const navigate = useNavigate()
+  const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
 
@@ -60,6 +64,13 @@ export const ArticleForm = ({
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  const allowDelete =
+    articleId &&
+    purpose === ArticleFormPurpose.UPDATE &&
+    (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLElement>, published: boolean) => {
@@ -94,7 +105,7 @@ export const ArticleForm = ({
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
-        if (rest.articleId !== undefined) {
+        if (articleId !== undefined) {
           onSubmit(
             title,
             encodedText,
@@ -102,7 +113,7 @@ export const ArticleForm = ({
               ? customLink
               : pictureUrls[selectedPictureIndex],
             published,
-            rest.articleId,
+            articleId,
           )
         } else {
           onSubmit(
@@ -122,7 +133,6 @@ export const ArticleForm = ({
   )
 
   useEffect(() => {
-    const { article } = rest
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
@@ -270,13 +280,43 @@ export const ArticleForm = ({
             errorMsg={bodyHelperText}
           />
         </Stack>
-        <Button
-          type='submit'
-          variant='contained'
-          style={{ marginTop: 34, backgroundColor: 'black' }}
+        <Box
+          sx={{
+            marginTop: 34,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
         >
-          {purpose === ArticleFormPurpose.CREATE ? 'CREATE' : 'UPDATE'}
-        </Button>
+          <Button
+            type='submit'
+            variant='contained'
+            style={{ backgroundColor: 'black' }}
+          >
+            <Typography>
+              {purpose === ArticleFormPurpose.CREATE ? 'CREATE' : 'UPDATE'}
+            </Typography>
+          </Button>
+          {allowDelete && (
+            <>
+              <Button
+                sx={{ marginLeft: '8px' }}
+                variant='contained'
+                onClick={() => {
+                  setDeleteModalOpen(true)
+                }}
+              >
+                <Typography>DELETE</Typography>
+              </Button>
+              <DeleteModal
+                articleId={articleId}
+                open={deleteModalOpen}
+                handleClose={() => setDeleteModalOpen(false)}
+                redirect
+              />
+            </>
+          )}
+        </Box>
       </form>
     </Container>
   )
