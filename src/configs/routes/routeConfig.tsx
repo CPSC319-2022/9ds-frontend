@@ -48,6 +48,7 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   profile: {
     path: '/profile',
     component: <Profile />,
+    isProtected: true,
   },
   adminDashboard: {
     path: '/admin',
