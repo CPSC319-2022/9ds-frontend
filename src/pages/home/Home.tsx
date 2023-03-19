@@ -7,8 +7,8 @@ import {
   useArticleRecents,
 } from '../../hooks/firebase/useArticle'
 import { UISkeleton } from '../../components/UISkeleton'
-import { NotificationContext } from '../../context'
 import { handleLoading } from '../../components/Spinner/Spinner'
+import { NotificationContext } from '../../context/NotificationContext'
 
 export const Home: FC = () => {
   const { dispatch } = useContext(NotificationContext)

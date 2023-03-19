@@ -22,8 +22,9 @@ import {
 import { useState, useEffect, useContext } from 'react'
 import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
-import { auth, db } from '../../firebaseApp'
-import { NotificationContext } from '../../context'
+import { db } from '../../firebaseApp'
+import { useAuth } from './useAuth'
+import { NotificationContext } from '../../context/NotificationContext'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -210,6 +211,7 @@ export const useArticleComments = (articleID: string, n: number) => {
 }
 
 export const useArticleCreate = () => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(false)
   const [articleId, setArticleId] = useState<string>()
@@ -220,7 +222,7 @@ export const useArticleCreate = () => {
     header_image: string,
     published: boolean,
   ) => {
-    getUser(auth.currentUser === null ? null : auth.currentUser.uid)
+    getUser(currentUser?.uid ?? null)
       .then((user: UserData) =>
         addDoc(collection(db, 'article'), {
           author_uid: user.uid,
