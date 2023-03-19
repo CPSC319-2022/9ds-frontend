@@ -53,4 +53,5 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
 
 LabeledTextField.defaultProps = {
   columnSpacing: 0,
+  isDisabled: false,
 }
