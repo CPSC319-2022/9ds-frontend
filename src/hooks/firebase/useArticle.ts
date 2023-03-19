@@ -175,7 +175,7 @@ export const useArticleComments = (articleID: string, n: number) => {
   useEffect(() => {
     getDocs(query(q, limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: DocumentData[] = []
+        const commentsData: comment[] = []
         docs.forEach((doc) => {
           commentsData.push({
               commenter_uid: doc.data().commenter_uid,

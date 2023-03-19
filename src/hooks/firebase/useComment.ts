@@ -29,14 +29,14 @@ export const useCommentCreate = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [commentId, setCommentId] = useState<string>()
-  const createComment = (articleID: string, comment: comment) => {
+  const createComment = (articleID: string, content: string) => {
     getUser(currentUser?.uid ?? null)
       .then((user) =>
         addDoc(collection(db, `article/${articleID}/comments`), {
           commenter_uid: user.uid,
           profile_image: user.profile_image,
           commenter_username: user.username,
-          content: comment,
+          content: content,
           post_time: serverTimestamp(),
         })
           .then((doc) => {
@@ -63,11 +63,11 @@ export const useCommentEdit = () => {
   const editComment = (
     articleID: string,
     commentID: string,
-    comment: unknown,
+    content: string,
   ) => {
     if (currentUser) {
       updateDoc(doc(db, `article/${articleID}/comments`, commentID), {
-        content: comment,
+        content: content,
       })
         .then(() => {
           setLoading(false)
