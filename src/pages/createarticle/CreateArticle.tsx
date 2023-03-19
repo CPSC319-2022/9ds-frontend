@@ -1,5 +1,6 @@
 import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
+import { handleLoading } from '../../components/Spinner/Spinner'
 import { useArticleCreate } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -11,20 +12,23 @@ export const CreateArticle = () => {
     loading: loadingArticleCreate,
     articleId,
   } = useArticleCreate()
+  const component = (
+    <ArticleForm
+    purpose={ArticleFormPurpose.CREATE}
+    onSubmit={(
+      title: string,
+      body: string,
+      imagelink: string,
+      published: boolean,
+      articleId?: string,
+    ) => {
+      createArticle(title, body, imagelink, published)
+    }}
+  />
+  )
   return (
     <AppWrapper>
-      <ArticleForm
-        purpose={ArticleFormPurpose.CREATE}
-        onSubmit={(
-          title: string,
-          body: string,
-          imagelink: string,
-          published: boolean,
-          articleId?: string,
-        ) => {
-          createArticle(title, body, imagelink, published)
-        }}
-      />
+      {handleLoading(loadingArticleCreate, component)}
     </AppWrapper>
   )
 }
