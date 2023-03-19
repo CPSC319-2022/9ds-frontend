@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useContext } from 'react'
 import {
   User,
   createUserWithEmailAndPassword,
@@ -15,36 +15,28 @@ import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
 import { auth, db } from '../../firebaseApp'
 import { UserData, getUser } from './useUser'
 import { FirebaseError } from 'firebase/app'
+import { AuthContext } from '../../context/AuthContext'
 
 export const useAuth = () => {
-  const [state, setState] = useState(() => {
-    const user = auth.currentUser
-    return {
-      initializing: !user,
-      user,
-    }
-  })
+  const {
+    state: { currentUser, initializing },
+  } = useContext(AuthContext)
 
-  const onChange = (user: User | null) => {
-    setState({ initializing: false, user })
+  return {
+    initializing,
+    user: currentUser ?? null,
   }
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(onChange)
-    return () => unsubscribe()
-  }, [])
-
-  return state
 }
 
 const createNewUser = (
+  currentUser: User | null,
   username: string,
   profile_image: string,
 ): Promise<void> => {
-  if (auth.currentUser === null) {
+  if (!currentUser) {
     return Promise.reject('failed_precondition')
   }
-  return setDoc(doc(db, 'users', auth.currentUser.uid), {
+  return setDoc(doc(db, 'users', currentUser.uid), {
     role: 'reader',
     username: username,
     profile_image: profile_image,
@@ -52,42 +44,42 @@ const createNewUser = (
 }
 
 export const useCreateUserEmailPassword = () => {
-    const [error, setError] = useState<FirestoreErrorCode>()
-    const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState<UserData>()
+  const [error, setError] = useState<FirestoreErrorCode>()
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<UserData>()
 
-    const createWithEmailAndPasswordWrapper = (
-        email: string,
-        password: string,
-        username: string,
-        profile_image: string,
-    ) => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(() => {
-                createNewUser(username, profile_image)
-                    .then(() => {
-                        setLoading(false)
-                        setUser(
-                            {role: "reader",
-                            profile_image: profile_image,
-                            username: username,
-                            // eslint-disable-next-line
-                            uid: auth.currentUser!.uid}
-                        )
-                    })
-                    .catch((err) => {
-                        setError(err)
-                    })
+  const createWithEmailAndPasswordWrapper = (
+    email: string,
+    password: string,
+    username: string,
+    profile_image: string,
+  ) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(({ user: newUser }) => {
+        createNewUser(newUser, username, profile_image)
+          .then(() => {
+            setLoading(false)
+            setUser({
+              role: 'reader',
+              profile_image: profile_image,
+              username: username,
+              uid: newUser.uid,
             })
-            .catch((err) => {
-                setError(err.code)
-            })
-    }
+          })
+          .catch((err) => {
+            setError(err)
+          })
+      })
+      .catch((err) => {
+        setError(err.code)
+      })
+  }
 
-    return { createWithEmailAndPasswordWrapper, error, loading, user }
+  return { createWithEmailAndPasswordWrapper, error, loading, user }
 }
 
 export const useSignInUserEmailPassword = () => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
@@ -98,7 +90,7 @@ export const useSignInUserEmailPassword = () => {
   ) => {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        getUser(auth.currentUser === null ? null : auth.currentUser.uid)
+        getUser(currentUser?.uid ?? null)
           .then((user) => {
             setLoading(false)
             setUser(user)
@@ -116,59 +108,61 @@ export const useSignInUserEmailPassword = () => {
 }
 
 export const useSignInWithGoogle = () => {
-    const [error, setError] = useState<FirestoreErrorCode>()
-    const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState<UserData>()
+  const [error, setError] = useState<FirestoreErrorCode>()
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<UserData>()
 
-    const provider = new GoogleAuthProvider()
+  const provider = new GoogleAuthProvider()
 
-    const signInWithGoogleWrapper = () => {
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const additionalInfo = getAdditionalUserInfo(result)
-                if (additionalInfo?.isNewUser) {
-                    const profile = additionalInfo.profile
-                    if (profile === null) {
-                        setError('unknown')
-                    } else {
-                        createNewUser(
-                            profile.name as string,
-                            profile.picture as string,
-                        )
-                            .then(() => {
-                                setLoading(false)
-                                setUser({role: "reader",
-                                    profile_image: profile.picture as string,
-                                    username: profile.name as string,
-                                    // eslint-disable-next-line
-                                    uid: auth.currentUser!.uid})
-                            })
-                            .catch((err) => {
-                                setError(err)
-                            })
-                    }
-                } else {
-                    getUser(auth.currentUser === null ? null : auth.currentUser.uid)
-                        .then((user) => {
-                            setLoading(false)
-                            setUser(user)
-                        })
-                        .catch((err) => {
-                            setError(err)
-                        })
-                }
+  const signInWithGoogleWrapper = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const additionalInfo = getAdditionalUserInfo(result)
+        if (additionalInfo?.isNewUser) {
+          const profile = additionalInfo.profile
+          if (profile === null) {
+            setError('unknown')
+          } else {
+            createNewUser(
+              result.user,
+              profile.name as string,
+              profile.picture as string,
+            )
+              .then(() => {
+                setLoading(false)
+                setUser({
+                  role: 'reader',
+                  profile_image: profile.picture as string,
+                  username: profile.name as string,
+                  uid: result.user.uid,
+                })
+              })
+              .catch((err) => {
+                setError(err)
+              })
+          }
+        } else {
+          getUser(result.user.uid)
+            .then((user) => {
+              setLoading(false)
+              setUser(user)
             })
             .catch((err) => {
-                setError(err.code)
+              setError(err)
             })
-    }
-    return { signInWithGoogleWrapper, error, loading, user }
+        }
+      })
+      .catch((err) => {
+        setError(err.code)
+      })
+  }
+  return { signInWithGoogleWrapper, error, loading, user }
 }
 
 export const useForgotPasswordEmail = () => {
   const [error, setError] = useState<FirebaseError>()
   const [loading, setLoading] = useState(true)
-    
+
   const sendEmail = (email: string) => {
     sendPasswordResetEmail(auth, email)
       .then(() => {

@@ -19,10 +19,12 @@ import {
   getDocs,
   startAfter,
 } from 'firebase/firestore'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
-import { auth, db } from '../../firebaseApp'
+import { db } from '../../firebaseApp'
+import { useAuth } from './useAuth'
+import { NotificationContext } from '../../context/NotificationContext'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -56,22 +58,22 @@ export const articlePreviewTranslator = (
 }
 
 export const articleDraftTranslator = (
-    docs: QuerySnapshot<DocumentData>,
+  docs: QuerySnapshot<DocumentData>,
 ): ArticlePreview[] => {
-    const articlesData: ArticlePreview[] = []
-    docs.forEach((doc) => {
-        articlesData.push({
-            title: doc.data().title,
-            content: doc.data().content,
-            header_image: doc.data().header_image,
-            author_image: doc.data().author_image,
-            author_username: doc.data().author_username,
-            publish_time: doc.data().edit_time,
-            articleId: doc.id,
-        })
+  const articlesData: ArticlePreview[] = []
+  docs.forEach((doc) => {
+    articlesData.push({
+      title: doc.data().title,
+      content: doc.data().content,
+      header_image: doc.data().header_image,
+      author_image: doc.data().author_image,
+      author_username: doc.data().author_username,
+      publish_time: doc.data().edit_time,
+      articleId: doc.id,
     })
+  })
 
-    return articlesData
+  return articlesData
 }
 
 export interface Article {
@@ -209,8 +211,9 @@ export const useArticleComments = (articleID: string, n: number) => {
 }
 
 export const useArticleCreate = () => {
+  const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [articleId, setArticleId] = useState<string>()
 
   const createArticle = (
@@ -219,7 +222,7 @@ export const useArticleCreate = () => {
     header_image: string,
     published: boolean,
   ) => {
-    getUser(auth.currentUser === null ? null : auth.currentUser.uid)
+    getUser(currentUser?.uid ?? null)
       .then((user: UserData) =>
         addDoc(collection(db, 'article'), {
           author_uid: user.uid,
@@ -233,10 +236,11 @@ export const useArticleCreate = () => {
           title: title,
         }).then(
           (doc) => {
-            setLoading(false)
+            setLoading(true)
             setArticleId(doc.id)
           },
           (err) => {
+            setLoading(false)
             setError(err.code)
           },
         ),
@@ -251,7 +255,7 @@ export const useArticleCreate = () => {
 
 export const useArticleEdit = () => {
   const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const editArticle = (
     articleID: string,
@@ -260,6 +264,7 @@ export const useArticleEdit = () => {
     header_image: string,
     published: boolean,
   ) => {
+    setLoading(true)
     updateDoc(doc(db, 'article', articleID), {
       content: content,
       edit_time: serverTimestamp(),
@@ -275,6 +280,7 @@ export const useArticleEdit = () => {
         setError(err.code)
       },
     )
+    setLoading(false)
   }
 
   return { editArticle, error, loading }
@@ -303,19 +309,27 @@ export const useArticlePost = () => {
 }
 
 export const useArticleDelete = (articleID: string) => {
+  const { dispatch } = useContext(NotificationContext)
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
 
-  const deleteArticle = () => {
+  const deleteArticle = async () =>
     deleteDoc(doc(db, 'article', articleID)).then(
       () => {
+        dispatch({
+          notificationActionType: 'success',
+          message: `Successfuly deleted article`,
+        })
         setLoading(false)
       },
       (err) => {
+        dispatch({
+          notificationActionType: 'error',
+          message: `Error deleting article. Error code: ${err.code}`,
+        })
         setError(err.code)
       },
     )
-  }
 
   return { deleteArticle, error, loading }
 }
