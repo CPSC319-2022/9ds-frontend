@@ -64,7 +64,7 @@ describe('AboutUs component', () => {
     const rows = getAllByTestId('about-us-row')
     rows.forEach((row) => {
       const cards = row.querySelectorAll('.about-us-card')
-      //TODO: failing on count 3, should explore why
+      //TODO: failing on count 3, should explore why.
       //expect(cards.length).toBe(3)
       expect(cards.length).toBeGreaterThanOrEqual(0)
     })
