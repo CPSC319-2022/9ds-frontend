@@ -25,6 +25,7 @@ export const UISkeleton: FC<UISkeletonProps> = ({
               role="progressbar" //for testing
               width={elemWidth}
               height={elemHeight}
+              data-testid='ui-skeleton'
               sx={{ borderRadius: '12px' }}
             />
           </Grid>

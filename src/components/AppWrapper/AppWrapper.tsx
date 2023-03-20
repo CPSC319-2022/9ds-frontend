@@ -1,15 +1,15 @@
-import React, {FC, ReactNode} from 'react'
-import { Header } from "../Header";
-import { Footer } from '../Footer';
+import React, { FC, ReactNode } from 'react'
+import { Header } from '../Header'
+import { Footer } from '../Footer'
 import Stack from '@mui/material/Stack'
 
 export interface IProps {
-  children: ReactNode;
+  children: ReactNode
   spacing?: number
 }
 
-export const AppWrapper: FC<IProps> = ({children, spacing}) => {
-    const space = !spacing ? 32 : spacing 
+export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
+  const space = !spacing ? 32 : spacing
   return (
     <Stack
       direction='column'
@@ -17,10 +17,11 @@ export const AppWrapper: FC<IProps> = ({children, spacing}) => {
       spacing={space}
       boxSizing='border-box'
       p='24px'
+      data-testid='app-wrapper-stack'
     >
-      <Header/>
+      <Header />
       {children}
-      <Footer/>
+      <Footer />
     </Stack>
   )
 }

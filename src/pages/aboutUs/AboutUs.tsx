@@ -21,6 +21,7 @@ export const AboutUs: FC = () => {
           direction='column'
           justifyContent='space-between'
           alignItems='stretch'
+          data-testid='about-us-stack'
           spacing={72}
         >
           <Stack
@@ -28,6 +29,7 @@ export const AboutUs: FC = () => {
             justifyContent='space-between'
             alignItems='stretch'
             spacing={57}
+            data-testid='about-us-row'
           >
             <AboutUsCard
               picture={catProfilePic}
@@ -53,6 +55,7 @@ export const AboutUs: FC = () => {
             justifyContent='space-between'
             alignItems='stretch'
             spacing={57}
+            data-testid='about-us-row'
           >
             <AboutUsCard
               picture={brianPic}
@@ -80,6 +83,7 @@ export const AboutUs: FC = () => {
             justifyContent='space-between'
             alignItems='stretch'
             spacing={57}
+            data-testid='about-us-row'
           >
             <AboutUsCard
               picture={
