@@ -26,6 +26,7 @@ const pictureUrls = [
 export enum ArticleFormPurpose {
   CREATE,
   UPDATE,
+  DRAFT,
 }
 
 interface ArticleFormProps {
@@ -131,13 +132,11 @@ export const ArticleForm = ({
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
-      if (purpose === ArticleFormPurpose.UPDATE) {
-        setEditorState(() =>
-          EditorState.createWithContent(
-            convertFromRaw(JSON.parse(article.content)),
-          ),
-        )
-      }
+      setEditorState(() =>
+        EditorState.createWithContent(
+          convertFromRaw(JSON.parse(article.content)),
+        ),
+      )
     }
   }, [])
 
@@ -159,7 +158,8 @@ export const ArticleForm = ({
           alignItems='flex-start'
           spacing={40}
         >
-          {purpose === ArticleFormPurpose.CREATE && (
+          {(purpose === ArticleFormPurpose.CREATE ||
+            purpose === ArticleFormPurpose.DRAFT) && (
             <Button
               variant='contained'
               style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
@@ -199,12 +199,6 @@ export const ArticleForm = ({
                   return (
                     <Button
                       aria-label='picture-selection'
-                      style={{
-                        backgroundColor:
-                          selectedPictureIndex === pictureIndexStart + index
-                            ? 'black'
-                            : 'transparent',
-                      }}
                       disabled={!pictureUrls[pictureIndexStart + index]}
                       key={index}
                       onClick={() => {
@@ -213,6 +207,10 @@ export const ArticleForm = ({
                     >
                       <Box
                         sx={{
+                          border:
+                            selectedPictureIndex === pictureIndexStart + index
+                              ? '5px solid black'
+                              : '0px solid black',
                           width: 150,
                           height: 150,
                           backgroundSize: 'cover',
@@ -288,7 +286,10 @@ export const ArticleForm = ({
             style={{ backgroundColor: 'black' }}
           >
             <Typography>
-              {purpose === ArticleFormPurpose.CREATE ? 'CREATE' : 'UPDATE'}
+              {purpose === ArticleFormPurpose.CREATE ||
+              purpose === ArticleFormPurpose.DRAFT
+                ? 'CREATE'
+                : 'UPDATE'}
             </Typography>
           </Button>
           {allowDelete && (
