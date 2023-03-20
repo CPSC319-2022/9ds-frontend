@@ -1,7 +1,6 @@
 import {Box, Button, Paper, Stack, TextField, Typography} from '@mui/material'
 import React, {useContext, useEffect, useState} from 'react'
 import {Article} from '../../components/Article'
-import sample from '../../assets/sample.jpg'
 import {theme} from '../../theme/Theme'
 import {useArticleComments, useArticleRead} from '../../hooks/firebase/useArticle'
 import {useNavigate, useParams} from 'react-router-dom'
@@ -52,7 +51,7 @@ export const IndividualBlogPost = () => {
             commenter_username: user.username,
             content: currComment,
             post_time: Timestamp.now(),
-            commentID: ""
+            commentID: ''
         }
 
         // eslint-disable-next-line
@@ -189,7 +188,7 @@ export const IndividualBlogPost = () => {
                     alignItems={'baseline'}
                 >
                     <img
-                        src={sample}
+                        src={user.profile_image}
                         width="42px"
                         height="42px"
                         style={{borderRadius: '50%'}}
