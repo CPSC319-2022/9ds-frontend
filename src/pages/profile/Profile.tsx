@@ -48,12 +48,19 @@ export const Profile: FC = () => {
   }
 
   const component = (
-    <>
-      <Typography variant='h4' color='black.main' sx={{ paddingLeft: '32px' }}>
+    <Stack
+      direction='column'
+      alignItems='flex-start'
+      alignSelf='stretch'
+      spacing={50}
+      paddingLeft={20}
+      paddingRight={20}
+    >
+      <Typography variant='h4' color='black.main'>
         Profile
       </Typography>
       <Stack direction='row' spacing={200} boxSizing='border-box' p='24px'>
-        <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
+        <Stack direction='row' spacing={48} boxSizing='border-box'>
           <img
             src={queriedUser.profile_image}
             width='140px'
@@ -97,34 +104,35 @@ export const Profile: FC = () => {
       </Stack>
       {queriedUser.role !== 'reader' && (
         <>
-          <Typography
-            variant='h5'
-            color='black.main'
-            justifyItems='flex-start'
-            sx={{ paddingLeft: '32px' }}
-          >
+          <Typography variant='h5' color='black.main' justifyItems='flex-start'>
             Posts
           </Typography>
-          <Stack direction='row' spacing={16} justifyContent='flex-start'>
+          <Stack
+            direction='row'
+            spacing={38}
+            justifyContent='flex-start'
+            alignSelf='stretch'
+          >
             {[...UserArticles].map((article) => (
               <Article key={article.articleId} size='small' article={article} />
             ))}
           </Stack>
-          <Typography
-            variant='h5'
-            color='black.main'
-            sx={{ paddingLeft: '32px' }}
-          >
+          <Typography variant='h5' color='black.main'>
             Drafts
           </Typography>
-          <Stack direction='row' spacing={16} justifyContent='flex-start'>
+          <Stack
+            direction='row'
+            spacing={38}
+            justifyContent='flex-start'
+            alignSelf='stretch'
+          >
             {[...UserDrafts].map((draft) => (
               <Article key={draft.articleId} article={draft} isDraft={true} />
             ))}
           </Stack>
         </>
       )}
-    </>
+    </Stack>
   )
 
   return (

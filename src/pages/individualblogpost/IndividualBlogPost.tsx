@@ -70,6 +70,7 @@ export const IndividualBlogPost = () => {
             publish_time: article.publish_time,
             articleId: articleId || '',
           }}
+          notFeatured={true}
         />
       </Stack>
       <Stack
