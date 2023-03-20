@@ -132,15 +132,20 @@ export const IndividualBlogPost = () => {
                 <Typography style={{alignSelf: 'flex-start'}} variant="h6">
                     Comments
                 </Typography>
-                {articleComments.comments.map((com) => (
-                    <Comment
-                        profilePic={com.commenter_image}
-                        comment={com.content}
-                        post_time={com.post_time}
-                        commenter_uid={com.commenter_uid}
-                    />
-                ))
+                <>
+                {articleComments.comments.map((com) => {
+                    return
+                    (
+                        <Comment
+                            profilePic={com.commenter_image}
+                            comment={com.content}
+                            post_time={com.post_time}
+                            commenter_uid={com.commenter_uid}
+                        />
+                    )
+                })
                 }
+                </>
                 {!articleComments.endOfCollection && (
                     <Button
                         variant="outlined"
