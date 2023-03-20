@@ -59,7 +59,6 @@ export const IndividualBlogPost = () => {
         setComments((comments) => [...comments, commentToSubmit])
         setIsCurrCommentError(false)
         setCommentHelperText('')
-        setCurrComment('')
     }
 
     // useEffect for rerendering the comment pushed
@@ -193,7 +192,6 @@ export const IndividualBlogPost = () => {
                         <TextField
                             variant="standard"
                             style={{minWidth: '500px'}}
-                            defaultValue=""
                             value={currComment}
                             placeholder="Comment away..."
                             multiline
@@ -221,7 +219,6 @@ export const IndividualBlogPost = () => {
                                             setCommentHelperText('Please sign up or sign in first.')
                                         } else {
                                             handleSubmitComment()
-                                            setCurrComment('')
                                         }
                                     }
                                 }}
