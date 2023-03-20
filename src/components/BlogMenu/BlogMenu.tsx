@@ -19,9 +19,9 @@ export const BlogMenu: FC<BlogMenuProps> = ({
   disabled,
 }) => {
   const { queriedUser } = useUser()
-  const allowDeleteAndUpdate =
-    articleId &&
-    (queriedUser.role === 'admin' || queriedUser.uid === author_uid)
+  const allowUpdate = queriedUser.uid === author_uid
+  const allowDelete = queriedUser.role === 'admin' || allowUpdate
+  const showMenu = allowUpdate || allowDelete
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -47,7 +47,7 @@ export const BlogMenu: FC<BlogMenuProps> = ({
     setDeleteModalOpen(true)
   }
 
-  if (!allowDeleteAndUpdate) {
+  if (!showMenu) {
     return null
   }
 
@@ -66,8 +66,10 @@ export const BlogMenu: FC<BlogMenuProps> = ({
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={handleEdit}>Edit Article</MenuItem>
-        <MenuItem onClick={handleDelete}>Delete Article</MenuItem>
+        {allowUpdate && <MenuItem onClick={handleEdit}>Edit Article</MenuItem>}
+        {allowDelete && (
+          <MenuItem onClick={handleDelete}>Delete Article</MenuItem>
+        )}
       </Menu>
       <DeleteModal
         articleId={articleId}

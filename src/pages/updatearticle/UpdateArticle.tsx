@@ -7,7 +7,11 @@ import { useArticleEdit, useArticleRead } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-export const UpdateArticle = () => {
+interface UpdateArticleProps {
+  isDraft?: boolean
+}
+
+export const UpdateArticle = ({ isDraft = false }: UpdateArticleProps) => {
   const { articleId } = useParams()
   const navigate = useNavigate()
   const {
@@ -32,7 +36,7 @@ export const UpdateArticle = () => {
   })
   const component = article && (
     <ArticleForm
-      purpose={ArticleFormPurpose.UPDATE}
+      purpose={isDraft ? ArticleFormPurpose.DRAFT : ArticleFormPurpose.UPDATE}
       onSubmit={(
         title: string,
         body: string,
@@ -53,7 +57,7 @@ export const UpdateArticle = () => {
 
   return (
     <AppWrapper>
-        {handleLoading(loadingArticleRead || loadingArticleEdit, component)}
+      {handleLoading(loadingArticleRead || loadingArticleEdit, component)}
     </AppWrapper>
   )
 }
