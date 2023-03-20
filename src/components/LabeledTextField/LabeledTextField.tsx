@@ -40,6 +40,11 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
           placeholder={placeholder}
           error={error}
           helperText={helperText}
+          sx={{
+            "& .MuiInputBase-input.Mui-disabled": {
+              WebkitTextFillColor: "black",
+          },
+          }}
           onChange={(event) => {
             if (onTextChange) {
               onTextChange(event.target.value)
