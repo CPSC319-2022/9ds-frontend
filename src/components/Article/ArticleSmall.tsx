@@ -9,18 +9,24 @@ import { convertToPlainText } from '../TextEditor'
 export interface ArticleSmallProps {
   article: ArticlePreview
   clickDisabled?: boolean
+  isDraft?: boolean
 }
 
 export const ArticleSmall: FC<ArticleSmallProps> = ({
   article,
   clickDisabled,
+  isDraft,
 }) => {
   const navigate = useNavigate()
   return (
     <ButtonBase
       disabled={clickDisabled}
       onClick={() => {
-        navigate(`/blog/${article.articleId}`)
+        if (isDraft) {
+          navigate(`/draft/${article.articleId}`)
+        } else {
+          navigate(`/blog/${article.articleId}`)
+        }
       }}
     >
       <Stack

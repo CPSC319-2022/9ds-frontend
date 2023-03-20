@@ -29,6 +29,13 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     isProtected: true,
     allowedRoles: ['contributor', 'admin'],
   },
+  draft: {
+    path: '/draft/:articleId',
+    component: <UpdateArticle isDraft={true} />,
+    isProtected: true,
+    allowedRoles: ['contributor', 'admin'],
+    isProtectedOwnerUser: true,
+  },
   getStarted: {
     path: '/get-started',
     component: <Login />,
