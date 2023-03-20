@@ -187,7 +187,7 @@ export const useArticleComments = (articleID: string, n: number) => {
           })
         })
         setLoading(false)
-        setComments(commentsData as comment[])
+        setComments(commentsData)
         setLastComment(docs.docs[docs.docs.length - 1])
         setEndOfCollection(docs.docs.length < n)
       })
@@ -200,12 +200,19 @@ export const useArticleComments = (articleID: string, n: number) => {
     setLoadingNext(true)
     getDocs(query(q, startAfter(lastComment), limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: DocumentData[] = []
+        const commentsData: comment[] = []
         docs.forEach((doc) => {
-          commentsData.push(doc.data)
+          commentsData.push({
+              commenter_uid: doc.data().commenter_uid,
+              commenter_image: doc.data().commenter_image,
+              commenter_username: doc.data().commenter_username,
+              content: doc.data().content,
+              post_time: doc.data().post_time,
+              commentID: doc.id
+        })
         })
         setLoadingNext(false)
-        setComments(comments.concat(commentsData as comment[]))
+        setComments(comments.concat(commentsData))
         setLastComment(docs.docs[docs.docs.length - 1])
         setEndOfCollection(docs.docs.length < n)
       })
