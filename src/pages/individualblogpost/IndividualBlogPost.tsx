@@ -31,6 +31,8 @@ export const IndividualBlogPost = () => {
   const [title, setTitle] = useState('')
   const {dispatch} = useContext(NotificationContext)
 
+  const defaultProfilePicture = "https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+
   //  eslint-disable-next-line
   const articleComments = useArticleComments(articleId!, 5)
   const [comments, setComments] = useState<comment[]>([])
@@ -423,7 +425,7 @@ export const IndividualBlogPost = () => {
           alignItems={'baseline'}
         >
           <img
-            src={user.profile_image}
+            src={user.profile_image === "" ? defaultProfilePicture : user.profile_image}
             width="42px"
             height="42px"
             style={{borderRadius: '50%'}}
