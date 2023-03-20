@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
@@ -78,7 +78,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
           <Avatar
             dark
             name={article.author_username}
-            date={article.publish_time.toDate()}
+            date={article.publish_time?.toDate() || new Date()}
             avatarImgSrc={article.author_image}
           />
         </Stack>
