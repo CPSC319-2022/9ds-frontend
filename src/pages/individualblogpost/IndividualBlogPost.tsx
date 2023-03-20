@@ -33,6 +33,7 @@ export const IndividualBlogPost = () => {
     const articleComments = useArticleComments(articleId!, 5)
     const [title, setTitle] = useState('')
     const [comments, setComments] = useState<comment[]>(articleComments.comments)
+    const [commentCount, setCommentCount] = useState(articleComments.comments.length)
     const commentCreate = useCommentCreate()
 
     const [currComment, setCurrComment] = useState('')
@@ -64,6 +65,7 @@ export const IndividualBlogPost = () => {
     // useEffect for rerendering the comment pushed
     useEffect(() => {
         setCurrComment('')
+        setCommentCount(comments.length)
     }, [comments])
 
     useEffect(() => {
@@ -131,20 +133,31 @@ export const IndividualBlogPost = () => {
                 <Typography style={{alignSelf: 'flex-start'}} variant="h6">
                     Comments
                 </Typography>
-                <>
-                {articleComments.comments.map((com) => {
-                    return
-                    (
+                {/*<>*/}
+                {/*{articleComments.comments.map((com) => {*/}
+                {/*    return*/}
+                {/*    (*/}
+                {/*        <Comment*/}
+                {/*            profilePic={com.commenter_image}*/}
+                {/*            comment={com.content}*/}
+                {/*            post_time={com.post_time}*/}
+                {/*            commenter_uid={com.commenter_uid}*/}
+                {/*        />*/}
+                {/*    )*/}
+                {/*})*/}
+                {/*}*/}
+                {/*</>*/}
+                {new Array(commentCount).fill(0).map((_, i) => {
+                    return (
                         <Comment
-                            profilePic={com.commenter_image}
-                            comment={com.content}
-                            post_time={com.post_time}
-                            commenter_uid={com.commenter_uid}
+                            key={i}
+                            profilePic={comments[i].commenter_image}
+                            comment={comments[i].content}
+                            post_time={comments[i].post_time}
+                            commenter_uid={comments[i].commenter_uid}
                         />
                     )
-                })
-                }
-                </>
+                })}
                 {!articleComments.endOfCollection && (
                     <Button
                         variant="outlined"
