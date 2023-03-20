@@ -282,8 +282,10 @@ export const IndividualBlogPost = () => {
 
   const component = article && (
     <>
-      <Stack style={{position: 'relative', width: '100%', height: '100%'}}>
-        <BlogMenu articleId={articleId ?? ''} author_uid={article.author_uid}/>
+      <Stack style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {articleId && (
+          <BlogMenu articleId={articleId} author_uid={article.author_uid} />
+        )}
         <Article
           clickDisabled={true}
           size={'large'}
