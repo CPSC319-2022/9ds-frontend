@@ -106,7 +106,7 @@ export const IndividualBlogPost = () => {
 
 
 
-  const Comment = ({profilePic, comment, post_time, commenter_uid}: CommentProps) => {
+  const Comment = ({profilePic, comment, post_time, commenter_uid, commenter_username}: CommentProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -141,6 +141,112 @@ export const IndividualBlogPost = () => {
       setCommentContentError(false)
       setCommentContentHelperText('')
       setCurrComment('')
+    }
+
+    const renderMenuButton: any = () => {
+      if (ownedBySignedInUser) {
+        return (<>
+          <Button
+            id="basic-button"
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            endIcon={<KeyboardArrowDownIcon/>}/><Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem
+            sx={{
+              ':hover': {
+                bgcolor: '#A292C5',
+              },
+            }}
+            onClick={() => setIsEditing(true)}
+          >
+            <Typography variant="subheading" color="black.main">
+              edit
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            sx={{
+              ':hover': {
+                bgcolor: '#A292C5',
+              },
+            }}
+            onClick={() => {
+              const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
+              if (response) {
+                // eslint-disable-next-line
+                commentDelete.deleteComment(articleId!, commentID)
+                setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
+                dispatch({
+                  notificationActionType: 'success',
+                  message: `Comment deleted.`,
+                })
+              }
+            }}
+          >
+            <Typography variant="subheading" color="black.main">
+              delete
+            </Typography>
+          </MenuItem>
+        </Menu>
+        </>
+        )
+      } else {
+        if (user.role === "admin") {
+          // only has delete button
+          return (<>
+            <Button
+              id="basic-button"
+              aria-controls={open ? 'basic-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleClick}
+              endIcon={<KeyboardArrowDownIcon/>}/>
+            <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+            >
+            <MenuItem
+              sx={{
+                ':hover': {
+                  bgcolor: '#A292C5',
+                },
+              }}
+              onClick={() => {
+                const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
+                if (response) {
+                  // eslint-disable-next-line
+                  commentDelete.deleteComment(articleId!, commentID)
+                  setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
+                  dispatch({
+                    notificationActionType: 'success',
+                    message: `Comment deleted.`,
+                  })
+                }
+              }}
+            >
+
+              <Typography variant="subheading" color="black.main">
+                delete
+              </Typography>
+            </MenuItem>
+          </Menu></>
+          )
+        }
+      }
     }
 
     return (
@@ -210,68 +316,15 @@ export const IndividualBlogPost = () => {
                 boxSizing="border-box"
                 alignItems={'baseline'}>
                 <Typography variant="subheading"
-                            color={theme.palette.black.main}>{user.username}:</Typography><Typography
+                            color={theme.palette.black.main}>{commenter_username}:</Typography>
+                <Typography
                 color={theme.palette.white.main}
                 style={{whiteSpace: 'pre-line'}}
-              >
-                {comment}
-              </Typography>
-              </Stack>
-              {ownedBySignedInUser ? (
-                <><Button
-                  id="basic-button"
-                  aria-controls={open ? 'basic-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? 'true' : undefined}
-                  onClick={handleClick}
-                  endIcon={<KeyboardArrowDownIcon/>}/><Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                  }}
                 >
-                  <MenuItem
-                    sx={{
-                      ':hover': {
-                        bgcolor: '#A292C5',
-                      },
-                    }}
-                    onClick={() => setIsEditing(true)}
-                  >
-                    <Typography variant="subheading" color="black.main">
-                      edit
-                    </Typography>
-                  </MenuItem>
-                  <MenuItem
-                    sx={{
-                      ':hover': {
-                        bgcolor: '#A292C5',
-                      },
-                    }}
-                    onClick={() => {
-
-                      const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
-                      if (response) {
-                        // eslint-disable-next-line
-                        commentDelete.deleteComment(articleId!, commentID)
-                        setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
-                        dispatch({
-                          notificationActionType: 'success',
-                          message: `Comment deleted.`,
-                        })
-                      }
-                    }}
-                  >
-
-                    <Typography variant="subheading" color="black.main">
-                      delete
-                    </Typography>
-                  </MenuItem>
-                </Menu></>
-              ) : (<></>)}
+                {comment}
+                </Typography>
+              </Stack>
+              {renderMenuButton()}
             </Stack>
           )}
         </Paper>
@@ -333,6 +386,7 @@ export const IndividualBlogPost = () => {
               comment={comments[i].content}
               post_time={comments[i].post_time}
               commenter_uid={comments[i].commenter_uid}
+              commenter_username={comments[i].commenter_username}
             />
           )
         })}
@@ -432,5 +486,6 @@ interface CommentProps {
   comment: string
   post_time: Timestamp
   commenter_uid: string
+  commenter_username: string
 }
 
