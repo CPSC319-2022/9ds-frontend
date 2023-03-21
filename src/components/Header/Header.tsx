@@ -2,9 +2,8 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
-import { Button } from '../Button'
-import { Link } from "react-router-dom";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import Button from '@mui/material/Button'
+import { Link } from 'react-router-dom'
 
 export const Header: FC = () => {
   return (
@@ -24,29 +23,48 @@ export const Header: FC = () => {
         direction='row'
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <Link to={"/"} style={{ textDecoration: 'none' }}>
-            <Typography variant='subheading' color="black.main">HOME</Typography>
+        <Link to={'/'} style={{ textDecoration: 'none' }}>
+          <Typography variant='subheading' color='black.main'>
+            HOME
+          </Typography>
         </Link>
-        <Stack direction='row' spacing={4} alignItems='center'>
-          <Typography variant='subheading' color="black.main">BLOG</Typography>
-          <KeyboardArrowDownIcon />
-        </Stack>
-        <Link to={"/about-us"} style={{ textDecoration: 'none' }}>
-            <Typography variant='subheading' color="black.main">ABOUT US</Typography>
+        <a href='/#recentPosts' style={{ textDecoration: 'none' }}>
+          <Button
+            variant='text'
+            size='large'
+            sx={{
+              textTransform: 'none',
+            }}
+          >
+            <Typography variant='subheading' color='black.main'>
+              BLOG
+            </Typography>
+          </Button>
+        </a>
+        <Link to={'/about-us'} style={{ textDecoration: 'none' }}>
+          <Typography variant='subheading' color='black.main'>
+            ABOUT US
+          </Typography>
         </Link>
       </Stack>
-      <Stack
-        direction='row'
-        spacing={12}
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
-      >
-        <Link to={"/login"} style={{ textDecoration: 'none' }}>
-            <Button variant='outlined' text='Login' dark size='large' />
-        </Link>
-        <Link to={"/login"} style={{ textDecoration: 'none' }}>
-            <Button dark text='Sign up' size='large' />
-        </Link>
-      </Stack>
+      <Link to={'/get-started'} style={{ textDecoration: 'none' }}>
+        <Button
+          variant='outlined'
+          size='large'
+          sx={{
+            backgroundColor: 'black.main',
+            textTransform: 'none',
+            border: `2px solid 'black'`,
+            ':hover': {
+              bgcolor: '#4D3188',
+            },
+          }}
+        >
+          <Typography variant='button' color='white.main'>
+            LOGIN/SIGN UP
+          </Typography>
+        </Button>
+      </Link>
     </Stack>
   )
 }

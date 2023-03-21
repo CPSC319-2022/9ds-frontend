@@ -1,32 +1,40 @@
 import { FC, useContext, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Article } from '../../components/Article'
 import { LabeledTextField } from '../../components/LabeledTextField'
 import {
+  useApplyPromotion,
   useUser,
   useUserArticles,
   useUserDrafts,
 } from '../../hooks/firebase/useUser'
-import { CircularProgress, Box } from '@mui/material'
-import { Header } from '../../components/Header'
-import { Footer } from '../../components/Footer'
-import { NotificationContext } from '../../context'
-import React from 'react'
+import { Button } from '@mui/material'
+import { NotificationContext } from '../../context/NotificationContext'
+import { UserType } from '../../components/UserType'
+import { AppWrapper } from '../../components/AppWrapper'
+import { handleLoading } from '../../components/Spinner/Spinner'
+import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
   const {
+    getNext: articleGetNext,
     articles: UserArticles,
     loading: loadingArticles,
+    loadingNext: loadingNextArticles,
     error: articleError,
+    endOfCollection: articleEnd,
   } = useUserArticles(queriedUser.uid, 4)
   const {
+    getNext: draftGetNext,
     articles: UserDrafts,
     loading: loadingDrafts,
+    loadingNext: loadingNextDrafts,
     error: draftError,
+    endOfCollection: draftEnd,
   } = useUserDrafts(4)
   const { dispatch } = useContext(NotificationContext)
+  const { applyPromotion } = useApplyPromotion()
 
   useEffect(() => {
     if (error || articleError || draftError) {
@@ -37,91 +45,120 @@ export const Profile: FC = () => {
     }
   }, [error, articleError, draftError])
 
-  return (
-    <Stack direction='column' spacing={32} boxSizing='border-box' p='24px'>
-      <Header />
-      {loading || loadingArticles || loadingDrafts ? (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-          }}
-        >
-          <CircularProgress color='secondary' />
-        </Box>
-      ) : (
-        <>
-          <Typography
-            variant='h4'
-            color='black.main'
-            sx={{ paddingLeft: '32px' }}
-          >
-            Profile
-          </Typography>
-          <Stack direction='row' spacing={48} boxSizing='border-box' p='24px'>
-            <img
-              src={queriedUser.profile_image}
-              width='140px'
-              height='140px'
-              style={{ borderRadius: '50%' }}
+  const handleButtonClick = () => {
+    applyPromotion()
+    dispatch({
+      notificationActionType: 'success',
+      message: `Successfully applied to become contributor!`,
+    })
+  }
+
+  const component = (
+    <Stack
+      direction='column'
+      alignItems='flex-start'
+      alignSelf='stretch'
+      spacing={50}
+      paddingLeft={20}
+      paddingRight={20}
+    >
+      <Typography variant='h4' color='black.main'>
+        Profile
+      </Typography>
+      <Stack direction='row' spacing={200} boxSizing='border-box' p='24px'>
+        <Stack direction='row' spacing={48} boxSizing='border-box'>
+          <img
+            src={queriedUser.profile_image}
+            width='140px'
+            height='140px'
+            style={{ borderRadius: '50%' }}
+          />
+          <Stack direction='column' spacing={32} width={'auto'}>
+            <LabeledTextField
+              variant='standard'
+              placeholder={queriedUser.role}
+              label='Account type'
+              multiline={false}
+              labelWidth={5}
+              text={
+                <Typography variant='title' sx={{ color: 'black' }}>
+                  Account Type
+                </Typography>
+              }
             />
-            <Stack direction='column' spacing={32} width={'auto'}>
-              <LabeledTextField
-                variant='standard'
-                placeholder={queriedUser.role}
-                label='Account type'
-                multiline={false}
-                labelWidth={5}
-                text={
-                  <Typography variant='title' sx={{ color: 'black' }}>
-                    Account Type
-                  </Typography>
-                }
-              />
-              <LabeledTextField
-                variant='standard'
-                placeholder={queriedUser.username}
-                label='Name'
-                multiline={false}
-                labelWidth={5}
-                text={
-                  <Typography variant='title' sx={{ color: 'black' }}>
-                    Name
-                  </Typography>
-                }
-              />
-            </Stack>
+            <LabeledTextField
+              variant='standard'
+              placeholder={queriedUser.username}
+              label='Name'
+              multiline={false}
+              labelWidth={5}
+              text={
+                <Typography variant='title' sx={{ color: 'black' }}>
+                  Name
+                </Typography>
+              }
+            />
           </Stack>
-          <Typography
-            variant='h5'
-            color='black.main'
-            justifyItems='flex-start'
-            sx={{ paddingLeft: '32px' }}
-          >
+        </Stack>
+        {queriedUser.role == 'reader' && (
+          <Stack direction='row'>
+            <Button onClick={handleButtonClick}>
+              <UserType type='contributor' />
+            </Button>
+          </Stack>
+        )}
+      </Stack>
+      {queriedUser.role !== 'reader' && (
+        <>
+          <Typography variant='h5' color='black.main' justifyItems='flex-start'>
             Posts
           </Typography>
-          <Stack direction='row' spacing={16} justifyContent='flex-start'>
-            {[...UserArticles].map((article) => (
-              <Article key={article.articleId} size='small' article={article} />
-            ))}
-          </Stack>
-          <Typography
-            variant='h5'
-            color='black.main'
-            sx={{ paddingLeft: '32px' }}
-          >
+          <ItemGrid items={UserArticles} type={ItemGridType.ARTICLES} />
+          {!articleEnd && (
+            <Button
+              variant='contained'
+              size='large'
+              color='primary'
+              sx={{
+                alignSelf: 'center',
+              }}
+              disabled={loadingNextArticles}
+              onClick={() => {
+                articleGetNext(4)
+              }}
+            >
+              LOAD MORE...
+            </Button>
+          )}
+
+          <Typography variant='h5' color='black.main'>
             Drafts
           </Typography>
-          <Stack direction='row' spacing={16} justifyContent='flex-start'>
-            {[...UserDrafts].map((draft) => (
-              <Article key={draft.articleId} article={draft} />
-            ))}
-          </Stack>
+          <ItemGrid items={UserDrafts} type={ItemGridType.DRAFTS} />
+          {!draftEnd && (
+            <Button
+              variant='contained'
+              size='large'
+              color='primary'
+              sx={{
+                alignSelf: 'center',
+              }}
+              disabled={loadingNextDrafts}
+              onClick={() => {
+                draftGetNext(4)
+              }}
+            >
+              LOAD MORE...
+            </Button>
+          )}
         </>
       )}
-      <Footer />
     </Stack>
+  )
+
+  return (
+    <AppWrapper>
+      {handleLoading(loading || loadingArticles || loadingDrafts, component)}
+    </AppWrapper>
   )
 }

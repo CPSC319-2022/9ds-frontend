@@ -2,11 +2,16 @@ import { Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import feather from '../../assets/feather.png'
 import logo from '../../assets/logo.png'
-import React, { FC } from 'react'
+import React, { FC, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../Button/Button'
+import { useApplyPromotion } from '../../hooks/firebase/useUser'
+import { NotificationContext } from '../../context/NotificationContext'
 
-export const Footer: FC = () => {
+export const FooterAsReader: FC = () => {
+  const applyContributor = useApplyPromotion()
+  const { dispatch } = useContext(NotificationContext)
+
   return (
     <Stack
       spacing={32}
@@ -31,14 +36,19 @@ export const Footer: FC = () => {
         </Typography>
         <img src={feather} width='80rem' height='60rem' />
       </Stack>
-      <Link to={'/get-started'} style={{ textDecoration: 'none' }}>
-        <Button
-          variant='outlined'
-          style={{ color: 'white.main', height: '60px', width: '140px' }}
-          text='Get started'
-          size='large'
-        />
-      </Link>
+      <Button
+        variant='outlined'
+        style={{ color: 'white.main', height: '66px', width: '266.67px' }}
+        text='BECOME A CONTRIBUTOR'
+        size='large'
+        onClick={() => {
+          applyContributor.applyPromotion()
+          dispatch({
+            notificationActionType: 'success',
+            message: `Successfully applied to become contributor!`,
+          })
+        }}
+      />
 
       <Stack
         spacing={5}
@@ -60,6 +70,11 @@ export const Footer: FC = () => {
           <Link to={'/about-us'} style={{ textDecoration: 'none' }}>
             <Typography variant='caption' color='white.main'>
               About Us
+            </Typography>
+          </Link>
+          <Link to={'/profile'} style={{ textDecoration: 'none' }}>
+            <Typography variant='caption' color='white.main'>
+              Profile
             </Typography>
           </Link>
         </Stack>

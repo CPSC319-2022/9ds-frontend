@@ -2,14 +2,23 @@ import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
+import { handleLoading } from '../../components/Spinner/Spinner'
 import { useArticleEdit, useArticleRead } from '../../hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-export const UpdateArticle = () => {
+interface UpdateArticleProps {
+  isDraft?: boolean
+}
+
+export const UpdateArticle = ({ isDraft = false }: UpdateArticleProps) => {
   const { articleId } = useParams()
   const navigate = useNavigate()
-  const { editArticle, error: errorArticleUpdate } = useArticleEdit()
+  const {
+    editArticle,
+    error: errorArticleUpdate,
+    loading: loadingArticleEdit,
+  } = useArticleEdit()
   const {
     error: errorArticleRead,
     loading: loadingArticleRead,
@@ -25,28 +34,30 @@ export const UpdateArticle = () => {
       throw new Error('Error updating article')
     }
   })
+  const component = article && (
+    <ArticleForm
+      purpose={isDraft ? ArticleFormPurpose.DRAFT : ArticleFormPurpose.UPDATE}
+      onSubmit={(
+        title: string,
+        body: string,
+        imagelink: string,
+        published: boolean,
+        articleId?: string,
+      ) => {
+        if (articleId) {
+          editArticle(articleId, title, body, imagelink, published)
+        } else {
+          throw Error('Error editing article. Please try again later!')
+        }
+      }}
+      article={article}
+      articleId={articleId}
+    />
+  )
+
   return (
     <AppWrapper>
-      {!loadingArticleRead && article && (
-        <ArticleForm
-          purpose={ArticleFormPurpose.UPDATE}
-          onSubmit={(
-            title: string,
-            body: string,
-            imagelink: string,
-            published: boolean,
-            articleId?: string,
-          ) => {
-            if (articleId) {
-              editArticle(articleId, title, body, imagelink, published)
-            } else {
-              throw Error('Error editing article. Please try again later!')
-            }
-          }}
-          article={article}
-          articleId={articleId}
-        />
-      )}
+      {handleLoading(loadingArticleRead || loadingArticleEdit, component)}
     </AppWrapper>
   )
 }
