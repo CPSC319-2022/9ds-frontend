@@ -111,13 +111,10 @@ export const useUserArticles = (uid: string, n: number) => {
       setError('unauthenticated')
     } else {
       q.current = query(
-        query(
-          collection(db, 'article'),
-          where('author_uid', '==', uid),
-          where('published', '==', true),
-        ),
-        orderBy('publish_time', 'desc'),
-      )
+        collection(db, 'article'),
+        where('author_uid', '==', uid),
+        where('published', '==', true),
+        orderBy('publish_time', 'desc'));
       getDocs(query(q.current, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
           setLoading(false)
@@ -171,8 +168,7 @@ export const useUserDrafts = (n: number) => {
         collection(db, 'article'),
         where('author_uid', '==', currentUser.uid),
         where('published', '==', false),
-        orderBy('edit_time', 'desc'),
-      )
+        orderBy('edit_time', 'desc'))
       getDocs(query(q.current, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
           setLoading(false)
