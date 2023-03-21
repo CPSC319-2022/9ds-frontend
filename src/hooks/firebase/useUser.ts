@@ -32,16 +32,25 @@ export interface UserData {
   uid: string
 }
 
+export interface AdminUserData {
+  role: string
+  profile_image: string
+  username: string
+  uid: string
+  promotion_request: string | null;
+}
+
 export const userTranslator = (
   docs: QuerySnapshot<DocumentData>,
 ): UserData[] => {
-  const userData: UserData[] = []
+  const userData: AdminUserData[] = []
   docs.forEach((doc) => {
     userData.push({
       role: doc.data().role,
       profile_image: doc.data().profile_image,
       username: doc.data().username,
       uid: doc.id,
+      promotion_request: doc.data().promotion_request
     })
   })
 
