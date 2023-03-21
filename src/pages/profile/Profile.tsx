@@ -13,7 +13,7 @@ import { NotificationContext } from '../../context/NotificationContext'
 import { UserType } from '../../components/UserType'
 import { AppWrapper } from '../../components/AppWrapper'
 import { handleLoading } from '../../components/Spinner/Spinner'
-import { ItemGrid } from '../../components/ItemGrid'
+import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
@@ -113,7 +113,7 @@ export const Profile: FC = () => {
           <Typography variant='h5' color='black.main' justifyItems='flex-start'>
             Posts
           </Typography>
-          <ItemGrid items={UserArticles} />
+          <ItemGrid items={UserArticles} type={ItemGridType.ARTICLES} />
           {!articleEnd && (
             <Button
               variant='contained'
@@ -134,7 +134,7 @@ export const Profile: FC = () => {
           <Typography variant='h5' color='black.main'>
             Drafts
           </Typography>
-          <ItemGrid items={UserDrafts} />
+          <ItemGrid items={UserDrafts} type={ItemGridType.DRAFTS} />
           {!draftEnd && (
             <Button
               variant='contained'
