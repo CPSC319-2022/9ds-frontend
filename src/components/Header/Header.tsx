@@ -54,18 +54,27 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
             HOME
           </Typography>
         </Link>
-        <Button
-          id='basic-button'
-          aria-controls={open ? 'basic-menu' : undefined}
-          aria-haspopup='true'
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
-          endIcon={<KeyboardArrowDownIcon />}
-        >
-          <Typography variant='button' color='black.main'>
-            BLOG
-          </Typography>
-        </Button>
+
+        {role === UserRole.VISITOR ? (
+          <Link to={'/'} style={{ textDecoration: 'none' }}>
+            <Typography variant='subheading' color='black.main'>
+              BLOG
+            </Typography>
+          </Link>
+        ) : (
+          <Button
+            id='basic-button'
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup='true'
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            endIcon={<KeyboardArrowDownIcon />}
+          >
+            <Typography variant='button' color='black.main'>
+              BLOG
+            </Typography>
+          </Button>
+        )}
 
         <Popper id='basic-menu' anchorEl={anchorEl} open={open}>
           <Paper>
