@@ -45,6 +45,7 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
 
   return (
     <Stack
+      data-testid='app-wrapper-stack'
       direction='column'
       alignItems='center'
       spacing={space}
