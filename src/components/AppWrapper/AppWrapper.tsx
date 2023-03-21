@@ -14,11 +14,8 @@ export interface IProps {
 export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
   const space = !spacing ? 32 : spacing
   const user = useUser().queriedUser
-  // eslint-disable-next-line
-  const renderHeader: any = () => {
-    if (user.role === '') {
-      return <Header role={UserRole.VISITOR} />
-    }
+
+  const HeaderComponent: FC = () => {
     if (user.role === 'reader') {
       return <Header role={UserRole.READER} />
     }
@@ -28,19 +25,17 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
     if (user.role === 'admin') {
       return <Header role={UserRole.ADMIN} />
     }
+    return <Header role={UserRole.VISITOR} />
   }
 
-  // eslint-disable-next-line
-  const renderFooter: any = () => {
-    if (user.role === '') {
-      return <Footer />
-    }
+  const FooterComponent: FC = () => {
     if (user.role === 'reader') {
       return <FooterAsReader />
     }
     if (user.role === 'contributor' || user.role === 'admin') {
       return <FooterAsContributor />
     }
+    return <Footer />
   }
 
   return (
@@ -52,9 +47,9 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
       boxSizing='border-box'
       p='24px'
     >
-      {renderHeader()}
+      <HeaderComponent />
       {children}
-      {renderFooter()}
+      <FooterComponent />
     </Stack>
   )
 }
