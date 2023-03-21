@@ -1,13 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { MemoryRouter as Router } from 'react-router-dom'
 import { Header, UserRole } from '../../components/Header'
 
 describe('Header Styling', () => {
-  beforeAll(() => {
-    render(
+  beforeAll(async () => {
+    await act( async () => render(
       <Router>
         <Header role={UserRole.VISITOR} />
       </Router>,
+    )
     )
     jest.setTimeout(15000)
   })

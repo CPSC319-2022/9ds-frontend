@@ -43,7 +43,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
       boxSizing='border-box'
       sx={{ justifyContent: 'space-between', alignItems: 'center' }}
     >
-      <img src={logo} width='100px' height='50px' />
+      <img data-testid="logo" src={logo} width='100px' height='50px' />
       <Stack
         spacing={32}
         direction='row'
@@ -55,6 +55,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
           </Typography>
         </Link>
         <Button
+          data-testid="blog-button"
           id='basic-button'
           aria-controls={open ? 'basic-menu' : undefined}
           aria-haspopup='true'
@@ -71,6 +72,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
           <Paper>
             {(role === UserRole.ADMIN || role === UserRole.CONTRIBUTOR) && (
               <MenuItem
+                data-testid="create-menu"
                 sx={{
                   ':hover': {
                     bgcolor: '#A292C5',
@@ -84,6 +86,8 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
               </MenuItem>
             )}
             <MenuItem
+              aria-label="profile"
+              data-testid="profile"
               sx={{
                 ':hover': {
                   bgcolor: '#A292C5',
@@ -129,6 +133,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
         <Button
           variant='outlined'
           size='large'
+          data-testid="sign-out-btn"
           sx={{
             backgroundColor: 'black.main',
             textTransform: 'none',
