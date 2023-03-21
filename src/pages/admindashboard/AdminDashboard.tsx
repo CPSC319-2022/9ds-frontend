@@ -15,6 +15,7 @@ import { handleLoading } from '../../components/Spinner/Spinner'
 enum PromoteButtonRoles {
   CONTRIBUTOR = 'contributor',
   ADMIN = 'admin',
+  READER = 'reader',
 }
 
 const columns: GridColDef[] = [
@@ -25,6 +26,23 @@ const columns: GridColDef[] = [
     field: 'contribStatusReq',
     headerName: 'Contributor status request',
     flex: 1,
+  },
+  {
+    field: 'makeReader',
+    headerName: 'Make reader',
+    flex: 1,
+    renderCell: (params) => {
+      return (
+        <PromoteButton
+          index={params.row.id - 1}
+          uid={params.row.uid}
+          role={PromoteButtonRoles.READER}
+          userCurrentRole={params.row.status}
+          setUsersSessionCopy={params.row.setUsersSessionCopy}
+          users={params.row.users}
+        />
+      )
+    },
   },
   {
     field: 'makeContributor',
@@ -103,6 +121,7 @@ export const AdminDashboard = () => {
             )
           }}
           rows={usersSessionCopy.map((v, i) => {
+            console.log(v)
             return {
               id: i + 1,
               user: v.username,
@@ -110,6 +129,7 @@ export const AdminDashboard = () => {
               status: v.role,
               contribStatusReq:
                 v.promotion_request === undefined ? 'no' : 'yes',
+              makeReader: v.role !== 'reader',
               makeContributor: v.role !== 'contributor',
               makeAdmin: v.role !== 'admin',
               setUsersSessionCopy: setUsersSessionCopy,
@@ -185,9 +205,13 @@ const PromoteButton = ({
           newUsersSessionCopy = users.map((v, i) =>
             i === index ? { ...v, role: 'admin' } : v,
           )
-        } else {
+        } else if (role === PromoteButtonRoles.CONTRIBUTOR) {
           newUsersSessionCopy = users.map((v, i) =>
             i === index ? { ...v, role: 'contributor' } : v,
+          )
+        } else {
+          newUsersSessionCopy = users.map((v, i) =>
+            i === index ? { ...v, role: 'reader' } : v,
           )
         }
         setUsersSessionCopy(newUsersSessionCopy)
@@ -195,7 +219,7 @@ const PromoteButton = ({
       variant='contained'
       color={role === PromoteButtonRoles.ADMIN ? 'secondary' : 'primary'}
     >
-      Promote
+      Set
     </Button>
   )
 }
