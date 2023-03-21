@@ -1,7 +1,6 @@
 import { FC, useContext, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Article } from '../../components/Article'
 import { LabeledTextField } from '../../components/LabeledTextField'
 import {
   useApplyPromotion,
@@ -14,18 +13,25 @@ import { NotificationContext } from '../../context/NotificationContext'
 import { UserType } from '../../components/UserType'
 import { AppWrapper } from '../../components/AppWrapper'
 import { handleLoading } from '../../components/Spinner/Spinner'
+import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
   const {
+    getNext: articleGetNext,
     articles: UserArticles,
     loading: loadingArticles,
+    loadingNext: loadingNextArticles,
     error: articleError,
+    endOfCollection: articleEnd,
   } = useUserArticles(queriedUser.uid, 4)
   const {
+    getNext: draftGetNext,
     articles: UserDrafts,
     loading: loadingDrafts,
+    loadingNext: loadingNextDrafts,
     error: draftError,
+    endOfCollection: draftEnd,
   } = useUserDrafts(4)
   const { dispatch } = useContext(NotificationContext)
   const { applyPromotion } = useApplyPromotion()
@@ -107,29 +113,44 @@ export const Profile: FC = () => {
           <Typography variant='h5' color='black.main' justifyItems='flex-start'>
             Posts
           </Typography>
-          <Stack
-            direction='row'
-            spacing={38}
-            justifyContent='flex-start'
-            alignSelf='stretch'
-          >
-            {[...UserArticles].map((article) => (
-              <Article key={article.articleId} size='small' article={article} />
-            ))}
-          </Stack>
+          <ItemGrid items={UserArticles} type={ItemGridType.ARTICLES} />
+          {!articleEnd && (
+            <Button
+              variant='contained'
+              size='large'
+              color='primary'
+              sx={{
+                alignSelf: 'center',
+              }}
+              disabled={loadingNextArticles}
+              onClick={() => {
+                articleGetNext(4)
+              }}
+            >
+              LOAD MORE...
+            </Button>
+          )}
+
           <Typography variant='h5' color='black.main'>
             Drafts
           </Typography>
-          <Stack
-            direction='row'
-            spacing={38}
-            justifyContent='flex-start'
-            alignSelf='stretch'
-          >
-            {[...UserDrafts].map((draft) => (
-              <Article key={draft.articleId} article={draft} isDraft={true} />
-            ))}
-          </Stack>
+          <ItemGrid items={UserDrafts} type={ItemGridType.DRAFTS} />
+          {!draftEnd && (
+            <Button
+              variant='contained'
+              size='large'
+              color='primary'
+              sx={{
+                alignSelf: 'center',
+              }}
+              disabled={loadingNextDrafts}
+              onClick={() => {
+                draftGetNext(4)
+              }}
+            >
+              LOAD MORE...
+            </Button>
+          )}
         </>
       )}
     </Stack>

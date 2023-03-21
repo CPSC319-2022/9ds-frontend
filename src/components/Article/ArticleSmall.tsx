@@ -31,7 +31,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
     >
       <Stack
         alignItems='flex-start'
-        width='298px'
+        width='350px'
         height='400px'
         borderRadius='12px'
         p='12px'
