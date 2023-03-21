@@ -35,7 +35,7 @@ export const HeaderAsContributor: FC = () => {
       boxSizing='border-box'
       sx={{ justifyContent: 'space-between', alignItems: 'center' }}
     >
-      <img src={logo} width='100px' height='50px' />
+      <img data-testid="logo" src={logo} width='100px' height='50px' />
       <Stack
         spacing={32}
         direction='row'
@@ -48,6 +48,7 @@ export const HeaderAsContributor: FC = () => {
         </Link>
 
         <Button
+          data-testid="blog-button"
           id='basic-button'
           aria-controls={open ? 'basic-menu' : undefined}
           aria-haspopup='true'
@@ -69,6 +70,7 @@ export const HeaderAsContributor: FC = () => {
           }}
         >
           <MenuItem
+            data-testid="create-menu"
             sx={{
               ':hover': {
                 bgcolor: '#A292C5',
@@ -81,6 +83,7 @@ export const HeaderAsContributor: FC = () => {
             </Typography>
           </MenuItem>
           <MenuItem
+            data-testid="profile"
             sx={{
               ':hover': {
                 bgcolor: '#A292C5',
@@ -114,6 +117,7 @@ export const HeaderAsContributor: FC = () => {
           />
         </Link>
         <Button
+          data-testid="sign-out-btn"
           variant='outlined'
           size='large'
           sx={{

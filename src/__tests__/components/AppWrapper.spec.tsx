@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import { createContext } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { MemoryRouter } from 'react-router-dom'
@@ -9,8 +9,8 @@ const mockRouterContext = createContext({
 })
 
 describe('AppWrapper', () => {
-  it('renders the children correctly', () => {
-    const { getByTestId } = render(
+  it('renders the children correctly', async () => {
+    const { getByTestId } = await act(async () => render(
       <MemoryRouter>
         <mockRouterContext.Provider value={{ basename: '/' || null }}>
           <AppWrapper>
@@ -19,13 +19,13 @@ describe('AppWrapper', () => {
           </AppWrapper>
         </mockRouterContext.Provider>
       </MemoryRouter>,
-    )
+    ))
     expect(getByTestId('child-1')).toBeInTheDocument()
     expect(getByTestId('child-2')).toBeInTheDocument()
   })
 
-  it('renders with the default spacing if spacing prop is not provided', () => {
-    const { getByTestId } = render(
+  it('renders with the default spacing if spacing prop is not provided', async () => {
+    const { getByTestId } = await act(async () => render(
       <MemoryRouter>
         <mockRouterContext.Provider value={{ basename: '/' || null }}>
           <AppWrapper>
@@ -33,7 +33,7 @@ describe('AppWrapper', () => {
           </AppWrapper>
         </mockRouterContext.Provider>
       </MemoryRouter>,
-    )
+    ))
     const stack = getByTestId('app-wrapper-stack')
     //TODO: it's expected to have 32 spacing in this case, but for some reason this is failing. Worth checking why.
     //expect(stack).toHaveStyle('spacing: 32px;')

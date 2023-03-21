@@ -35,7 +35,7 @@ export const HeaderAsReader: FC = () => {
       boxSizing='border-box'
       sx={{ justifyContent: 'space-between', alignItems: 'center' }}
     >
-      <img src={logo} width='100px' height='50px' />
+      <img data-testid="logo" src={logo} width='100px' height='50px' />
       <Stack
         spacing={32}
         direction='row'
@@ -47,6 +47,7 @@ export const HeaderAsReader: FC = () => {
           </Typography>
         </Link>
         <Button
+          data-testid="blog-button"
           id='basic-button'
           aria-controls={open ? 'basic-menu' : undefined}
           aria-haspopup='true'
@@ -68,6 +69,7 @@ export const HeaderAsReader: FC = () => {
           }}
         >
           <MenuItem
+            data-testid="profile"
             sx={{
               ':hover': {
                 bgcolor: '#A292C5',
@@ -75,7 +77,7 @@ export const HeaderAsReader: FC = () => {
             }}
             onClick={() => navigate('/profile')}
           >
-            Profile
+            PROFILE
           </MenuItem>
         </Menu>
         <Link to={'/about-us'} style={{ textDecoration: 'none' }}>
@@ -99,6 +101,7 @@ export const HeaderAsReader: FC = () => {
           />
         </Link>
         <Button
+          data-testid="sign-out-btn"
           variant='contained'
           size='large'
           sx={{
