@@ -147,7 +147,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
           }}
         >
           <Typography variant='button' color='white.main'>
-            {role !== UserRole.VISITOR ? 'SIGN OUT' : 'SIGN UP/SIGN IN'}
+            {role !== UserRole.VISITOR ? 'SIGN OUT' : 'LOGIN/SIGN UP'}
           </Typography>
         </Button>
       </Stack>
