@@ -19,7 +19,7 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
 }) => {
   const navigate = useNavigate()
   const { articleId } = useParams()
-  const article = articleId ? useArticleRead(articleId)?.article : undefined
+  const { article, loading, error } = useArticleRead(articleId || '0')
 
   const { user, initializing: userInitializing } = useAuth()
   const { queriedUser, loading: queriedUserLoading } = useUser()
@@ -51,7 +51,7 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
         isProtectedOwnerUser &&
         !queriedUserLoading &&
         article &&
-        article.author_uid !== queriedUser.uid
+        article?.author_uid !== queriedUser.uid
       ) {
         dispatch({
           notificationActionType: 'error',

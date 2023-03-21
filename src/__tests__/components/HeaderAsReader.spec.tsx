@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter as Router } from 'react-router-dom'
-import { HeaderAsReader } from '../../components/Header/HeaderAsReader'
+import { Header, UserRole } from '../../components/Header/Header'
 
 describe('Header As Rader', () => {
   const mockedUsedNavigate = jest.fn()
@@ -20,7 +20,7 @@ describe('Header As Rader', () => {
   beforeEach(async () => {
     await act( async () => render(
       <Router>
-        <HeaderAsReader />
+        <Header role={UserRole.READER} />
       </Router>,
     )
     )
@@ -69,8 +69,8 @@ describe('Header As Rader', () => {
     userEvent.click(blogBtn)
   })
 
-  test('sign out', () => {
+  test('sign out', async () => {
     const signOutBtn = screen.getByTestId('sign-out-btn')
-    userEvent.click(signOutBtn)
+    await act( async () => userEvent.click(signOutBtn))
   })
 })

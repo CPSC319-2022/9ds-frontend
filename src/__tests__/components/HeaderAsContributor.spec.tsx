@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter as Router } from 'react-router-dom'
-import { HeaderAsContributor } from '../../components/Header/HeaderAsContributor'
+import { Header, UserRole } from '../../components/Header/Header'
 
 describe('Header As Contributor', () => {
   const mockedUsedNavigate = jest.fn()
@@ -17,12 +17,13 @@ describe('Header As Contributor', () => {
     ...(jest.requireActual('../../hooks/firebase/useAuth') as any),
     useSignOut: () => {signOutWrapper: mockSignOutWrapper},
   }))
-  beforeEach(() => {
-    render(
+  beforeEach(async () => {
+   await act( async() => render(
       <Router>
-        <HeaderAsContributor />
+        <Header role={UserRole.CONTRIBUTOR} />
       </Router>,
     )
+   )
     jest.setTimeout(15000)
   })
 
@@ -61,12 +62,12 @@ describe('Header As Contributor', () => {
     const blogBtn = screen.getByTestId('blog-button')
     userEvent.click(blogBtn)
 
-    const blog = screen.getByTestId('create-menu')
+
+    const blog = screen.getByText('CREATE BLOG POST')
+    const profile = screen.getByText('PROFILE')
     userEvent.click(blog)
 
     userEvent.click(blogBtn)
-
-    const profile = screen.getByTestId("profile")
     userEvent.click(profile)
   })
 
@@ -76,8 +77,8 @@ describe('Header As Contributor', () => {
     userEvent.click(blogBtn)
   })
 
-  test('sign out', () => {
+  test('sign out', async () => {
     const signOutBtn = screen.getByTestId('sign-out-btn')
-    userEvent.click(signOutBtn)
+    await act( async () => userEvent.click(signOutBtn))
   })
 })

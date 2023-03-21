@@ -2,8 +2,8 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter as Router } from 'react-router-dom'
-import { HeaderAsAdmin } from '../../components/Header/HeaderAsAdmin'
-import { HeaderAsContributor } from '../../components/Header/HeaderAsContributor'
+import { UserRole } from '../../components/Header/Header'
+import { Header } from '../../components/Header/Header'
 
 describe('Header As Contributor', () => {
   const mockedUsedNavigate = jest.fn()
@@ -21,7 +21,7 @@ describe('Header As Contributor', () => {
   beforeEach(async () => {
     await act( () => render(
       <Router>
-        <HeaderAsAdmin />
+        <Header role={UserRole.ADMIN} />
       </Router>,
     )
     )
@@ -51,7 +51,7 @@ describe('Header As Contributor', () => {
     expect(admin).toBeInTheDocument()
   })
 
-  test('see menu', () => {
+  test('see menu', async () => {
     const blogBtn = screen.getByTestId('blog-button')
     userEvent.click(blogBtn)
 
@@ -63,15 +63,16 @@ describe('Header As Contributor', () => {
   })
 
   test('click menu', () => {
-    const blogBtn = screen.getByTestId('blog-button')
-    userEvent.click(blogBtn)
 
-    const blog = screen.getByTestId('create-menu')
+    const blogBtn = screen.getByTestId('blog-button')
+   userEvent.click(blogBtn)
+    const blog = screen.getByText('CREATE BLOG POST')
+    const profile = screen.getByText('PROFILE')
+
     userEvent.click(blog)
 
     userEvent.click(blogBtn)
 
-    const profile = screen.getByTestId("profile")
     userEvent.click(profile)
   })
 
@@ -81,8 +82,8 @@ describe('Header As Contributor', () => {
     userEvent.click(blogBtn)
   })
 
-  test('sign out', () => {
+  test('sign out', async () => {
     const signOutBtn = screen.getByTestId('sign-out-btn')
-    userEvent.click(signOutBtn)
+    await act( async () => userEvent.click(signOutBtn))
   })
 })
