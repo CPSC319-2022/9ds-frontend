@@ -1,22 +1,30 @@
-import {Box, Button, Paper, Stack, TextField, Typography} from '@mui/material'
-import React, {useContext, useEffect, useState} from 'react'
-import {Article} from '../../components/Article'
-import {theme} from '../../theme/Theme'
-import {useArticleComments, useArticleRead} from '../../hooks/firebase/useArticle'
-import {useNavigate, useParams} from 'react-router-dom'
-import {convertFromRaw, EditorState} from 'draft-js'
-import {Editor} from 'react-draft-wysiwyg'
-import {AppWrapper} from '../../components/AppWrapper'
-import {BlogMenu} from '../../components/BlogMenu/BlogMenu'
-import {handleLoading} from '../../components/Spinner/Spinner'
-import {UserData, useUser} from '../../hooks/firebase/useUser'
-import {comment, useCommentCreate, useCommentDelete, useCommentEdit} from '../../hooks/firebase/useComment'
-import {Timestamp} from 'firebase/firestore'
-import {NotificationContext} from '../../context/NotificationContext'
+import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import React, { useContext, useEffect, useState } from 'react'
+import { Article } from '../../components/Article'
+import { theme } from '../../theme/Theme'
+import {
+  useArticleComments,
+  useArticleRead,
+} from '../../hooks/firebase/useArticle'
+import { useNavigate, useParams } from 'react-router-dom'
+import { convertFromRaw, EditorState } from 'draft-js'
+import { Editor } from 'react-draft-wysiwyg'
+import { AppWrapper } from '../../components/AppWrapper'
+import { BlogMenu } from '../../components/BlogMenu/BlogMenu'
+import { handleLoading } from '../../components/Spinner/Spinner'
+import { UserData, useUser } from '../../hooks/firebase/useUser'
+import {
+  comment,
+  useCommentCreate,
+  useCommentDelete,
+  useCommentEdit,
+} from '../../hooks/firebase/useComment'
+import { Timestamp } from 'firebase/firestore'
+import { NotificationContext } from '../../context/NotificationContext'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import {useAuth} from '../../hooks/firebase/useAuth'
+import { useAuth } from '../../hooks/firebase/useAuth'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -26,12 +34,13 @@ const PAGINATION_COUNT = 5
 export const IndividualBlogPost = () => {
   const navigate = useNavigate()
   const user: UserData = useUser().queriedUser
-  const {articleId} = useParams()
-  const {loading, error, article} = useArticleRead(articleId || '')
+  const { articleId } = useParams()
+  const { loading, error, article } = useArticleRead(articleId || '')
   const [title, setTitle] = useState('')
-  const {dispatch} = useContext(NotificationContext)
+  const { dispatch } = useContext(NotificationContext)
 
-  const defaultProfilePicture = "https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+  const defaultProfilePicture =
+    'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
 
   //  eslint-disable-next-line
   const articleComments = useArticleComments(articleId!, 5)
@@ -95,20 +104,24 @@ export const IndividualBlogPost = () => {
       commenter_username: user.username,
       content: currComment,
       post_time: Timestamp.now(),
-      commentID: ''
+      commentID: '',
     }
 
     // eslint-disable-next-line
     commentCreate.createComment(articleId!, commentToSubmit.content)
     setComments((comments) => [...comments, commentToSubmit])
-    setCommentCount(commentCount => commentCount + 1)
+    setCommentCount((commentCount) => commentCount + 1)
     setIsCurrCommentError(false)
     setCommentHelperText('')
   }
 
-
-
-  const Comment = ({profilePic, comment, post_time, commenter_uid, commenter_username}: CommentProps) => {
+  const Comment = ({
+    profilePic,
+    comment,
+    post_time,
+    commenter_uid,
+    commenter_username,
+  }: CommentProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -124,17 +137,22 @@ export const IndividualBlogPost = () => {
 
     const commentEdit = useCommentEdit()
     const commentDelete = useCommentDelete()
-    const filteredComment = comments.filter(com => (com.commenter_image === profilePic && com.content === comment && com.post_time === post_time))
+    const filteredComment = comments.filter(
+      (com) =>
+        com.commenter_image === profilePic &&
+        com.content === comment &&
+        com.post_time === post_time,
+    )
     const commentID = filteredComment[0].commentID
 
-    const ownedBySignedInUser = (auth.user && commenter_uid === auth.user.uid)
+    const ownedBySignedInUser = auth.user && commenter_uid === auth.user.uid
 
     const handleSave = () => {
       // eslint-disable-next-line
       commentEdit.editComment(articleId!, commentID, commentContent)
       const updatedComments = comments.map((obj) => {
         if (obj.content === comment) {
-          return {...obj, content: commentContent}
+          return { ...obj, content: commentContent }
         }
         return obj
       })
@@ -147,105 +165,123 @@ export const IndividualBlogPost = () => {
 
     const renderMenuButton: any = () => {
       if (ownedBySignedInUser) {
-        return (<>
-          <Button
-            id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-            endIcon={<KeyboardArrowDownIcon/>}/><Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
-        >
-          <MenuItem
-            sx={{
-              ':hover': {
-                bgcolor: '#A292C5',
-              },
-            }}
-            onClick={() => setIsEditing(true)}
-          >
-            <Typography variant="subheading" color="black.main">
-              edit
-            </Typography>
-          </MenuItem>
-          <MenuItem
-            sx={{
-              ':hover': {
-                bgcolor: '#A292C5',
-              },
-            }}
-            onClick={() => {
-              const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
-              if (response) {
-                // eslint-disable-next-line
-                commentDelete.deleteComment(articleId!, commentID)
-                setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
-                dispatch({
-                  notificationActionType: 'success',
-                  message: `Comment deleted.`,
-                })
-              }
-            }}
-          >
-            <Typography variant="subheading" color="black.main">
-              delete
-            </Typography>
-          </MenuItem>
-        </Menu>
-        </>
-        )
-      } else {
-        if (user.role === "admin") {
-          // only has delete button
-          return (<>
+        return (
+          <>
             <Button
-              id="basic-button"
+              id='basic-button'
               aria-controls={open ? 'basic-menu' : undefined}
-              aria-haspopup="true"
+              aria-haspopup='true'
               aria-expanded={open ? 'true' : undefined}
               onClick={handleClick}
-              endIcon={<KeyboardArrowDownIcon/>}/>
+              endIcon={<KeyboardArrowDownIcon />}
+            />
             <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-            >
-            <MenuItem
-              sx={{
-                ':hover': {
-                  bgcolor: '#A292C5',
-                },
-              }}
-              onClick={() => {
-                const response = confirm('Are you sure? You cannot restore comments that have been deleted.')
-                if (response) {
-                  // eslint-disable-next-line
-                  commentDelete.deleteComment(articleId!, commentID)
-                  setComments((comments) => comments.filter((currComment) => currComment.content !== comment))
-                  dispatch({
-                    notificationActionType: 'success',
-                    message: `Comment deleted.`,
-                  })
-                }
+              id='basic-menu'
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
               }}
             >
-
-              <Typography variant="subheading" color="black.main">
-                delete
-              </Typography>
-            </MenuItem>
-          </Menu></>
+              <MenuItem
+                sx={{
+                  ':hover': {
+                    bgcolor: '#A292C5',
+                  },
+                }}
+                onClick={() => setIsEditing(true)}
+              >
+                <Typography variant='subheading' color='black.main'>
+                  edit
+                </Typography>
+              </MenuItem>
+              <MenuItem
+                sx={{
+                  ':hover': {
+                    bgcolor: '#A292C5',
+                  },
+                }}
+                onClick={() => {
+                  const response = confirm(
+                    'Are you sure? You cannot restore comments that have been deleted.',
+                  )
+                  if (response) {
+                    // eslint-disable-next-line
+                    commentDelete.deleteComment(articleId!, commentID)
+                    setComments((comments) =>
+                      comments.filter(
+                        (currComment) => currComment.content !== comment,
+                      ),
+                    )
+                    dispatch({
+                      notificationActionType: 'success',
+                      message: `Comment deleted.`,
+                    })
+                  }
+                }}
+              >
+                <Typography variant='subheading' color='black.main'>
+                  delete
+                </Typography>
+              </MenuItem>
+            </Menu>
+          </>
+        )
+      } else {
+        if (user.role === 'admin') {
+          // only has delete button
+          return (
+            <>
+              <Button
+                id='basic-button'
+                aria-controls={open ? 'basic-menu' : undefined}
+                aria-haspopup='true'
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+                endIcon={<KeyboardArrowDownIcon />}
+              />
+              <Menu
+                disableScrollLock={true}
+                id='basic-menu'
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem
+                  sx={{
+                    ':hover': {
+                      bgcolor: '#A292C5',
+                    },
+                  }}
+                  onClick={() => {
+                    const response = confirm(
+                      'Are you sure? You cannot restore comments that have been deleted.',
+                    )
+                    if (response) {
+                      // eslint-disable-next-line
+                      commentDelete.deleteComment(articleId!, commentID)
+                      setComments((comments) =>
+                        comments.filter(
+                          (currComment) => currComment.content !== comment,
+                        ),
+                      )
+                      dispatch({
+                        notificationActionType: 'success',
+                        message: `Comment deleted.`,
+                      })
+                    }
+                  }}
+                >
+                  <Typography variant='subheading' color='black.main'>
+                    delete
+                  </Typography>
+                </MenuItem>
+              </Menu>
+            </>
           )
         }
       }
@@ -253,16 +289,16 @@ export const IndividualBlogPost = () => {
 
     return (
       <Stack
-        direction="row"
+        direction='row'
         spacing={28}
-        boxSizing="border-box"
+        boxSizing='border-box'
         alignItems={'baseline'}
       >
         <img
           src={profilePic}
-          width="42px"
-          height="42px"
-          style={{borderRadius: '50%'}}
+          width='42px'
+          height='42px'
+          style={{ borderRadius: '50%' }}
         />
         <Paper
           style={{
@@ -273,23 +309,24 @@ export const IndividualBlogPost = () => {
           }}
         >
           {isEditing ? (
-            <><TextField
-              style={{minWidth: '500px'}}
-              multiline
-              value={commentContent}
-              onChange={(event) => setCommentContent(event.target.value)}
-              error={commentContentError}
-              helperText={commentContentHelperText}
-            />
+            <>
+              <TextField
+                style={{ minWidth: '500px' }}
+                multiline
+                value={commentContent}
+                onChange={(event) => setCommentContent(event.target.value)}
+                error={commentContentError}
+                helperText={commentContentHelperText}
+              />
               <Stack
-                direction="row"
-                justifyContent="flex-end"
-                alignItems="center"
+                direction='row'
+                justifyContent='flex-end'
+                alignItems='center'
                 spacing={2}
-                p="10px"
+                p='10px'
               >
                 <Button
-                  variant="contained"
+                  variant='contained'
                   onClick={() => {
                     if (commentContent.trim() === '') {
                       setCommentContentError(true)
@@ -303,27 +340,32 @@ export const IndividualBlogPost = () => {
                 >
                   Save
                 </Button>
-              </Stack></>
-
+              </Stack>
+            </>
           ) : (
             <Stack
-              direction="row"
+              direction='row'
               spacing={28}
-              boxSizing="border-box"
+              boxSizing='border-box'
               alignItems={'baseline'}
             >
               <Stack
-                direction="column"
+                direction='column'
                 spacing={10}
-                boxSizing="border-box"
-                alignItems={'baseline'}>
-                <Typography variant="subheading"
-                            color={theme.palette.black.main}>{commenter_username}:</Typography>
+                boxSizing='border-box'
+                alignItems={'baseline'}
+              >
                 <Typography
-                color={theme.palette.white.main}
-                style={{whiteSpace: 'pre-line'}}
+                  variant='subheading'
+                  color={theme.palette.black.main}
                 >
-                {comment}
+                  {commenter_username}:
+                </Typography>
+                <Typography
+                  color={theme.palette.white.main}
+                  style={{ whiteSpace: 'pre-line' }}
+                >
+                  {comment}
                 </Typography>
               </Stack>
               {renderMenuButton()}
@@ -333,7 +375,6 @@ export const IndividualBlogPost = () => {
       </Stack>
     )
   }
-
 
   const component = article && (
     <>
@@ -357,14 +398,14 @@ export const IndividualBlogPost = () => {
         />
       </Stack>
       <Stack
-        direction="column"
-        alignItems="flex-start"
+        direction='column'
+        alignItems='flex-start'
         spacing={32}
-        alignSelf="stretch"
+        alignSelf='stretch'
         paddingLeft={'32px'}
         paddingRight={'32px'}
       >
-        <Typography variant="h3">{title}</Typography>
+        <Typography variant='h3'>{title}</Typography>
         <Box
           width={'100%'}
           sx={{
@@ -376,11 +417,11 @@ export const IndividualBlogPost = () => {
           <Editor
             toolbarHidden
             editorState={editorState}
-            editorStyle={{fontFamily: 'Roboto', fontSize: '18px'}}
+            editorStyle={{ fontFamily: 'Roboto', fontSize: '18px' }}
             readOnly
           />
         </Box>
-        <Typography style={{alignSelf: 'flex-start'}} variant="h6">
+        <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
           Comments
         </Typography>
         {new Array(commentCount).fill(0).map((_, i) => {
@@ -397,8 +438,8 @@ export const IndividualBlogPost = () => {
         })}
         {!articleComments.endOfCollection && (
           <Button
-            variant="outlined"
-            size="large"
+            variant='outlined'
+            size='large'
             sx={{
               marginTop: 34,
               alignSelf: 'center',
@@ -408,7 +449,7 @@ export const IndividualBlogPost = () => {
               border: `2px solid 'black'`,
               ':hover': {
                 bgcolor: '#4D3188',
-              }
+              },
             }}
             disabled={articleComments.loadingNext}
             onClick={() => {
@@ -420,16 +461,20 @@ export const IndividualBlogPost = () => {
         )}
 
         <Stack
-          direction="row"
+          direction='row'
           spacing={28}
-          boxSizing="border-box"
+          boxSizing='border-box'
           alignItems={'baseline'}
         >
           <img
-            src={user.profile_image === "" ? defaultProfilePicture : user.profile_image}
-            width="42px"
-            height="42px"
-            style={{borderRadius: '50%'}}
+            src={
+              user.profile_image === ''
+                ? defaultProfilePicture
+                : user.profile_image
+            }
+            width='42px'
+            height='42px'
+            style={{ borderRadius: '50%' }}
           />
           <Paper
             style={{
@@ -440,25 +485,25 @@ export const IndividualBlogPost = () => {
             }}
           >
             <TextField
-              variant="standard"
-              style={{minWidth: '500px'}}
+              variant='standard'
+              style={{ minWidth: '500px' }}
               value={currComment}
-              placeholder="Comment away..."
+              placeholder='Comment away...'
               multiline
-              color="primary"
+              color='primary'
               onChange={(event) => setCurrComment(event.target.value)}
               error={isCurrCommentError}
               helperText={commentHelperText}
             />
             <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="center"
+              direction='row'
+              justifyContent='flex-end'
+              alignItems='center'
               spacing={2}
-              p="10px"
+              p='10px'
             >
               <Button
-                variant="contained"
+                variant='contained'
                 onClick={() => {
                   if (currComment.trim() === '') {
                     setIsCurrCommentError(true)
@@ -493,4 +538,3 @@ interface CommentProps {
   commenter_uid: string
   commenter_username: string
 }
-

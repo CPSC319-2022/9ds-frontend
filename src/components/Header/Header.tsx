@@ -3,9 +3,35 @@ import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
 import React, { FC } from 'react'
 import Button from '@mui/material/Button'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { MenuItem, Paper, Popper } from '@mui/material'
+import { useUser } from '../../hooks/firebase/useUser'
+import { useSignOut } from '../../hooks/firebase/useAuth'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
-export const Header: FC = () => {
+export enum UserRole {
+  READER = 'reader',
+  CONTRIBUTOR = 'contributor',
+  ADMIN = 'admin',
+  VISITOR = 'visitor',
+}
+
+interface HeaderProps {
+  role: UserRole
+}
+
+export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
+  const user = useUser().queriedUser
+  const signOut = useSignOut()
+  const navigate = useNavigate()
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [open, setOpen] = React.useState<boolean>(false)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setOpen(!open)
+    setAnchorEl(event.currentTarget)
+  }
+
   return (
     <Stack
       border='2px solid black'
@@ -28,26 +54,78 @@ export const Header: FC = () => {
             HOME
           </Typography>
         </Link>
-        <a href='/#recentPosts' style={{ textDecoration: 'none' }}>
-          <Button
-            variant='text'
-            size='large'
-            sx={{
-              textTransform: 'none',
-            }}
-          >
+        <Button
+          id='basic-button'
+          aria-controls={open ? 'basic-menu' : undefined}
+          aria-haspopup='true'
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+          endIcon={<KeyboardArrowDownIcon />}
+        >
+          <Typography variant='button' color='black.main'>
+            BLOG
+          </Typography>
+        </Button>
+
+        <Popper id='basic-menu' anchorEl={anchorEl} open={open}>
+          <Paper>
+            {(role === UserRole.ADMIN || role === UserRole.CONTRIBUTOR) && (
+              <MenuItem
+                sx={{
+                  ':hover': {
+                    bgcolor: '#A292C5',
+                  },
+                }}
+                onClick={() => navigate('/create')}
+              >
+                <Typography variant='subheading' color='black.main'>
+                  CREATE BLOG POST
+                </Typography>
+              </MenuItem>
+            )}
+            <MenuItem
+              sx={{
+                ':hover': {
+                  bgcolor: '#A292C5',
+                },
+              }}
+              onClick={() => navigate('/profile')}
+            >
+              <Typography variant='subheading' color='black.main'>
+                PROFILE
+              </Typography>
+            </MenuItem>
+          </Paper>
+        </Popper>
+        {role === UserRole.ADMIN && (
+          <Link to={'/admin'} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color='black.main'>
-              BLOG
+              ADMIN PANEL
             </Typography>
-          </Button>
-        </a>
+          </Link>
+        )}
         <Link to={'/about-us'} style={{ textDecoration: 'none' }}>
           <Typography variant='subheading' color='black.main'>
             ABOUT US
           </Typography>
         </Link>
       </Stack>
-      <Link to={'/get-started'} style={{ textDecoration: 'none' }}>
+      <Stack
+        direction='row'
+        justifyContent='center'
+        alignItems='center'
+        spacing={20}
+      >
+        {role !== UserRole.VISITOR && (
+          <Link to={'/profile'}>
+            <img
+              src={user.profile_image}
+              width='55px'
+              height='55px'
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
+            />
+          </Link>
+        )}
         <Button
           variant='outlined'
           size='large'
@@ -59,12 +137,20 @@ export const Header: FC = () => {
               bgcolor: '#4D3188',
             },
           }}
+          onClick={() => {
+            if (role === UserRole.VISITOR) {
+              navigate('/get-started')
+            } else {
+              signOut.signOutWrapper()
+              navigate('/get-started')
+            }
+          }}
         >
           <Typography variant='button' color='white.main'>
-            LOGIN/SIGN UP
+            {role !== UserRole.VISITOR ? 'SIGN OUT' : 'SIGN UP/SIGN IN'}
           </Typography>
         </Button>
-      </Link>
+      </Stack>
     </Stack>
   )
 }
