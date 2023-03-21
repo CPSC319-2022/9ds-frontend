@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
-import { NotificationContext, NotificationProvider } from '../../context'
+import { NotificationContext, NotificationProvider } from '../../context/NotificationContext'
+
 
 describe('NotificationContext', () => {
   it('renders without crashing', () => {

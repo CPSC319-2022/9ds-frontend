@@ -20,7 +20,7 @@ test('renders all team members', () => {
       <AboutUs />
     </MemoryRouter>,
   )
-  const teamMembers = screen.getAllByTestId('about-us-card')
+  const teamMembers = screen.queryAllByTestId('about-us-card')
   expect(teamMembers).toHaveLength(9)
 })
 
@@ -40,7 +40,7 @@ describe('AboutUs component', () => {
         <AboutUs />
       </MemoryRouter>,
     )
-    const rows = getAllByTestId('about-us-row')
+    const rows = screen.queryAllByTestId('about-us-row')
     expect(rows.length).toBe(3)
   })
 
@@ -50,7 +50,7 @@ describe('AboutUs component', () => {
         <AboutUs />
       </MemoryRouter>,
     )
-    const stack = getByTestId('about-us-stack')
+    const stack = screen.getByTestId('about-us-stack')
     expect(stack).toHaveStyle('justify-content: space-between')
     expect(stack).toHaveStyle('align-items: stretch')
   })
@@ -61,7 +61,7 @@ describe('AboutUs component', () => {
         <AboutUs />
       </MemoryRouter>,
     )
-    const rows = getAllByTestId('about-us-row')
+    const rows = screen.getAllByTestId('about-us-row')
     rows.forEach((row) => {
       const cards = row.querySelectorAll('.about-us-card')
       //TODO: failing on count 3, should explore why.

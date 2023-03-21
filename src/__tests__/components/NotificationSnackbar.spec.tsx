@@ -1,7 +1,7 @@
 import { AlertColor } from '@mui/material'
 import { render, screen } from '@testing-library/react'
 import { NotificationSnackbar } from '../../components/Snackbar'
-import { NotificationContext } from '../../context'
+import { NotificationContext } from '../../context/NotificationContext'
 
 
 describe('NotificationSnackbar', () => {
