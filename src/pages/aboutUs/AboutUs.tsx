@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
-import {Typography, Stack} from '@mui/material';
-import { AboutUsCard } from '../../components/AboutUsCard';
+import { Typography, Stack } from '@mui/material'
+import { AboutUsCard } from '../../components/AboutUsCard'
 import catProfilePic from '../../assets/catProfilePic.png'
 import brianPic from '../../assets/brian.jpg'
 import ahnafPic from '../../assets/ahnaf.png'
@@ -19,6 +19,7 @@ export const AboutUs: FC = () => {
             >
                 <Typography variant="h2">About the 9 Dudes</Typography>
                 <Stack
+                    data-testid="about-us-stack"
                     direction="column"
                     justifyContent="space-between"
                     alignItems="stretch"
@@ -28,6 +29,7 @@ export const AboutUs: FC = () => {
                         direction="row"
                         justifyContent="space-between"
                         alignItems="stretch"
+                        data-testid='about-us-row'
                         spacing={57}
                     >
                         <AboutUsCard
@@ -54,6 +56,7 @@ export const AboutUs: FC = () => {
                         direction="row"
                         justifyContent="space-between"
                         alignItems="stretch"
+                        data-testid='about-us-row'
                         spacing={57}
                     >
                         <AboutUsCard
@@ -79,6 +82,7 @@ export const AboutUs: FC = () => {
                         direction="row"
                         justifyContent="space-between"
                         alignItems="stretch"
+                        data-testid='about-us-row'
                         spacing={57}
                     >
                         <AboutUsCard
