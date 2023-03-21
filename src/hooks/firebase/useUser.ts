@@ -17,7 +17,7 @@ import {
   Query,
 } from 'firebase/firestore'
 import { db } from '../../firebaseApp'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   articleDraftTranslator,
   ArticlePreview,
@@ -100,7 +100,7 @@ export const useUserArticles = (uid: string, n: number) => {
   const [loadingNext, setLoadingNext] = useState(false)
   const [articles, setArticles] = useState<ArticlePreview[]>([])
 
-  let q: Query<DocumentData>
+  const q = useRef<Query<DocumentData> | null>(null)
 
   const [lastArticle, setLastArticle] =
     useState<QueryDocumentSnapshot<DocumentData>>()
@@ -110,7 +110,7 @@ export const useUserArticles = (uid: string, n: number) => {
     if (!currentUser) {
       setError('unauthenticated')
     } else {
-      q = query(
+      q.current = query(
         query(
           collection(db, 'article'),
           where('author_uid', '==', uid),
@@ -118,7 +118,7 @@ export const useUserArticles = (uid: string, n: number) => {
         ),
         orderBy('publish_time', 'desc'),
       )
-      getDocs(query(q, limit(n)))
+      getDocs(query(q.current, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
           setLoading(false)
           setArticles(articlePreviewTranslator(docs))
@@ -132,17 +132,19 @@ export const useUserArticles = (uid: string, n: number) => {
   }, [uid])
 
   const getNext = (n: number) => {
-    setLoadingNext(true)
-    getDocs(query(q, startAfter(lastArticle), limit(n)))
-      .then((docs: QuerySnapshot<DocumentData>) => {
-        setLoadingNext(false)
-        setArticles(articles.concat(articlePreviewTranslator(docs)))
-        setLastArticle(docs.docs[docs.docs.length - 1])
-        setEndOfCollection(docs.docs.length < n)
-      })
-      .catch((err: FirestoreError) => {
-        setError(err.code)
-      })
+    if (q.current) {
+      setLoadingNext(true)
+      getDocs(query(q.current, startAfter(lastArticle), limit(n)))
+        .then((docs: QuerySnapshot<DocumentData>) => {
+          setLoadingNext(false)
+          setArticles(articles.concat(articlePreviewTranslator(docs)))
+          setLastArticle(docs.docs[docs.docs.length - 1])
+          setEndOfCollection(docs.docs.length < n)
+        })
+        .catch((err: FirestoreError) => {
+          setError(err.code)
+        })
+    }
   }
 
   return { getNext, error, loading, loadingNext, articles, endOfCollection }
@@ -155,7 +157,7 @@ export const useUserDrafts = (n: number) => {
   const [loadingNext, setLoadingNext] = useState(false)
   const [articles, setArticles] = useState<ArticlePreview[]>([])
 
-  let q: Query
+  const q = useRef<Query | null>(null)
 
   const [lastArticle, setLastArticle] =
     useState<QueryDocumentSnapshot<DocumentData>>()
@@ -165,13 +167,13 @@ export const useUserDrafts = (n: number) => {
     if (!currentUser) {
       setError('unauthenticated')
     } else {
-      q = query(
+      q.current = query(
         collection(db, 'article'),
         where('author_uid', '==', currentUser.uid),
         where('published', '==', false),
         orderBy('edit_time', 'desc'),
       )
-      getDocs(query(q, limit(n)))
+      getDocs(query(q.current, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
           setLoading(false)
           setArticles(articleDraftTranslator(docs))
@@ -188,17 +190,19 @@ export const useUserDrafts = (n: number) => {
     if (!currentUser) {
       setError('unauthenticated')
     } else {
-      setLoadingNext(true)
-      getDocs(query(q, startAfter(lastArticle), limit(n)))
-        .then((docs: QuerySnapshot<DocumentData>) => {
-          setLoadingNext(false)
-          setArticles(articles.concat(articleDraftTranslator(docs)))
-          setLastArticle(docs.docs[docs.docs.length - 1])
-          setEndOfCollection(docs.docs.length < n)
-        })
-        .catch((err: FirestoreError) => {
-          setError(err.code)
-        })
+      if (q.current) {
+        setLoadingNext(true)
+        getDocs(query(q.current, startAfter(lastArticle), limit(n)))
+          .then((docs: QuerySnapshot<DocumentData>) => {
+            setLoadingNext(false)
+            setArticles(articles.concat(articleDraftTranslator(docs)))
+            setLastArticle(docs.docs[docs.docs.length - 1])
+            setEndOfCollection(docs.docs.length < n)
+          })
+          .catch((err: FirestoreError) => {
+            setError(err.code)
+          })
+      }
     }
   }
 
