@@ -125,7 +125,7 @@ export const ArticleForm = ({
       }
       e.preventDefault()
     },
-    [title, editorState, customLink],
+    [title, editorState, customLink, selectedPictureIndex],
   )
 
   useEffect(() => {
