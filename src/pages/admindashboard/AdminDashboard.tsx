@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { useSetRole, useUserRoleDirectory } from '../../hooks/firebase/useUser'
 import BlockIcon from '@mui/icons-material/Block'
+import React from 'react'
 
 enum PromoteButtonRoles {
   CONTRIBUTOR = 'contributor',
@@ -132,7 +133,6 @@ export const AdminDashboard = () => {
                   selectedRows.forEach((v) => {
                     setRole(v.uid, 'banned')
                   })
-                  console.log(selectedRowsIndexes)
                   const newUsersSessionCopy: DocumentData[] =
                     usersSessionCopy.map((v, i) =>
                       selectedRowsIndexes.includes(i + 1)

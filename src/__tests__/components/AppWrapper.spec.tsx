@@ -35,7 +35,6 @@ describe('AppWrapper', () => {
       </MemoryRouter>,
     )
     const stack = getByTestId('app-wrapper-stack')
-    console.log(stack)
     //TODO: it's expected to have 32 spacing in this case, but for some reason this is failing. Worth checking why.
     //expect(stack).toHaveStyle('spacing: 32px;')
   })

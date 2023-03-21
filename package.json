@@ -74,6 +74,17 @@
         "functions": 80,
         "lines": 80
       }
-    }
+    },
+    "coveragePathIgnorePatterns": [
+        "<rootDir>/src/theme",
+        "<rootDir>/src/pages",
+        "<rootDir>/src/__tests__/",
+        "<rootDir>/src/configs/routes",
+        "<rootDir>/src/hooks",
+        "<rootDir>/src/pages",
+        "<rootDir>/src/firebaseApp.ts",
+        "<rootDir>/src/components/Routes",
+        "<rootDir>/src/index.tsx"
+      ]
   }
 }
