@@ -28,8 +28,12 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [open, setOpen] = React.useState<boolean>(false)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setOpen(!open)
-    setAnchorEl(event.currentTarget)
+    if (role === UserRole.VISITOR) {
+      navigate('/')
+    } else {
+      setOpen(!open)
+      setAnchorEl(event.currentTarget)
+    }
   }
 
   return (
@@ -43,7 +47,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
       boxSizing='border-box'
       sx={{ justifyContent: 'space-between', alignItems: 'center' }}
     >
-      <img src={logo} width='100px' height='50px' />
+      <img data-testid='logo' src={logo} width='100px' height='50px' />
       <Stack
         spacing={32}
         direction='row'
@@ -55,31 +59,25 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
           </Typography>
         </Link>
 
-        {role === UserRole.VISITOR ? (
-          <Link to={'/'} style={{ textDecoration: 'none' }}>
-            <Typography variant='subheading' color='black.main'>
-              BLOG
-            </Typography>
-          </Link>
-        ) : (
-          <Button
-            id='basic-button'
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup='true'
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-            endIcon={<KeyboardArrowDownIcon />}
-          >
-            <Typography variant='button' color='black.main'>
-              BLOG
-            </Typography>
-          </Button>
-        )}
+        <Button
+          data-testid='blog-button'
+          id='basic-button'
+          aria-controls={open ? 'basic-menu' : undefined}
+          aria-haspopup='true'
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+          endIcon={role === UserRole.VISITOR ? null : <KeyboardArrowDownIcon />}
+        >
+          <Typography variant='button' color='black.main'>
+            BLOG
+          </Typography>
+        </Button>
 
         <Popper id='basic-menu' anchorEl={anchorEl} open={open}>
           <Paper>
             {(role === UserRole.ADMIN || role === UserRole.CONTRIBUTOR) && (
               <MenuItem
+                data-testid='create-menu'
                 sx={{
                   ':hover': {
                     bgcolor: '#A292C5',
@@ -93,6 +91,8 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
               </MenuItem>
             )}
             <MenuItem
+              aria-label='profile'
+              data-testid='profile'
               sx={{
                 ':hover': {
                   bgcolor: '#A292C5',
@@ -138,6 +138,7 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
         <Button
           variant='outlined'
           size='large'
+          data-testid='sign-out-btn'
           sx={{
             backgroundColor: 'black.main',
             textTransform: 'none',
