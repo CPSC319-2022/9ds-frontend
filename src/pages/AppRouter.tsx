@@ -1,15 +1,26 @@
 import React from 'react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '../components/Routes'
-import { RouteConfig, ROUTE_CONFIG } from '../configs'
+import { RouteConfig, ROUTE_CONFIG } from '../configs/routes/routeConfig'
 
 export const AppRouter = () => {
   const buildRoutes = () => (
     <Routes>
       {Object.values(ROUTE_CONFIG).map(
-        ({ path, component, isProtected }: RouteConfig) => {
+        ({
+          path,
+          component,
+          isProtected,
+          allowedRoles,
+          isProtectedOwnerUser,
+        }: RouteConfig) => {
           const element = isProtected ? (
-            <ProtectedRoute>{component}</ProtectedRoute>
+            <ProtectedRoute
+              allowedRoles={allowedRoles}
+              isProtectedOwnerUser={isProtectedOwnerUser}
+            >
+              {component}
+            </ProtectedRoute>
           ) : (
             component
           )

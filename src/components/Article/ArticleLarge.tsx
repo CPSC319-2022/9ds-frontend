@@ -4,15 +4,18 @@ import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
 import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
+import { convertToPlainText } from '../TextEditor'
 
 export interface ArticleLargeProps {
   article: ArticlePreview
   clickDisabled?: boolean
+  notFeatured: boolean
 }
 
 export const ArticleLarge: FC<ArticleLargeProps> = ({
   article,
   clickDisabled,
+  notFeatured,
 }) => {
   const navigate = useNavigate()
   return (
@@ -53,10 +56,13 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
             justifyContent='flex-end'
             boxSizing='border-box'
             p='12px'
+            textAlign='left'
           >
-            <Typography variant='h5' color='white.main'>
-              Featured
-            </Typography>
+            {!notFeatured && (
+              <Typography variant='h5' color='white.main'>
+                Featured
+              </Typography>
+            )}
             <Typography variant='title' color='white.main'>
               {article.title}
             </Typography>
@@ -69,7 +75,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
                 overflow: 'hidden',
               }}
             >
-              {article.content}
+              {convertToPlainText(article.content)}
             </Typography>
           </Stack>
           <Avatar

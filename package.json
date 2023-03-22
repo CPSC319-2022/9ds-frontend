@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.0",
-    "@mui/material": "^5.11.8",
+    "@mui/material": "^5.11.12",
+    "@mui/x-data-grid": "^6.0.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -14,7 +15,7 @@
     "@types/node": "^16.7.13",
     "@types/react-dom": "^18.0.0",
     "draft-js": "^0.11.7",
-    "firebase": "^9.17.1",
+    "firebase": "^9.17.2",
     "firebase-tools": "10.9.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -80,6 +81,17 @@
     "testMatch": [
       "**/__tests__/!(cypress.)*.[jt]s?(x)",
       "**/!(cypress.)?(*.)+(spec|test).[tj]s?(x)"
-    ]
+    ],
+    "coveragePathIgnorePatterns": [
+        "<rootDir>/src/theme",
+        "<rootDir>/src/pages",
+        "<rootDir>/src/__tests__/",
+        "<rootDir>/src/configs/routes",
+        "<rootDir>/src/hooks",
+        "<rootDir>/src/pages",
+        "<rootDir>/src/firebaseApp.ts",
+        "<rootDir>/src/components/Routes",
+        "<rootDir>/src/index.tsx"
+      ]
   }
 }

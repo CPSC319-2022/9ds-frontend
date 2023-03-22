@@ -1,30 +1,37 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
 import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
+import { convertToPlainText } from '../TextEditor'
 
 export interface ArticleSmallProps {
   article: ArticlePreview
   clickDisabled?: boolean
+  isDraft?: boolean
 }
 
 export const ArticleSmall: FC<ArticleSmallProps> = ({
   article,
   clickDisabled,
+  isDraft,
 }) => {
   const navigate = useNavigate()
   return (
     <ButtonBase
       disabled={clickDisabled}
       onClick={() => {
-        navigate(`/blog/${article.articleId}`)
+        if (isDraft) {
+          navigate(`/draft/${article.articleId}`)
+        } else {
+          navigate(`/blog/${article.articleId}`)
+        }
       }}
     >
       <Stack
         alignItems='flex-start'
-        width='298px'
+        width='350px'
         height='400px'
         borderRadius='12px'
         p='12px'
@@ -37,6 +44,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
             display: 'flex',
             height: '100%',
             justifyContent: 'space-between',
+            textAlign: 'left',
           }}
         >
           <img
@@ -64,13 +72,13 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
               variant='caption'
               color='black.main'
             >
-              {article.content}
+              {convertToPlainText(article.content)}
             </Typography>
           </Stack>
           <Avatar
             dark
             name={article.author_username}
-            date={article.publish_time.toDate()}
+            date={article.publish_time?.toDate() || new Date()}
             avatarImgSrc={article.author_image}
           />
         </Stack>

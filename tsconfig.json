@@ -18,6 +18,6 @@
     "jsx": "react-jsx",
     "baseUrl": "src",
   },
-  "include": ["src/declarations.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["src/declarations.d.ts", "**/*.ts", "**/*.tsx", "src/__tests__/components/Profile.txtg"],
   "exclude": ["node_modules"]
 }
