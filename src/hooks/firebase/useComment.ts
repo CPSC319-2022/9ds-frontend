@@ -10,8 +10,8 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../firebaseApp'
 import { useState } from 'react'
-import { getUser } from './useUser'
 import { useAuth } from './useAuth'
+import { getUser } from 'utils/firebase/user'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 

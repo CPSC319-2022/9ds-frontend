@@ -12,7 +12,7 @@ import { Editor } from 'react-draft-wysiwyg'
 import { AppWrapper } from '../../components/AppWrapper'
 import { BlogMenu } from '../../components/BlogMenu/BlogMenu'
 import { handleLoading } from '../../components/Spinner/Spinner'
-import { UserData, useUser } from '../../hooks/firebase/useUser'
+import { useUser } from '../../hooks/firebase/useUser'
 import {
   comment,
   useCommentCreate,
@@ -25,6 +25,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useAuth } from '../../hooks/firebase/useAuth'
+import { UserData } from 'types/UserData'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -43,7 +44,7 @@ export const IndividualBlogPost = () => {
     'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
 
   //  eslint-disable-next-line
-  const articleComments = useArticleComments(articleId!, 5)
+  const articleComments = useArticleComments(articleId!, PAGINATION_COUNT)
   const [comments, setComments] = useState<comment[]>([])
   const [commentCount, setCommentCount] = useState(0)
 

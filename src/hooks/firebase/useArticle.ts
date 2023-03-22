@@ -9,7 +9,6 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  Timestamp,
   DocumentData,
   QuerySnapshot,
   FirestoreErrorCode,
@@ -19,72 +18,16 @@ import {
   getDocs,
   startAfter,
 } from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytes } from '@firebase/storage'
 import { useState, useEffect, useContext } from 'react'
-import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
-import {db, storage} from '../../firebaseApp'
+import { db, storage } from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
-import {getDownloadURL, ref, uploadBytes} from "@firebase/storage";
-
-export interface ArticlePreview {
-  title: string
-  content: string
-  header_image: string
-  author_image: string
-  author_username: string
-  publish_time: Timestamp
-  articleId: string
-}
-
-export const articlePreviewTranslator = (
-  docs: QuerySnapshot<DocumentData>,
-): ArticlePreview[] => {
-  const articlesData: ArticlePreview[] = []
-  docs.forEach((doc) => {
-    articlesData.push({
-      title: doc.data().title,
-      content: doc.data().content,
-      header_image: doc.data().header_image,
-      author_image: doc.data().author_image,
-      author_username: doc.data().author_username,
-      publish_time: doc.data().publish_time,
-      articleId: doc.id,
-    })
-  })
-
-  return articlesData
-}
-
-export const articleDraftTranslator = (
-  docs: QuerySnapshot<DocumentData>,
-): ArticlePreview[] => {
-  const articlesData: ArticlePreview[] = []
-  docs.forEach((doc) => {
-    articlesData.push({
-      title: doc.data().title,
-      content: doc.data().content,
-      header_image: doc.data().header_image,
-      author_image: doc.data().author_image,
-      author_username: doc.data().author_username,
-      publish_time: doc.data().edit_time,
-      articleId: doc.id,
-    })
-  })
-
-  return articlesData
-}
-
-export interface Article {
-  title: string
-  content: string
-  header_image: string
-  author_image: string
-  author_uid: string
-  edit_time: Timestamp
-  author_username: string
-  publish_time: Timestamp
-}
+import { Article, ArticlePreview } from 'types/Article'
+import { articlePreviewTranslator } from 'utils/firebase/article'
+import { UserData } from 'types/UserData'
+import { getUser } from 'utils/firebase/user'
 
 export const useArticleRecents = (n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
@@ -177,12 +120,12 @@ export const useArticleComments = (articleID: string, n: number) => {
         const commentsData: comment[] = []
         docs.forEach((doc) => {
           commentsData.push({
-              commenter_uid: doc.data().commenter_uid,
-              commenter_image: doc.data().commenter_image,
-              commenter_username: doc.data().commenter_username,
-              content: doc.data().content,
-              post_time: doc.data().post_time,
-              commentID: doc.id
+            commenter_uid: doc.data().commenter_uid,
+            commenter_image: doc.data().commenter_image,
+            commenter_username: doc.data().commenter_username,
+            content: doc.data().content,
+            post_time: doc.data().post_time,
+            commentID: doc.id,
           })
         })
         setLoading(false)
@@ -202,13 +145,13 @@ export const useArticleComments = (articleID: string, n: number) => {
         const commentsData: comment[] = []
         docs.forEach((doc) => {
           commentsData.push({
-              commenter_uid: doc.data().commenter_uid,
-              commenter_image: doc.data().commenter_image,
-              commenter_username: doc.data().commenter_username,
-              content: doc.data().content,
-              post_time: doc.data().post_time,
-              commentID: doc.id
-        })
+            commenter_uid: doc.data().commenter_uid,
+            commenter_image: doc.data().commenter_image,
+            commenter_username: doc.data().commenter_username,
+            content: doc.data().content,
+            post_time: doc.data().post_time,
+            commentID: doc.id,
+          })
         })
         setLoadingNext(false)
         setComments(comments.concat(commentsData))
@@ -224,48 +167,49 @@ export const useArticleComments = (articleID: string, n: number) => {
 }
 
 export const useUploadHeader = () => {
-    const { user: currentUser } = useAuth()
-    const [error, setError] = useState<string>()
-    const [loading, setLoading] = useState(false)
-    const [imageURL, setImageURL] = useState("")
+  const { user: currentUser } = useAuth()
+  const [error, setError] = useState<string>()
+  const [loading, setLoading] = useState(false)
+  const [imageURL, setImageURL] = useState('')
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const uuid = require('uuid')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const uuid = require('uuid')
 
-    const uploadHeader = async (file: File) => {
-        if(currentUser == null) {
-            setError("unauthenticated");
-            return
-        }
-        setLoading(true)
-        const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
-        // const storageRef = ref(storage, `${currentUser.uid}/${file.name}${uuid.v4()}`)
-        // try {
-        //     await uploadBytes(storageRef, file)
-        //     const url = await getDownloadURL(storageRef)
-        //     setImageURL(url)
-        //     setLoading(false)
-        // } catch (err) {
-        //     if (err instanceof FirestoreError) {
-        //         setError(err.code)
-        //     } else {
-        //         setError("unknown-error")
-        //     }
-        //     setLoading(false)
-        const storageRef = ref(storage, path)
-        uploadBytes(storageRef, file).then(() => {
-            getDownloadURL(storageRef).then((res) => {
-                setLoading(false)
-                setImageURL(res)
-            })
-        }).catch((err) => {
-            setLoading(false)
-            setError(err.code)
-        })
-        
+  const uploadHeader = async (file: File) => {
+    if (currentUser == null) {
+      setError('unauthenticated')
+      return
     }
+    setLoading(true)
+    const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
+    // const storageRef = ref(storage, `${currentUser.uid}/${file.name}${uuid.v4()}`)
+    // try {
+    //     await uploadBytes(storageRef, file)
+    //     const url = await getDownloadURL(storageRef)
+    //     setImageURL(url)
+    //     setLoading(false)
+    // } catch (err) {
+    //     if (err instanceof FirestoreError) {
+    //         setError(err.code)
+    //     } else {
+    //         setError("unknown-error")
+    //     }
+    //     setLoading(false)
+    const storageRef = ref(storage, path)
+    uploadBytes(storageRef, file)
+      .then(() => {
+        getDownloadURL(storageRef).then((res) => {
+          setLoading(false)
+          setImageURL(res)
+        })
+      })
+      .catch((err) => {
+        setLoading(false)
+        setError(err.code)
+      })
+  }
 
-    return {uploadHeader, error, loading, imageURL}
+  return { uploadHeader, error, loading, imageURL }
 }
 
 export const useArticleCreate = () => {
@@ -331,7 +275,7 @@ export const useArticleEdit = () => {
       publish_time: published ? serverTimestamp() : null,
       title: title,
     }).then(
-      (doc) => {
+      () => {
         setLoading(false)
       },
       (err) => {
