@@ -23,7 +23,6 @@ import googleIcon from '../../assets/googleIcon.png'
 import { NotificationContext } from '../../context/NotificationContext'
 
 export const LoginForm = () => {
-  const navigate = useNavigate()
   const { dispatch } = useContext(NotificationContext)
 
   const [email, setEmail] = useState('')
@@ -45,19 +44,6 @@ export const LoginForm = () => {
 
   const emailAccountSignIn = useSignInUserEmailPassword()
   const signInWithGoogle = useSignInWithGoogle()
-
-  useEffect(() => {
-    if (signInWithGoogle.user) {
-      navigate('/')
-    }
-  }, [signInWithGoogle.user])
-
-  // signIn success
-  useEffect(() => {
-    if (emailAccountSignIn.user) {
-      navigate('/')
-    }
-  }, [emailAccountSignIn.user])
 
   // signIn error
   // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#signinwithemailandpassword
