@@ -2,6 +2,7 @@ import { Grid, Stack, Typography } from '@mui/material'
 import React, { FC } from 'react'
 import { Article } from '../../components/Article'
 import { Button } from '../../components/Button'
+import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 import { UISkeleton } from '../../components/UISkeleton'
 import { ArticlePreview } from '../../hooks/firebase/useArticle'
 
@@ -31,19 +32,9 @@ export const RecentPosts: FC<RecentPostsProps> = ({
         color='black.main'
         sx={{ alignSelf: 'flex-start' }}
       >
-          <div id='recentPosts'>Recent posts</div>
+        <div id='recentPosts'>Recent posts</div>
       </Typography>
-      <Grid
-        container
-        spacing={32}
-        sx={{ justifyContent: 'center', maxWidth: '80%' }}
-      >
-        {articles.map((article) => (
-          <Grid item key={article.articleId}>
-            <Article size='small' article={article} />
-          </Grid>
-        ))}
-      </Grid>
+      <ItemGrid items={articles} type={ItemGridType.ARTICLES} />
       {loadingNext && (
         <UISkeleton
           elemWidth='300px'
