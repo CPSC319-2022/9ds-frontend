@@ -7,7 +7,7 @@ import {
   Typography,
   Link,
 } from '@mui/material'
-import React, { useState, FormEvent, useEffect } from 'react'
+import React, { useState, FormEvent, useEffect, useContext } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
@@ -20,9 +20,11 @@ import {
   useSignInWithGoogle,
 } from '../../hooks/firebase/useAuth'
 import googleIcon from '../../assets/googleIcon.png'
+import { NotificationContext } from '../../context/NotificationContext'
 
 export const LoginForm = () => {
   const navigate = useNavigate()
+  const { dispatch } = useContext(NotificationContext)
 
   const [email, setEmail] = useState('')
   const [isEmailError, setIsEmailError] = useState(false)
@@ -87,6 +89,16 @@ export const LoginForm = () => {
         setEmailHelperText('The email address is not valid.')
         setIsPasswordError(false)
         setPasswordHelperText('')
+        break
+      case 'permission-denied':
+        setIsEmailError(true)
+        setEmailHelperText('')
+        setIsPasswordError(true)
+        setPasswordHelperText('')
+        dispatch({
+          notificationActionType: 'error',
+          message: 'This user has been banned',
+        })
         break
       default:
         setIsEmailError(false)

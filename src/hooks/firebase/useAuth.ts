@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import {
   User,
   createUserWithEmailAndPassword,
@@ -10,6 +10,7 @@ import {
   sendPasswordResetEmail,
   verifyPasswordResetCode,
   confirmPasswordReset,
+  UserCredential,
 } from 'firebase/auth'
 import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
 import { auth, db } from '../../firebaseApp'
@@ -79,8 +80,7 @@ export const useCreateUserEmailPassword = () => {
 }
 
 export const useSignInUserEmailPassword = () => {
-  const { user: currentUser } = useAuth()
-  const [error, setError] = useState<FirestoreErrorCode>()
+  const [error, setError] = useState<FirestoreErrorCode | undefined>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
 
@@ -88,10 +88,19 @@ export const useSignInUserEmailPassword = () => {
     email: string,
     password: string,
   ) => {
+    setError(undefined)
+    setLoading(true)
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        getUser(currentUser?.uid ?? null)
+      .then(({ user: newUser }: UserCredential) => {
+        console.log(`Signing in with user uid ${newUser} ${newUser.uid}`)
+        getUser(newUser.uid)
           .then((user) => {
+            if (user.role === 'banned') {
+              setError('permission-denied')
+              setLoading(false)
+              setUser(undefined)
+              return signOut(auth)
+            }
             setLoading(false)
             setUser(user)
           })
@@ -104,17 +113,24 @@ export const useSignInUserEmailPassword = () => {
       })
   }
 
-  return { signInWithEmailAndPasswordWrapper, error, loading, user }
+  return {
+    signInWithEmailAndPasswordWrapper,
+    error,
+    loading,
+    user,
+  }
 }
 
 export const useSignInWithGoogle = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
+  const [error, setError] = useState<FirestoreErrorCode | undefined>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
 
   const provider = new GoogleAuthProvider()
 
   const signInWithGoogleWrapper = () => {
+    setError(undefined)
+    setLoading(true)
     signInWithPopup(auth, provider)
       .then((result) => {
         const additionalInfo = getAdditionalUserInfo(result)
@@ -144,6 +160,12 @@ export const useSignInWithGoogle = () => {
         } else {
           getUser(result.user.uid)
             .then((user) => {
+              if (user.role === 'banned') {
+                setError('permission-denied')
+                setLoading(false)
+                setUser(undefined)
+                return signOut(auth)
+              }
               setLoading(false)
               setUser(user)
             })
