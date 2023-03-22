@@ -47,6 +47,18 @@ export const IndividualBlogPost = () => {
   const [comments, setComments] = useState<comment[]>([])
   const [commentCount, setCommentCount] = useState(0)
 
+  const commentCreate = useCommentCreate()
+
+  const [currComment, setCurrComment] = useState('')
+  const [isCurrCommentError, setIsCurrCommentError] = useState(false)
+  const [commentHelperText, setCommentHelperText] = useState('')
+
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  )
+  const auth = useAuth()
+  const commentMaxLength = 1200
+
   // after useArticleComments finish, update comments
   useEffect(() => {
     setComments(articleComments.comments)
@@ -86,17 +98,6 @@ export const IndividualBlogPost = () => {
     }
   }, [error])
 
-  const commentCreate = useCommentCreate()
-
-  const [currComment, setCurrComment] = useState('')
-  const [isCurrCommentError, setIsCurrCommentError] = useState(false)
-  const [commentHelperText, setCommentHelperText] = useState('')
-
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty(),
-  )
-  const auth = useAuth()
-
   const handleSubmitComment = () => {
     const commentToSubmit: comment = {
       commenter_uid: user.uid,
@@ -106,13 +107,19 @@ export const IndividualBlogPost = () => {
       post_time: Timestamp.now(),
       commentID: '',
     }
-
     // eslint-disable-next-line
     commentCreate.createComment(articleId!, commentToSubmit.content)
-    setComments((comments) => [...comments, commentToSubmit])
-    setCommentCount((commentCount) => commentCount + 1)
-    setIsCurrCommentError(false)
-    setCommentHelperText('')
+
+    // setCommentID on comment after creating using useCommentCreate
+    useEffect(() => {
+      if (commentCreate.commentId) {
+        commentToSubmit.commentID = commentCreate.commentId
+        setComments((comments) => [commentToSubmit, ...comments])
+        setCommentCount((commentCount) => commentCount + 1)
+        setIsCurrCommentError(false)
+        setCommentHelperText('')
+      }
+    }, [commentCreate.commentId])
   }
 
   const Comment = ({
@@ -121,6 +128,7 @@ export const IndividualBlogPost = () => {
     post_time,
     commenter_uid,
     commenter_username,
+    commentID
   }: CommentProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
@@ -131,35 +139,54 @@ export const IndividualBlogPost = () => {
       setAnchorEl(null)
     }
     const [isEditing, setIsEditing] = useState(false)
-    const [commentContent, setCommentContent] = useState(comment)
-    const [commentContentError, setCommentContentError] = useState(false)
-    const [commentContentHelperText, setCommentContentHelperText] = useState('')
+    const [editCommentContent, setEditCommentContent] = useState(comment)
+    const [editCommentContentError, setEditCommentContentError] = useState(false)
+    const [editCommentContentHelperText, setEditCommentContentHelperText] = useState('')
 
     const commentEdit = useCommentEdit()
     const commentDelete = useCommentDelete()
-    const filteredComment = comments.filter(
-      (com) =>
-        com.commenter_image === profilePic &&
-        com.content === comment &&
-        com.post_time === post_time,
-    )
-    const commentID = filteredComment[0].commentID
-
     const ownedBySignedInUser = auth.user && commenter_uid === auth.user.uid
+
+    // character limit for reply
+    useEffect(() => {
+      if (currComment.length === commentMaxLength) {
+        setIsCurrCommentError(true)
+        setCommentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+      } else {
+        if (currComment.length !== 0) {
+          setIsCurrCommentError(false)
+          setCommentHelperText("")
+        }
+      }
+    },[currComment])
+
+    // character limit for editing
+    useEffect(() => {
+      if (editCommentContent.length === commentMaxLength) {
+        setEditCommentContentError(true)
+        setEditCommentContentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+      } else {
+        if (currComment.length !== 0) {
+          setEditCommentContentError(false)
+          setEditCommentContentHelperText("")
+        }
+      }
+    },[editCommentContent])
+
 
     const handleSave = () => {
       // eslint-disable-next-line
-      commentEdit.editComment(articleId!, commentID, commentContent)
+      commentEdit.editComment(articleId!, commentID, editCommentContent)
       const updatedComments = comments.map((obj) => {
         if (obj.content === comment) {
-          return { ...obj, content: commentContent }
+          return { ...obj, content: editCommentContent }
         }
         return obj
       })
       setComments(updatedComments)
       setIsEditing(false)
-      setCommentContentError(false)
-      setCommentContentHelperText('')
+      setEditCommentContentError(false)
+      setEditCommentContentHelperText('')
       setCurrComment('')
     }
 
@@ -306,6 +333,8 @@ export const IndividualBlogPost = () => {
             borderTopRightRadius: 25,
             padding: 15,
             backgroundColor: theme.palette.black['50%'],
+            overflow: 'hidden',
+            maxWidth: '1200px'
           }}
         >
           {isEditing ? (
@@ -313,10 +342,11 @@ export const IndividualBlogPost = () => {
               <TextField
                 style={{ minWidth: '500px' }}
                 multiline
-                value={commentContent}
-                onChange={(event) => setCommentContent(event.target.value)}
-                error={commentContentError}
-                helperText={commentContentHelperText}
+                inputProps={{ maxLength: commentMaxLength }}
+                value={editCommentContent}
+                onChange={(event) => setEditCommentContent(event.target.value)}
+                error={editCommentContentError}
+                helperText={editCommentContentHelperText}
               />
               <Stack
                 direction='row'
@@ -328,12 +358,12 @@ export const IndividualBlogPost = () => {
                 <Button
                   variant='contained'
                   onClick={() => {
-                    if (commentContent.trim() === '') {
-                      setCommentContentError(true)
-                      setCommentContentHelperText('comment cannot be empty.')
+                    if (editCommentContent.trim() === '') {
+                      setEditCommentContentError(true)
+                      setEditCommentContentHelperText('comment cannot be empty.')
                     } else {
-                      setCommentContentError(false)
-                      setCommentContentHelperText('')
+                      setEditCommentContentError(false)
+                      setEditCommentContentHelperText('')
                       handleSave()
                     }
                   }}
@@ -363,7 +393,13 @@ export const IndividualBlogPost = () => {
                 </Typography>
                 <Typography
                   color={theme.palette.white.main}
-                  style={{ whiteSpace: 'pre-line' }}
+                  paragraph
+                  style={{
+                    wordWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'pre-line',
+                    overflow: 'hidden'
+                  }}
                 >
                   {comment}
                 </Typography>
@@ -424,42 +460,6 @@ export const IndividualBlogPost = () => {
         <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
           Comments
         </Typography>
-        {new Array(commentCount).fill(0).map((_, i) => {
-          return (
-            <Comment
-              key={i}
-              profilePic={comments[i].commenter_image}
-              comment={comments[i].content}
-              post_time={comments[i].post_time}
-              commenter_uid={comments[i].commenter_uid}
-              commenter_username={comments[i].commenter_username}
-            />
-          )
-        })}
-        {!articleComments.endOfCollection && (
-          <Button
-            variant='outlined'
-            size='large'
-            sx={{
-              marginTop: 34,
-              alignSelf: 'center',
-              display: 'block',
-              backgroundColor: 'black.main',
-              textTransform: 'none',
-              border: `2px solid 'black'`,
-              ':hover': {
-                bgcolor: '#4D3188',
-              },
-            }}
-            disabled={articleComments.loadingNext}
-            onClick={() => {
-              articleComments.getNext(4)
-            }}
-          >
-            LOAD MORE...
-          </Button>
-        )}
-
         <Stack
           direction='row'
           spacing={28}
@@ -490,6 +490,7 @@ export const IndividualBlogPost = () => {
               value={currComment}
               placeholder='Comment away...'
               multiline
+              inputProps={{ maxLength: commentMaxLength }}
               color='primary'
               onChange={(event) => setCurrComment(event.target.value)}
               error={isCurrCommentError}
@@ -523,6 +524,52 @@ export const IndividualBlogPost = () => {
             </Stack>
           </Paper>
         </Stack>
+        {new Array(commentCount).fill(0).map((_, i) => {
+          return (
+            <Comment
+              key={i}
+              profilePic={comments[i].commenter_image}
+              comment={comments[i].content}
+              post_time={comments[i].post_time}
+              commenter_uid={comments[i].commenter_uid}
+              commenter_username={comments[i].commenter_username}
+              commentID={comments[i].commentID}
+            />
+          )
+        })}
+        {!articleComments.endOfCollection && (
+          <Button
+            variant='outlined'
+            size='large'
+            sx={{
+              marginTop: 34,
+              alignSelf: 'center',
+              display: 'block',
+              backgroundColor: 'black.main',
+              textTransform: 'none',
+              border: `2px solid 'black'`,
+              ':hover': {
+                bgcolor: '#4D3188',
+              },
+            }}
+            disabled={articleComments.loadingNext}
+            onClick={() => {
+              articleComments.getNext(4)
+            }}
+          >
+            <
+              Typography
+              variant='button'
+              noWrap
+              sx={{
+                color: 'white.main',
+                textTransform: 'none',
+              }}
+            >
+              LOAD MORE...
+            </Typography>
+          </Button>
+        )}
       </Stack>
     </>
   )
@@ -537,4 +584,5 @@ interface CommentProps {
   post_time: Timestamp
   commenter_uid: string
   commenter_username: string
+  commentID: string
 }
