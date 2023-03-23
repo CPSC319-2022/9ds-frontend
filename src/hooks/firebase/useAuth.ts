@@ -66,6 +66,7 @@ export const useCreateUserEmailPassword = () => {
             })
           }).catch((err) => {
             setError(err.code)
+            profile_image = 'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
           })
         }
         createNewUser(newUser, username, profile_image as string)

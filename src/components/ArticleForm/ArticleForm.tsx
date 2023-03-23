@@ -8,6 +8,8 @@ import { useUser } from '../../hooks/firebase/useUser'
 import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
 import { TextEditor, TextEditorInfo } from '../TextEditor'
+import {storage} from "../../firebaseApp";
+import {getDownloadURL, ref, uploadBytes} from "@firebase/storage";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -127,6 +129,20 @@ export const ArticleForm = ({
     },
     [title, editorState, customLink, selectedPictureIndex],
   )
+
+  const handleUpload = (e: FormEvent<HTMLElement>) => {
+      e.preventDefault();
+      const storageRef = ref(storage, `users/${queriedUser.uid}`)
+      const target = e.target as HTMLInputElement;
+      if(!target.files) return
+      uploadBytes(storageRef, target.files[0]).then(() => {
+          getDownloadURL(storageRef).then((res) => {
+            setCustomLink(res)
+          })
+      }).catch((err) => {
+          // TODO: add error indication.
+      })
+    }
 
   useEffect(() => {
     if (article !== undefined) {
