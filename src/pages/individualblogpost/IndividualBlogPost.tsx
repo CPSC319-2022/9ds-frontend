@@ -151,7 +151,7 @@ export const IndividualBlogPost = () => {
     useEffect(() => {
       if (currComment.length === commentMaxLength) {
         setIsCurrCommentError(true)
-        setCommentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+        setCommentHelperText(`Input limit of ${commentMaxLength} characters reached.`)
       } else {
         if (currComment.length !== 0) {
           setIsCurrCommentError(false)
@@ -164,7 +164,7 @@ export const IndividualBlogPost = () => {
     useEffect(() => {
       if (editCommentContent.length === commentMaxLength) {
         setEditCommentContentError(true)
-        setEditCommentContentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+        setEditCommentContentHelperText(`Input limit of ${commentMaxLength} characters reached.`)
       } else {
         if (currComment.length !== 0) {
           setEditCommentContentError(false)
@@ -187,7 +187,6 @@ export const IndividualBlogPost = () => {
       setIsEditing(false)
       setEditCommentContentError(false)
       setEditCommentContentHelperText('')
-      setCurrComment('')
     }
 
     const renderMenuButton: any = () => {
