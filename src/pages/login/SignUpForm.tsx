@@ -120,12 +120,22 @@ export const SignUpForm = () => {
       setPasswordHelperText('')
     }
     if (!isInvalid) {
-      emailAccountCreate.createWithEmailAndPasswordWrapper(
-        email,
-        password,
-        name,
-        profImageLink,
-      )
+      const target = e.target as HTMLInputElement;
+      if(!target.files) {
+        emailAccountCreate.createWithEmailAndPasswordWrapper(
+            email,
+            password,
+            name,
+            'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg',
+        )
+      } else {
+        emailAccountCreate.createWithEmailAndPasswordWrapper(
+            email,
+            password,
+            name,
+            target.files[0],
+        )
+      }
     }
     e.preventDefault()
   }

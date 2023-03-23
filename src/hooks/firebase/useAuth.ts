@@ -13,10 +13,11 @@ import {
   UserCredential,
 } from 'firebase/auth'
 import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
-import { auth, db } from '../../firebaseApp'
+import {auth, db, storage} from '../../firebaseApp'
 import { UserData, getUser } from './useUser'
 import { FirebaseError } from 'firebase/app'
 import { AuthContext } from '../../context/AuthContext'
+import {getDownloadURL, ref, StorageErrorCode, uploadBytes} from "@firebase/storage";
 
 export const useAuth = () => {
   const {
@@ -45,7 +46,7 @@ const createNewUser = (
 }
 
 export const useCreateUserEmailPassword = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
+  const [error, setError] = useState<FirestoreErrorCode|StorageErrorCode>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
 
@@ -53,16 +54,26 @@ export const useCreateUserEmailPassword = () => {
     email: string,
     password: string,
     username: string,
-    profile_image: string,
+    profile_image: string | File,
   ) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(({ user: newUser }) => {
-        createNewUser(newUser, username, profile_image)
+        if (!(typeof profile_image === 'string')){
+          const storageRef = ref(storage, `users/${user!.uid}/${profile_image.name}`)
+          uploadBytes(storageRef, profile_image).then(() => {
+            getDownloadURL(storageRef).then((res) => {
+              profile_image = res
+            })
+          }).catch((err) => {
+            setError(err.code)
+          })
+        }
+        createNewUser(newUser, username, profile_image as string)
           .then(() => {
             setLoading(false)
             setUser({
               role: 'reader',
-              profile_image: profile_image,
+              profile_image: profile_image as string,
               username: username,
               uid: newUser.uid,
             })
