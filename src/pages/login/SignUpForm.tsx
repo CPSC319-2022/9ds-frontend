@@ -7,7 +7,6 @@ import {
   IconButton,
   FormHelperText,
 } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -21,8 +20,6 @@ import {
 } from '../../hooks/firebase/useAuth'
 
 export const SignUpForm = () => {
-  const navigate = useNavigate()
-
   const [email, setEmail] = useState('')
   const [isEmailError, setIsEmailError] = useState(false)
   const [emailHelperText, setEmailHelperText] = useState('')
@@ -51,18 +48,6 @@ export const SignUpForm = () => {
 
   const emailAccountCreate = useCreateUserEmailPassword()
   const signInWithGoogle = useSignInWithGoogle()
-
-  useEffect(() => {
-    if (emailAccountCreate.user) {
-      navigate('/')
-    }
-  }, [emailAccountCreate.user])
-
-  useEffect(() => {
-    if (signInWithGoogle.user) {
-      navigate('/')
-    }
-  }, [signInWithGoogle.user])
 
   // signUp Error
   // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword
