@@ -59,6 +59,8 @@ export const IndividualBlogPost = () => {
   const auth = useAuth()
   const commentMaxLength = 1200
 
+  const isSignedIn = user.role !== ""
+
   // after useArticleComments finish, update comments
   useEffect(() => {
     setComments(articleComments.comments)
@@ -75,7 +77,6 @@ export const IndividualBlogPost = () => {
 
   // useEffect for rerendering the comment pushed
   useEffect(() => {
-    setCurrComment('')
     setCommentCount(comments.length)
   }, [comments])
 
@@ -99,28 +100,29 @@ export const IndividualBlogPost = () => {
   }, [error])
 
   const handleSubmitComment = () => {
-    const commentToSubmit: comment = {
-      commenter_uid: user.uid,
-      commenter_image: user.profile_image,
-      commenter_username: user.username,
-      content: currComment,
-      post_time: Timestamp.now(),
-      commentID: '',
-    }
     // eslint-disable-next-line
-    commentCreate.createComment(articleId!, commentToSubmit.content)
-
-    // setCommentID on comment after creating using useCommentCreate
-    useEffect(() => {
-      if (commentCreate.commentId) {
-        commentToSubmit.commentID = commentCreate.commentId
-        setComments((comments) => [commentToSubmit, ...comments])
-        setCommentCount((commentCount) => commentCount + 1)
-        setIsCurrCommentError(false)
-        setCommentHelperText('')
-      }
-    }, [commentCreate.commentId])
+    commentCreate.createComment(articleId!, currComment)
   }
+
+  // setCommentID on comment after creating using useCommentCreate
+  useEffect(() => {
+    if (commentCreate.commentId) {
+      const commentToSubmit: comment = {
+        commenter_uid: user.uid,
+        commenter_image: user.profile_image,
+        commenter_username: user.username,
+        content: currComment,
+        post_time: Timestamp.now(),
+        commentID: commentCreate.commentId,
+      }
+      setComments((comments) => [commentToSubmit, ...comments])
+      setCommentCount((commentCount) => commentCount + 1)
+      setIsCurrCommentError(false)
+      setCommentHelperText('')
+      setCurrComment('')
+    }
+  }, [commentCreate.commentId])
+
 
   const Comment = ({
     profilePic,
@@ -459,6 +461,8 @@ export const IndividualBlogPost = () => {
         <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
           Comments
         </Typography>
+        {/* if signed in show this, else PLease login to comment + login button*/}
+        {isSignedIn ? (
         <Stack
           direction='row'
           spacing={28}
@@ -523,6 +527,66 @@ export const IndividualBlogPost = () => {
             </Stack>
           </Paper>
         </Stack>
+          ) : (
+          <Stack
+            direction='row'
+            spacing={28}
+            boxSizing='border-box'
+            alignItems={'baseline'}
+          >
+            <img
+              src={
+                'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
+              }
+              width='42px'
+              height='42px'
+              style={{ borderRadius: '50%' }}
+            />
+            <Paper
+              style={{
+                borderBottomLeftRadius: 25,
+                borderTopRightRadius: 25,
+                padding: 15,
+                backgroundColor: theme.palette.black['50%'],
+              }}
+            >
+              <Stack
+                direction='row'
+                justifyContent='center'
+                alignItems='center'
+                spacing={20}
+                p='10px'
+              >
+                <Typography variant='h6'> Please sign in or sign up to comment</Typography>
+                <Button
+                  variant='outlined'
+                  size='large'
+                  sx={{
+                    backgroundColor: 'black.main',
+                    textTransform: 'none',
+                    border: `2px solid 'black'`,
+                    ':hover': {
+                      bgcolor: '#4D3188',
+                    },
+                  }}
+                  onClick={() => {
+                    if (user.role === "") {
+                      navigate('/get-started')
+                    }
+                  }}
+                >
+                  <Typography
+                    variant='button'
+                    noWrap
+                    sx={{color: 'white.main',textTransform: 'none',}}
+                  >
+                    LOGIN
+                  </Typography>
+                </Button>
+              </Stack>
+            </Paper>
+          </Stack>
+        )}
         {new Array(commentCount).fill(0).map((_, i) => {
           return (
             <Comment
