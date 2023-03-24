@@ -239,9 +239,11 @@ export const IndividualBlogPost = () => {
                     commentDelete.deleteComment(articleId!, commentID)
                     setComments((comments) =>
                       comments.filter(
-                        (currComment) => currComment.content !== comment,
-                      ),
+                        (currComment) => currComment.commentID !== comment
+                      )
                     )
+                    setCommentCount((commentCount) => commentCount - 1)
+
                     dispatch({
                       notificationActionType: 'success',
                       message: `Comment deleted.`,
@@ -461,7 +463,6 @@ export const IndividualBlogPost = () => {
         <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
           Comments
         </Typography>
-        {/* if signed in show this, else PLease login to comment + login button*/}
         {isSignedIn ? (
         <Stack
           direction='row'
