@@ -47,6 +47,7 @@ export const Button: FC<ButtonProps> = ({
         ...style,
       }}
     >
+    <>
       <Typography
         variant='button'
         noWrap
@@ -57,6 +58,7 @@ export const Button: FC<ButtonProps> = ({
       >
         {text}
       </Typography>
+    </>
     </MuiButton>
   )
 }

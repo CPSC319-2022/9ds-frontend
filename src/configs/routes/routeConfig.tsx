@@ -44,6 +44,10 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     path: '/about-us',
     component: <AboutUs />,
   },
+//   upload: {
+//     path: '/upload',
+//     component: <FileUploader />,
+//   },
   resendEmail: {
     path: '/reset/email',
     component: <EmailVerification />,
