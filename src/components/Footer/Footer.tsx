@@ -61,7 +61,7 @@ export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
         <Button
           variant='outlined'
           style={{ color: 'white.main', height: '66px', width: '266.67px' }}
-          text='BECOME A CONTRIBUTOR'
+          text='Become a contributor'
           size='large'
           onClick={() => {
             applyContributor.applyPromotion()
@@ -77,7 +77,7 @@ export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
           <Button
             variant='outlined'
             style={{ color: 'white.main', height: '66px', width: '153.67px' }}
-            text='CREATE BLOG'
+            text='Create blog'
             size='large'
           />
         </Link>
