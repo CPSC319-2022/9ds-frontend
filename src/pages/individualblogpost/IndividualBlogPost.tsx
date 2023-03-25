@@ -49,6 +49,8 @@ export const IndividualBlogPost = () => {
 
   const commentCreate = useCommentCreate()
 
+  const [deletedCommentIDs, setDeletedCommentIDs] = useState<string[]>([])
+
   const [currComment, setCurrComment] = useState('')
   const [isCurrCommentError, setIsCurrCommentError] = useState(false)
   const [commentHelperText, setCommentHelperText] = useState('')
@@ -63,7 +65,12 @@ export const IndividualBlogPost = () => {
 
   // after useArticleComments finish, update comments
   useEffect(() => {
-    setComments(articleComments.comments)
+    // filter articleComments with deletedCommentIDs check
+    // because when deleting comment it does not interact with useArticleComments.comments
+    const filterDeleted = articleComments.comments.filter(
+      (comment) => !deletedCommentIDs.includes(comment.commentID)
+    )
+    setComments(filterDeleted)
   }, [articleComments.comments])
 
   useEffect(() => {
@@ -237,7 +244,8 @@ export const IndividualBlogPost = () => {
                   if (response) {
                     // eslint-disable-next-line
                     commentDelete.deleteComment(articleId!, commentID)
-                    const updatedComments =  comments.filter((currComment) => currComment.commentID !== commentID)
+                    setDeletedCommentIDs([...deletedCommentIDs, commentID])
+                    const updatedComments = comments.filter((currComment) => currComment.commentID !== commentID)
                     setComments(updatedComments)
                     setCommentCount((commentCount) => commentCount - 1)
                     dispatch({
@@ -290,6 +298,7 @@ export const IndividualBlogPost = () => {
                     if (response) {
                       // eslint-disable-next-line
                       commentDelete.deleteComment(articleId!, commentID)
+                      setDeletedCommentIDs([...deletedCommentIDs, commentID])
                       const updatedComments =  comments.filter((currComment) => currComment.commentID !== commentID)
                       setComments(updatedComments)
                       setCommentCount((commentCount) => commentCount - 1)
