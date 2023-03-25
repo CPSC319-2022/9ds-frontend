@@ -60,6 +60,7 @@ export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
       {role === UserRole.READER && (
         <Button
           variant='outlined'
+          data-testid='apply-contributor-btn'
           style={{ color: 'white.main', height: '66px', width: '266.67px' }}
           text='Become a contributor'
           size='large'
