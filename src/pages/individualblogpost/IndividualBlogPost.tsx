@@ -299,6 +299,7 @@ export const IndividualBlogPost = () => {
                           (currComment) => currComment.content !== comment,
                         ),
                       )
+                      setCommentCount((commentCount) => commentCount - 1)
                       dispatch({
                         notificationActionType: 'success',
                         message: `Comment deleted.`,
