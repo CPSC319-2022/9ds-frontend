@@ -237,13 +237,9 @@ export const IndividualBlogPost = () => {
                   if (response) {
                     // eslint-disable-next-line
                     commentDelete.deleteComment(articleId!, commentID)
-                    setComments((comments) =>
-                      comments.filter(
-                        (currComment) => currComment.commentID !== comment
-                      )
-                    )
+                    const updatedComments =  comments.filter((currComment) => currComment.commentID !== commentID)
+                    setComments(updatedComments)
                     setCommentCount((commentCount) => commentCount - 1)
-
                     dispatch({
                       notificationActionType: 'success',
                       message: `Comment deleted.`,
@@ -294,11 +290,8 @@ export const IndividualBlogPost = () => {
                     if (response) {
                       // eslint-disable-next-line
                       commentDelete.deleteComment(articleId!, commentID)
-                      setComments((comments) =>
-                        comments.filter(
-                          (currComment) => currComment.content !== comment,
-                        ),
-                      )
+                      const updatedComments =  comments.filter((currComment) => currComment.commentID !== commentID)
+                      setComments(updatedComments)
                       setCommentCount((commentCount) => commentCount - 1)
                       dispatch({
                         notificationActionType: 'success',
