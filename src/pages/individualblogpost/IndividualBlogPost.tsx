@@ -47,6 +47,20 @@ export const IndividualBlogPost = () => {
   const [comments, setComments] = useState<comment[]>([])
   const [commentCount, setCommentCount] = useState(0)
 
+  const commentCreate = useCommentCreate()
+
+  const [currComment, setCurrComment] = useState('')
+  const [isCurrCommentError, setIsCurrCommentError] = useState(false)
+  const [commentHelperText, setCommentHelperText] = useState('')
+
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty(),
+  )
+  const auth = useAuth()
+  const commentMaxLength = 1200
+
+  const isSignedIn = user.role !== ""
+
   // after useArticleComments finish, update comments
   useEffect(() => {
     setComments(articleComments.comments)
@@ -63,7 +77,6 @@ export const IndividualBlogPost = () => {
 
   // useEffect for rerendering the comment pushed
   useEffect(() => {
-    setCurrComment('')
     setCommentCount(comments.length)
   }, [comments])
 
@@ -86,34 +99,30 @@ export const IndividualBlogPost = () => {
     }
   }, [error])
 
-  const commentCreate = useCommentCreate()
-
-  const [currComment, setCurrComment] = useState('')
-  const [isCurrCommentError, setIsCurrCommentError] = useState(false)
-  const [commentHelperText, setCommentHelperText] = useState('')
-
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty(),
-  )
-  const auth = useAuth()
-
   const handleSubmitComment = () => {
-    const commentToSubmit: comment = {
-      commenter_uid: user.uid,
-      commenter_image: user.profile_image,
-      commenter_username: user.username,
-      content: currComment,
-      post_time: Timestamp.now(),
-      commentID: '',
-    }
-
     // eslint-disable-next-line
-    commentCreate.createComment(articleId!, commentToSubmit.content)
-    setComments((comments) => [...comments, commentToSubmit])
-    setCommentCount((commentCount) => commentCount + 1)
-    setIsCurrCommentError(false)
-    setCommentHelperText('')
+    commentCreate.createComment(articleId!, currComment)
   }
+
+  // setCommentID on comment after creating using useCommentCreate
+  useEffect(() => {
+    if (commentCreate.commentId) {
+      const commentToSubmit: comment = {
+        commenter_uid: user.uid,
+        commenter_image: user.profile_image,
+        commenter_username: user.username,
+        content: currComment,
+        post_time: Timestamp.now(),
+        commentID: commentCreate.commentId,
+      }
+      setComments((comments) => [commentToSubmit, ...comments])
+      setCommentCount((commentCount) => commentCount + 1)
+      setIsCurrCommentError(false)
+      setCommentHelperText('')
+      setCurrComment('')
+    }
+  }, [commentCreate.commentId])
+
 
   const Comment = ({
     profilePic,
@@ -121,6 +130,7 @@ export const IndividualBlogPost = () => {
     post_time,
     commenter_uid,
     commenter_username,
+    commentID
   }: CommentProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
@@ -131,36 +141,54 @@ export const IndividualBlogPost = () => {
       setAnchorEl(null)
     }
     const [isEditing, setIsEditing] = useState(false)
-    const [commentContent, setCommentContent] = useState(comment)
-    const [commentContentError, setCommentContentError] = useState(false)
-    const [commentContentHelperText, setCommentContentHelperText] = useState('')
+    const [editCommentContent, setEditCommentContent] = useState(comment)
+    const [editCommentContentError, setEditCommentContentError] = useState(false)
+    const [editCommentContentHelperText, setEditCommentContentHelperText] = useState('')
 
     const commentEdit = useCommentEdit()
     const commentDelete = useCommentDelete()
-    const filteredComment = comments.filter(
-      (com) =>
-        com.commenter_image === profilePic &&
-        com.content === comment &&
-        com.post_time === post_time,
-    )
-    const commentID = filteredComment[0].commentID
-
     const ownedBySignedInUser = auth.user && commenter_uid === auth.user.uid
+
+    // character limit for reply
+    useEffect(() => {
+      if (currComment.length === commentMaxLength) {
+        setIsCurrCommentError(true)
+        setCommentHelperText(`Input limit of ${commentMaxLength} characters reached.`)
+      } else {
+        if (currComment.length !== 0) {
+          setIsCurrCommentError(false)
+          setCommentHelperText("")
+        }
+      }
+    },[currComment])
+
+    // character limit for editing
+    useEffect(() => {
+      if (editCommentContent.length === commentMaxLength) {
+        setEditCommentContentError(true)
+        setEditCommentContentHelperText(`Input limit of ${commentMaxLength} characters reached.`)
+      } else {
+        if (currComment.length !== 0) {
+          setEditCommentContentError(false)
+          setEditCommentContentHelperText("")
+        }
+      }
+    },[editCommentContent])
+
 
     const handleSave = () => {
       // eslint-disable-next-line
-      commentEdit.editComment(articleId!, commentID, commentContent)
+      commentEdit.editComment(articleId!, commentID, editCommentContent)
       const updatedComments = comments.map((obj) => {
         if (obj.content === comment) {
-          return { ...obj, content: commentContent }
+          return { ...obj, content: editCommentContent }
         }
         return obj
       })
       setComments(updatedComments)
       setIsEditing(false)
-      setCommentContentError(false)
-      setCommentContentHelperText('')
-      setCurrComment('')
+      setEditCommentContentError(false)
+      setEditCommentContentHelperText('')
     }
 
     const renderMenuButton: any = () => {
@@ -211,9 +239,11 @@ export const IndividualBlogPost = () => {
                     commentDelete.deleteComment(articleId!, commentID)
                     setComments((comments) =>
                       comments.filter(
-                        (currComment) => currComment.content !== comment,
-                      ),
+                        (currComment) => currComment.commentID !== comment
+                      )
                     )
+                    setCommentCount((commentCount) => commentCount - 1)
+
                     dispatch({
                       notificationActionType: 'success',
                       message: `Comment deleted.`,
@@ -269,6 +299,7 @@ export const IndividualBlogPost = () => {
                           (currComment) => currComment.content !== comment,
                         ),
                       )
+                      setCommentCount((commentCount) => commentCount - 1)
                       dispatch({
                         notificationActionType: 'success',
                         message: `Comment deleted.`,
@@ -306,6 +337,8 @@ export const IndividualBlogPost = () => {
             borderTopRightRadius: 25,
             padding: 15,
             backgroundColor: theme.palette.black['50%'],
+            overflow: 'hidden',
+            maxWidth: '1200px'
           }}
         >
           {isEditing ? (
@@ -313,10 +346,11 @@ export const IndividualBlogPost = () => {
               <TextField
                 style={{ minWidth: '500px' }}
                 multiline
-                value={commentContent}
-                onChange={(event) => setCommentContent(event.target.value)}
-                error={commentContentError}
-                helperText={commentContentHelperText}
+                inputProps={{ maxLength: commentMaxLength }}
+                value={editCommentContent}
+                onChange={(event) => setEditCommentContent(event.target.value)}
+                error={editCommentContentError}
+                helperText={editCommentContentHelperText}
               />
               <Stack
                 direction='row'
@@ -328,12 +362,12 @@ export const IndividualBlogPost = () => {
                 <Button
                   variant='contained'
                   onClick={() => {
-                    if (commentContent.trim() === '') {
-                      setCommentContentError(true)
-                      setCommentContentHelperText('comment cannot be empty.')
+                    if (editCommentContent.trim() === '') {
+                      setEditCommentContentError(true)
+                      setEditCommentContentHelperText('comment cannot be empty.')
                     } else {
-                      setCommentContentError(false)
-                      setCommentContentHelperText('')
+                      setEditCommentContentError(false)
+                      setEditCommentContentHelperText('')
                       handleSave()
                     }
                   }}
@@ -363,7 +397,13 @@ export const IndividualBlogPost = () => {
                 </Typography>
                 <Typography
                   color={theme.palette.white.main}
-                  style={{ whiteSpace: 'pre-line' }}
+                  paragraph
+                  style={{
+                    wordWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'pre-line',
+                    overflow: 'hidden'
+                  }}
                 >
                   {comment}
                 </Typography>
@@ -424,42 +464,7 @@ export const IndividualBlogPost = () => {
         <Typography style={{ alignSelf: 'flex-start' }} variant='h6'>
           Comments
         </Typography>
-        {new Array(commentCount).fill(0).map((_, i) => {
-          return (
-            <Comment
-              key={i}
-              profilePic={comments[i].commenter_image}
-              comment={comments[i].content}
-              post_time={comments[i].post_time}
-              commenter_uid={comments[i].commenter_uid}
-              commenter_username={comments[i].commenter_username}
-            />
-          )
-        })}
-        {!articleComments.endOfCollection && (
-          <Button
-            variant='outlined'
-            size='large'
-            sx={{
-              marginTop: 34,
-              alignSelf: 'center',
-              display: 'block',
-              backgroundColor: 'black.main',
-              textTransform: 'none',
-              border: `2px solid 'black'`,
-              ':hover': {
-                bgcolor: '#4D3188',
-              },
-            }}
-            disabled={articleComments.loadingNext}
-            onClick={() => {
-              articleComments.getNext(4)
-            }}
-          >
-            LOAD MORE...
-          </Button>
-        )}
-
+        {isSignedIn ? (
         <Stack
           direction='row'
           spacing={28}
@@ -490,6 +495,7 @@ export const IndividualBlogPost = () => {
               value={currComment}
               placeholder='Comment away...'
               multiline
+              inputProps={{ maxLength: commentMaxLength }}
               color='primary'
               onChange={(event) => setCurrComment(event.target.value)}
               error={isCurrCommentError}
@@ -523,6 +529,112 @@ export const IndividualBlogPost = () => {
             </Stack>
           </Paper>
         </Stack>
+          ) : (
+          <Stack
+            direction='row'
+            spacing={28}
+            boxSizing='border-box'
+            alignItems={'baseline'}
+          >
+            <img
+              src={
+                'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
+              }
+              width='42px'
+              height='42px'
+              style={{ borderRadius: '50%' }}
+            />
+            <Paper
+              style={{
+                borderBottomLeftRadius: 25,
+                borderTopRightRadius: 25,
+                padding: 15,
+                backgroundColor: theme.palette.black['50%'],
+              }}
+            >
+              <Stack
+                direction='row'
+                justifyContent='center'
+                alignItems='center'
+                spacing={20}
+                p='10px'
+              >
+                <Typography variant='h6'> Please sign in or sign up to comment</Typography>
+                <Button
+                  variant='outlined'
+                  size='large'
+                  sx={{
+                    backgroundColor: 'black.main',
+                    textTransform: 'none',
+                    border: `2px solid 'black'`,
+                    ':hover': {
+                      bgcolor: '#4D3188',
+                    },
+                  }}
+                  onClick={() => {
+                    if (user.role === "") {
+                      navigate('/get-started')
+                    }
+                  }}
+                >
+                  <Typography
+                    variant='button'
+                    noWrap
+                    sx={{color: 'white.main',textTransform: 'none',}}
+                  >
+                    LOGIN
+                  </Typography>
+                </Button>
+              </Stack>
+            </Paper>
+          </Stack>
+        )}
+        {new Array(commentCount).fill(0).map((_, i) => {
+          return (
+            <Comment
+              key={i}
+              profilePic={comments[i].commenter_image}
+              comment={comments[i].content}
+              post_time={comments[i].post_time}
+              commenter_uid={comments[i].commenter_uid}
+              commenter_username={comments[i].commenter_username}
+              commentID={comments[i].commentID}
+            />
+          )
+        })}
+        {!articleComments.endOfCollection && (
+          <Button
+            variant='outlined'
+            size='large'
+            sx={{
+              marginTop: 34,
+              alignSelf: 'center',
+              display: 'block',
+              backgroundColor: 'black.main',
+              textTransform: 'none',
+              border: `2px solid 'black'`,
+              ':hover': {
+                bgcolor: '#4D3188',
+              },
+            }}
+            disabled={articleComments.loadingNext}
+            onClick={() => {
+              articleComments.getNext(4)
+            }}
+          >
+            <
+              Typography
+              variant='button'
+              noWrap
+              sx={{
+                color: 'white.main',
+                textTransform: 'none',
+              }}
+            >
+              LOAD MORE...
+            </Typography>
+          </Button>
+        )}
       </Stack>
     </>
   )
@@ -537,4 +649,5 @@ interface CommentProps {
   post_time: Timestamp
   commenter_uid: string
   commenter_username: string
+  commentID: string
 }
