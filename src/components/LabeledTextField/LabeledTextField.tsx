@@ -7,7 +7,6 @@ type LabeledTextFieldProps = TextFieldProps & {
   labelWidth: number
   columnSpacing?: number
   text: React.ReactNode
-  isDisabled?: boolean
   type: 'TextField' | 'Typography'
 }
 
@@ -23,7 +22,6 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   labelWidth,
   text,
   value,
-  isDisabled,
   type,
 }: LabeledTextFieldProps) => {
   return (
@@ -34,7 +32,6 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
       <Grid item xs={12 - labelWidth}>
         {type === 'TextField' ? (
           <TextField
-            disabled={isDisabled}
             value={value}
             fullWidth
             multiline={multiline}
@@ -59,6 +56,5 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
 
 LabeledTextField.defaultProps = {
   columnSpacing: 0,
-  isDisabled: false,
   type: 'TextField'
 }
