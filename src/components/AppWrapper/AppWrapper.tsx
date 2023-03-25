@@ -13,7 +13,13 @@ export interface IProps {
 
 export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
   const space = !spacing ? 32 : spacing
-  const user = useUser().queriedUser
+  // const user = useUser().queriedUser
+  const user = {
+    role: '',
+    profile_image: '',
+    username: '',
+    uid: ''
+  }
 
   const HeaderComponent: FC = () => {
     if (user.role === 'reader') {
@@ -30,12 +36,15 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
 
   const FooterComponent: FC = () => {
     if (user.role === 'reader') {
-      return <FooterAsReader />
+      return <Footer role={UserRole.READER} />
     }
-    if (user.role === 'contributor' || user.role === 'admin') {
-      return <FooterAsContributor />
+    if (user.role === 'contributor') {
+      return <Footer role={UserRole.CONTRIBUTOR} />
     }
-    return <Footer />
+    if (user.role === 'admin') {
+      return <Footer role={UserRole.ADMIN} />
+    }
+    return <Footer role={UserRole.VISITOR} />
   }
 
   return (
