@@ -252,6 +252,7 @@ export const ArticleForm = ({
             labelWidth={1}
             multiline={false}
             value={customLink}
+            type='TextField'
           />
           <LabeledTextField
             variant='outlined'
@@ -267,6 +268,7 @@ export const ArticleForm = ({
             error={isTitleError}
             helperText={titleHelperText}
             value={title}
+            type='TextField'
           />
           <TextEditor
             editorInfo={editorInfo}

@@ -77,29 +77,31 @@ export const Profile: FC = () => {
                 <Stack direction='column' spacing={32} width={'auto'}>
                   <LabeledTextField
                     variant='standard'
-                    placeholder={queriedUser.role}
+                    value={queriedUser.role}
                     label='Account type'
                     multiline={false}
-                    labelWidth={5}
+                    labelWidth={6}
                     isDisabled={true}
                     text={
                       <Typography variant='title' sx={{ color: 'black' }}>
                         Account Type
                       </Typography>
                     }
+                    type='Typography'
                   />
                   <LabeledTextField
                     variant='standard'
-                    placeholder={queriedUser.username}
+                    value={queriedUser.username}
                     label='Name'
                     multiline={false}
-                    labelWidth={5}
+                    labelWidth={6}
                     isDisabled={true}
                     text={
                       <Typography variant='title' sx={{ color: 'black' }}>
                         Name
                       </Typography>
                     }
+                    type='Typography'
                   />
                 </Stack>
               </Stack>

@@ -1,4 +1,4 @@
-import { Grid, TextField, TextFieldProps } from '@mui/material'
+import { Grid, TextField, TextFieldProps, Typography } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
@@ -8,6 +8,7 @@ type LabeledTextFieldProps = TextFieldProps & {
   columnSpacing?: number
   text: React.ReactNode
   isDisabled?: boolean
+  type: 'TextField' | 'Typography'
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
@@ -23,6 +24,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   text,
   value,
   isDisabled,
+  type,
 }: LabeledTextFieldProps) => {
   return (
     <Grid container columnSpacing={columnSpacing} alignSelf={'stretch'}>
@@ -30,27 +32,26 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
         {text}
       </Grid>
       <Grid item xs={12 - labelWidth}>
-        <TextField
-          disabled={isDisabled}
-          value={value}
-          fullWidth
-          multiline={multiline}
-          rows={rows}
-          variant={variant}
-          placeholder={placeholder}
-          error={error}
-          helperText={helperText}
-          sx={{
-            "& .MuiInputBase-input.Mui-disabled": {
-              WebkitTextFillColor: "black",
-          },
-          }}
-          onChange={(event) => {
-            if (onTextChange) {
-              onTextChange(event.target.value)
-            }
-          }}
-        />
+        {type === 'TextField' ? (
+          <TextField
+            disabled={isDisabled}
+            value={value}
+            fullWidth
+            multiline={multiline}
+            rows={rows}
+            variant={variant}
+            placeholder={placeholder}
+            error={error}
+            helperText={helperText}
+            onChange={(event) => {
+              if (onTextChange) {
+                onTextChange(event.target.value)
+              }
+            }}
+          />
+        ) : type === 'Typography' ? (
+          <Typography sx={{borderBottom: '1px solid', width: '220px'}}>{value as string}</Typography>
+        ) : null}
       </Grid>
     </Grid>
   )
@@ -59,4 +60,5 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
 LabeledTextField.defaultProps = {
   columnSpacing: 0,
   isDisabled: false,
+  type: 'TextField'
 }
