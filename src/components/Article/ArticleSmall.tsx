@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
@@ -9,23 +9,29 @@ import { convertToPlainText } from '../TextEditor'
 export interface ArticleSmallProps {
   article: ArticlePreview
   clickDisabled?: boolean
+  isDraft?: boolean
 }
 
 export const ArticleSmall: FC<ArticleSmallProps> = ({
   article,
   clickDisabled,
+  isDraft,
 }) => {
   const navigate = useNavigate()
   return (
     <ButtonBase
       disabled={clickDisabled}
       onClick={() => {
-        navigate(`/blog/${article.articleId}`)
+        if (isDraft) {
+          navigate(`/draft/${article.articleId}`)
+        } else {
+          navigate(`/blog/${article.articleId}`)
+        }
       }}
     >
       <Stack
         alignItems='flex-start'
-        width='298px'
+        width='350px'
         height='400px'
         borderRadius='12px'
         p='12px'
@@ -72,7 +78,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
           <Avatar
             dark
             name={article.author_username}
-            date={article.publish_time.toDate()}
+            date={article.publish_time?.toDate() || new Date()}
             avatarImgSrc={article.author_image}
           />
         </Stack>

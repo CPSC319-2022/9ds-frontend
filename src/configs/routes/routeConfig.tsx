@@ -14,6 +14,8 @@ export interface RouteConfig {
   path: string
   component: JSX.Element
   isProtected?: boolean
+  allowedRoles?: string[]
+  isProtectedOwnerUser?: boolean
 }
 
 export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
@@ -25,6 +27,14 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
     path: '/create',
     component: <CreateArticle />,
     isProtected: true,
+    allowedRoles: ['contributor', 'admin'],
+  },
+  draft: {
+    path: '/draft/:articleId',
+    component: <UpdateArticle isDraft={true} />,
+    isProtected: true,
+    allowedRoles: ['contributor', 'admin'],
+    isProtectedOwnerUser: true,
   },
   getStarted: {
     path: '/get-started',
@@ -45,16 +55,20 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   profile: {
     path: '/profile',
     component: <Profile />,
+    isProtected: true,
   },
   adminDashboard: {
     path: '/admin',
     component: <AdminDashboard />,
     isProtected: true,
+    allowedRoles: ['admin'],
   },
   edit: {
     path: '/update/:articleId',
     component: <UpdateArticle />,
     isProtected: true,
+    allowedRoles: ['contributor', 'admin'],
+    isProtectedOwnerUser: true,
   },
   individualBlogPost: {
     path: '/blog/:articleId',

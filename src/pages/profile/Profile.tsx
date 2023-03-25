@@ -1,7 +1,6 @@
 import { FC, useContext, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Article } from '../../components/Article'
 import { LabeledTextField } from '../../components/LabeledTextField'
 import {
   useApplyPromotion,
@@ -14,18 +13,25 @@ import { NotificationContext } from '../../context/NotificationContext'
 import { UserType } from '../../components/UserType'
 import { AppWrapper } from '../../components/AppWrapper'
 import { handleLoading } from '../../components/Spinner/Spinner'
+import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
   const {
+    getNext: articleGetNext,
     articles: UserArticles,
     loading: loadingArticles,
+    loadingNext: loadingNextArticles,
     error: articleError,
+    endOfCollection: articleEnd,
   } = useUserArticles(queriedUser.uid, 4)
   const {
+    getNext: draftGetNext,
     articles: UserDrafts,
     loading: loadingDrafts,
+    loadingNext: loadingNextDrafts,
     error: draftError,
+    endOfCollection: draftEnd,
   } = useUserDrafts(4)
   const { dispatch } = useContext(NotificationContext)
   const { applyPromotion } = useApplyPromotion()
@@ -48,143 +54,113 @@ export const Profile: FC = () => {
   }
 
   const component = (
-          <>
-            <Typography
-              variant='h4'
-              color='black.main'
-              sx={{ paddingLeft: '32px' }}
-            >
-              Profile
-            </Typography>
-            <Stack
-              direction='row'
-              spacing={200}
-              boxSizing='border-box'
-              p='24px'
-            >
-              <Stack
-                direction='row'
-                spacing={48}
-                boxSizing='border-box'
-                p='24px'
-              >
-                <img
-                  src={queriedUser.profile_image}
-                  width='140px'
-                  height='140px'
-                  style={{ borderRadius: '50%' }}
-                />
-                <Stack direction='column' spacing={32} width={'auto'}>
-                  <LabeledTextField
-                    variant='standard'
-                    value={queriedUser.role}
-                    label='Account type'
-                    multiline={false}
-                    labelWidth={6}
-                    isDisabled={true}
-                    text={
-                      <Typography variant='title' sx={{ color: 'black' }}>
-                        Account Type
-                      </Typography>
-                    }
-                    type='Typography'
-                  />
-                  <LabeledTextField
-                    variant='standard'
-                    value={queriedUser.username}
-                    label='Name'
-                    multiline={false}
-                    labelWidth={6}
-                    isDisabled={true}
-                    text={
-                      <Typography variant='title' sx={{ color: 'black' }}>
-                        Name
-                      </Typography>
-                    }
-                    type='Typography'
-                  />
-                </Stack>
-              </Stack>
-              {queriedUser.role == 'reader' && (
-                <Stack direction='row'>
-                  <Button onClick={handleButtonClick}>
-                    <UserType type='contributor' />
-                  </Button>
-                </Stack>
-              )}
-            </Stack>
-            {queriedUser.role !== 'reader' && (
-              <>
-                <Typography
-                  variant='h5'
-                  color='black.main'
-                  justifyItems='flex-start'
-                  sx={{ paddingLeft: '32px' }}
-                >
-                  Posts
+    <Stack
+      direction='column'
+      alignItems='flex-start'
+      alignSelf='stretch'
+      spacing={50}
+      paddingLeft={20}
+      paddingRight={20}
+    >
+      <Typography variant='h4' color='black.main'>
+        Profile
+      </Typography>
+      <Stack direction='row' spacing={200} boxSizing='border-box' p='24px'>
+        <Stack direction='row' spacing={48} boxSizing='border-box'>
+          <img
+            src={queriedUser.profile_image}
+            width='140px'
+            height='140px'
+            style={{ borderRadius: '50%' }}
+          />
+          <Stack direction='column' spacing={32} width={'auto'}>
+            <LabeledTextField
+              variant='standard'
+              value={queriedUser.role}
+              label='Account type'
+              multiline={false}
+              labelWidth={5}
+              type='Typography'
+              text={
+                <Typography variant='title' sx={{ color: 'black' }}>
+                  Account Type
                 </Typography>
-                <Stack direction='row' spacing={16} justifyContent='flex-start'>
-                  {[...UserArticles].map((article) => (
-                    <Article
-                      key={article.articleId}
-                      size='small'
-                      article={article}
-                    />
-                  ))}
-                </Stack>
-                <Typography
-                  variant='h5'
-                  color='black.main'
-                  sx={{ paddingLeft: '32px' }}
-                >
-                  Drafts
+              }
+            />
+            <LabeledTextField
+              variant='standard'
+              value={queriedUser.username}
+              type='Typography'
+              label='Name'
+              multiline={false}
+              labelWidth={5}
+              text={
+                <Typography variant='title' sx={{ color: 'black' }}>
+                  Name
                 </Typography>
-                <Stack direction='row' spacing={16} justifyContent='flex-start'>
-                  {[...UserDrafts].map((draft) => (
-                    <Article key={draft.articleId} article={draft} />
-                  ))}
-                </Stack>
-              </>
-            )}
-          {queriedUser.role !== 'reader' && (
-            <>
-              <Typography
-                variant='h5'
-                color='black.main'
-                justifyItems='flex-start'
-                sx={{ paddingLeft: '32px' }}
-              >
-                Posts
-              </Typography>
-              <Stack direction='row' spacing={16} justifyContent='flex-start'>
-                {[...UserArticles].map((article) => (
-                  <Article
-                    key={article.articleId}
-                    size='small'
-                    article={article}
-                  />
-                ))}
-              </Stack>
-              <Typography
-                variant='h5'
-                color='black.main'
-                sx={{ paddingLeft: '32px' }}
-              >
-                Drafts
-              </Typography>
-              <Stack direction='row' spacing={16} justifyContent='flex-start'>
-                {[...UserDrafts].map((draft) => (
-                  <Article key={draft.articleId} article={draft} />
-                ))}
-              </Stack>
-            </>
+              }
+            />
+          </Stack>
+        </Stack>
+        {queriedUser.role == 'reader' && (
+          <Stack direction='row'>
+            <Button onClick={handleButtonClick}>
+              <UserType type='contributor' />
+            </Button>
+          </Stack>
+        )}
+      </Stack>
+      {queriedUser.role !== 'reader' && (
+        <>
+          <Typography variant='h5' color='black.main' justifyItems='flex-start'>
+            Posts
+          </Typography>
+          <ItemGrid items={UserArticles} type={ItemGridType.ARTICLES} />
+          {!articleEnd && (
+            <Button
+              variant='contained'
+              size='large'
+              color='primary'
+              sx={{
+                alignSelf: 'center',
+              }}
+              disabled={loadingNextArticles}
+              onClick={() => {
+                articleGetNext(4)
+              }}
+            >
+              LOAD MORE...
+            </Button>
+          )}
+
+          <Typography variant='h5' color='black.main'>
+            Drafts
+          </Typography>
+          <ItemGrid items={UserDrafts} type={ItemGridType.DRAFTS} />
+          {!draftEnd && (
+            <Button
+              variant='contained'
+              size='large'
+              color='primary'
+              sx={{
+                alignSelf: 'center',
+              }}
+              disabled={loadingNextDrafts}
+              onClick={() => {
+                draftGetNext(4)
+              }}
+            >
+              LOAD MORE...
+            </Button>
           )}
         </>
+      )}
+    </Stack>
   )
 
   return (
-      <AppWrapper>
-        {handleLoading(loading || loadingArticles || loadingDrafts, component)}
-      </AppWrapper>
+    <AppWrapper>
+      {handleLoading(loading || loadingArticles || loadingDrafts, component)}
+    </AppWrapper>
   )
 }
