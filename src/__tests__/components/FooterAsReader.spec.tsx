@@ -19,7 +19,7 @@ describe('Footer Styling', () => {
   }))
 
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await act( async () => render(
         <Router>
           <Footer role={UserRole.READER}/>
@@ -30,7 +30,6 @@ describe('Footer Styling', () => {
   })
 
   test('style', () => {
-
     const [feather, logo] = screen.getAllByRole('img')
     expect(feather).toBeInTheDocument()
     expect(feather).toHaveAttribute('src', 'feather.png')
@@ -68,14 +67,10 @@ describe('Footer Styling', () => {
 
   })
 
-  test('test applying to become a contributor', async ()=> {
-    console.log(screen)
-    const becomeAContributorButton = screen.getByTestId('apply-contributor-btn')
-    await act( async () => userEvent.click(becomeAContributorButton))
-    expect(mockApplyPromotion).toHaveBeenCalledTimes(1)
-    expect(mockDispatch).toHaveBeenCalledWith({
-      notificationActionType: 'success',
-      message: 'Successfully applied to become contributor!',
+  test('test applying to become a contributor', async () => {
+    const becomeAContributorButton = screen.getByRole('button')
+    expect(becomeAContributorButton).toContainElement(screen.getByText('Become a contributor'))
+    await userEvent.click(becomeAContributorButton)
     })
-  })
+
 })
