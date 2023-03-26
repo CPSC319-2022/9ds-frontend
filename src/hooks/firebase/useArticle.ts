@@ -22,11 +22,10 @@ import {
 import { useState, useEffect, useContext } from 'react'
 import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
-import { db } from '../../firebaseApp'
+import {db, storage} from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import {getDownloadURL, ref, uploadBytes} from "@firebase/storage";
 
 export interface ArticlePreview {
   title: string
@@ -224,6 +223,32 @@ export const useArticleComments = (articleID: string, n: number) => {
   return { getNext, error, loading, loadingNext, comments, endOfCollection }
 }
 
+export const useUploadHeader = () => {
+    const { user: currentUser } = useAuth()
+    const [error, setError] = useState<FirestoreErrorCode>()
+    const [loading, setLoading] = useState(false)
+    const [imageURL, setImageURL] = useState("");
+
+    const uploadHeader = (file: File) => {
+        if(currentUser == null) {
+            setError("unauthenticated");
+            return
+        }
+        setLoading(true)
+        const storageRef = ref(storage, `${currentUser.uid}/${file.name}`)
+        uploadBytes(storageRef, file).then(() => {
+            getDownloadURL(storageRef).then((res) => {
+                setLoading(false)
+                setImageURL(res)
+            })
+        }).catch((err) => {
+            setError(err.code)
+        })
+    }
+
+    return {uploadHeader, error, loading, imageURL}
+}
+
 export const useArticleCreate = () => {
   const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
@@ -298,28 +323,6 @@ export const useArticleEdit = () => {
   }
 
   return { editArticle, error, loading }
-}
-
-export const useArticlePost = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
-
-  const postArticle = (articleID: string) => {
-    updateDoc(doc(db, 'article', articleID), {
-      edit_time: serverTimestamp(),
-      published: true,
-      publish_time: serverTimestamp(),
-    }).then(
-      () => {
-        setLoading(false)
-      },
-      (err) => {
-        setError(err.code)
-      },
-    )
-  }
-
-  return { postArticle, error, loading }
 }
 
 export const useArticleDelete = (articleID: string) => {

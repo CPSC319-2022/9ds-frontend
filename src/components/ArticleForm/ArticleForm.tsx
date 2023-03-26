@@ -3,7 +3,7 @@ import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
 import { useState, FormEvent, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Article } from '../../hooks/firebase/useArticle'
+import {Article, useUploadHeader} from '../../hooks/firebase/useArticle'
 import { useUser } from '../../hooks/firebase/useUser'
 import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
@@ -70,6 +70,8 @@ export const ArticleForm = ({
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
+  const image = useUploadHeader();
+
   const allowDelete =
     articleId &&
     purpose === ArticleFormPurpose.UPDATE &&
@@ -132,16 +134,8 @@ export const ArticleForm = ({
 
   const handleUpload = (e: FormEvent<HTMLElement>) => {
       e.preventDefault();
-      const storageRef = ref(storage, `users/${queriedUser.uid}`)
-      const target = e.target as HTMLInputElement;
-      if(!target.files) return
-      uploadBytes(storageRef, target.files[0]).then(() => {
-          getDownloadURL(storageRef).then((res) => {
-            setCustomLink(res)
-          })
-      }).catch((err) => {
-          // TODO: add error indication.
-      })
+      // put target file in function
+      // image.uploadHeader()
     }
 
   useEffect(() => {

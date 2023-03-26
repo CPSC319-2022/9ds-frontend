@@ -10,7 +10,7 @@ import {
   sendPasswordResetEmail,
   verifyPasswordResetCode,
   confirmPasswordReset,
-  UserCredential,
+  UserCredential, deleteUser,
 } from 'firebase/auth'
 import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
 import {auth, db, storage} from '../../firebaseApp'
@@ -57,31 +57,43 @@ export const useCreateUserEmailPassword = () => {
     profile_image: string | File,
   ) => {
     createUserWithEmailAndPassword(auth, email, password)
-      .then(({ user: newUser }) => {
-        if (!(typeof profile_image === 'string')){
-          const storageRef = ref(storage, `users/${user!.uid}/${profile_image.name}`)
-          uploadBytes(storageRef, profile_image).then(() => {
+      .then(({user: newUser}) => {
+        if (!(typeof profile_image === 'string')) {
+          const storageRef = ref(storage, `${newUser.uid}/${profile_image.name}`)
+          uploadBytes(ref(storage, `${newUser.uid}/${profile_image.name}`), profile_image).then(() => {
             getDownloadURL(storageRef).then((res) => {
-              profile_image = res
+              createNewUser(newUser, username, res)
+                .then(() => {
+                  setUser({
+                    role: 'reader',
+                    profile_image: res,
+                    username: username,
+                    uid: newUser.uid,
+                  })
+                  setLoading(false)
+                })
             })
           }).catch((err) => {
             setError(err.code)
-            profile_image = 'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
+            return deleteUser(newUser)
           })
         }
-        createNewUser(newUser, username, profile_image as string)
-          .then(() => {
-            setLoading(false)
-            setUser({
-              role: 'reader',
-              profile_image: profile_image as string,
-              username: username,
-              uid: newUser.uid,
-            })
-          })
-          .catch((err) => {
-            setError(err)
-          })
+       else {
+          createNewUser(newUser, username, profile_image as string)
+              .then(() => {
+                setUser({
+                  role: 'reader',
+                  profile_image: profile_image as string,
+                  username: username,
+                  uid: newUser.uid,
+                })
+                setLoading(false)
+              })
+              .catch((err) => {
+                setError(err.code)
+                return deleteUser(newUser)
+              })
+        }
       })
       .catch((err) => {
         setError(err.code)
