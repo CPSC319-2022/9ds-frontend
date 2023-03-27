@@ -232,32 +232,37 @@ export const useUploadHeader = () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const uuid = require('uuid')
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    // useEffect(() => {console.log(imageURL)}, [imageURL])
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-
-
     const uploadHeader = async (file: File) => {
         if(currentUser == null) {
             setError("unauthenticated");
             return
         }
         setLoading(true)
-        const path = `${currentUser.uid}/${file.name}`
-        const storageRef = ref(storage, `${currentUser.uid}/${file.name}`)
-        try {
-            await uploadBytes(storageRef, file)
-            const url = await getDownloadURL(storageRef)
-            setImageURL(url)
+        const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
+        // const storageRef = ref(storage, `${currentUser.uid}/${file.name}${uuid.v4()}`)
+        // try {
+        //     await uploadBytes(storageRef, file)
+        //     const url = await getDownloadURL(storageRef)
+        //     setImageURL(url)
+        //     setLoading(false)
+        // } catch (err) {
+        //     if (err instanceof FirestoreError) {
+        //         setError(err.code)
+        //     } else {
+        //         setError("unknown-error")
+        //     }
+        //     setLoading(false)
+        const storageRef = ref(storage, path)
+        uploadBytes(storageRef, file).then(() => {
+            getDownloadURL(storageRef).then((res) => {
+                setLoading(false)
+                setImageURL(res)
+            })
+        }).catch((err) => {
             setLoading(false)
-        } catch (err) {
-            if (err instanceof FirestoreError) {
-                setError(err.code)
-            } else {
-                setError("unknown-error")
-            }
-            setLoading(false)
-        }
+            setError(err.code)
+        })
+        
     }
 
     return {uploadHeader, error, loading, imageURL}

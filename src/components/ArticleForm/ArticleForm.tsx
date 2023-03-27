@@ -86,7 +86,7 @@ export const ArticleForm = ({
             title,
             encodedText,
             imageURL,
-            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.DRAFT,
+            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.UPDATE,
             articleId,
             )
         } else {
@@ -94,7 +94,7 @@ export const ArticleForm = ({
             title,
             encodedText,
             imageURL,
-            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.DRAFT,
+            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.UPDATE,
             )
         }
         navigate('/profile')
@@ -110,7 +110,7 @@ export const ArticleForm = ({
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
-    async (e: FormEvent<HTMLElement>, published: boolean) => {
+    (e: FormEvent<HTMLElement>, published: boolean) => {
       e.preventDefault()
       let isInvalid = false
       if (title.length === 0 || countWords(title) > 60) {
@@ -137,8 +137,8 @@ export const ArticleForm = ({
       const link = customLink.length > 0
       ? customLink
       : pictureUrls[selectedPictureIndex]
-      if (file) {
-        await uploadHeader(file)
+      if (file && !isInvalid) {
+        uploadHeader(file)
         return
       }
       if (!isInvalid) {
@@ -189,8 +189,8 @@ export const ArticleForm = ({
           justifyItems: 'space-between',
           flex: 1,
         }}
-        onSubmit={async (event) => {
-          await handleSubmit(event, true)
+        onSubmit={(event) => {
+          handleSubmit(event, true)
         }}
       >
         <Stack
@@ -204,8 +204,8 @@ export const ArticleForm = ({
             <Button
               variant='contained'
               style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
-              onClick={async (event) => {
-                await handleSubmit(event, false)
+              onClick={(event) => {
+                handleSubmit(event, false)
               }}
             >
               SAVE DRAFT
