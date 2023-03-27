@@ -1,4 +1,4 @@
-import { Grid, TextField, TextFieldProps } from '@mui/material'
+import { Grid, TextField, TextFieldProps, Typography } from '@mui/material'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 
 type LabeledTextFieldProps = TextFieldProps & {
@@ -7,6 +7,7 @@ type LabeledTextFieldProps = TextFieldProps & {
   labelWidth: number
   columnSpacing?: number
   text: React.ReactNode
+  type: 'TextField' | 'Typography'
 }
 
 export const LabeledTextField: FC<LabeledTextFieldProps> = ({
@@ -21,6 +22,7 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
   labelWidth,
   text,
   value,
+  type,
 }: LabeledTextFieldProps) => {
   return (
     <Grid container columnSpacing={columnSpacing} alignSelf={'stretch'}>
@@ -28,21 +30,25 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
         {text}
       </Grid>
       <Grid item xs={12 - labelWidth}>
-        <TextField
-          value={value}
-          fullWidth
-          multiline={multiline}
-          rows={rows}
-          variant={variant}
-          placeholder={placeholder}
-          error={error}
-          helperText={helperText}
-          onChange={(event) => {
-            if(onTextChange) {
-              onTextChange(event.target.value)
-            }
-          }}
-        />
+        {type === 'TextField' ? (
+          <TextField
+            value={value}
+            fullWidth
+            multiline={multiline}
+            rows={rows}
+            variant={variant}
+            placeholder={placeholder}
+            error={error}
+            helperText={helperText}
+            onChange={(event) => {
+              if (onTextChange) {
+                onTextChange(event.target.value)
+              }
+            }}
+          />
+        ) : type === 'Typography' ? (
+          <Typography sx={{borderBottom: '1px solid', width: '220px'}}>{value as string}</Typography>
+        ) : null}
       </Grid>
     </Grid>
   )
@@ -50,4 +56,5 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
 
 LabeledTextField.defaultProps = {
   columnSpacing: 0,
+  type: 'TextField'
 }
