@@ -1,15 +1,16 @@
 import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect } from 'react'
+import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {Article, useUploadHeader} from '../../hooks/firebase/useArticle'
+import { Article, useUploadHeader } from '../../hooks/firebase/useArticle'
 import { useUser } from '../../hooks/firebase/useUser'
 import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
 import { TextEditor, TextEditorInfo } from '../TextEditor'
-import {storage} from "../../firebaseApp";
-import {getDownloadURL, ref, uploadBytes} from "@firebase/storage";
+import { FileUploader } from 'components/FileUploader/FileUploader'
+import { NotificationContext } from 'context/NotificationContext'
+import { handleLoading, Spinner } from 'components/Spinner/Spinner'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -54,6 +55,8 @@ export const ArticleForm = ({
   const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
+  const [file, setFile] = useState<File | null>(null)
+  const { dispatch } = useContext(NotificationContext)
 
   const [isTitleError, setIsTitleError] = useState(false)
   const [title, setTitle] = useState('')
@@ -70,7 +73,36 @@ export const ArticleForm = ({
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
-  const image = useUploadHeader();
+
+  const {uploadHeader, error: uploadError, imageURL, loading: uploadLoading} = useUploadHeader()
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  useEffect(() => {
+    if (!uploadError && imageURL) {
+        const encodedText = JSON.stringify(
+            convertToRaw(editorState.getCurrentContent()),
+        )
+        if (articleId !== undefined) {
+            onSubmit(
+            title,
+            encodedText,
+            imageURL,
+            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.DRAFT,
+            articleId,
+            )
+        } else {
+            onSubmit(
+            title,
+            encodedText,
+            imageURL,
+            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.DRAFT,
+            )
+        }
+        navigate('/profile')
+    }
+    if (uploadError) {
+        dispatch({notificationActionType: "error", message: "Failed to upload image"})
+    }
+}, [imageURL, uploadError])
 
   const allowDelete =
     articleId &&
@@ -78,7 +110,8 @@ export const ArticleForm = ({
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
-    (e: FormEvent<HTMLElement>, published: boolean) => {
+    async (e: FormEvent<HTMLElement>, published: boolean) => {
+      e.preventDefault()
       let isInvalid = false
       if (title.length === 0 || countWords(title) > 60) {
         isInvalid = true
@@ -101,6 +134,13 @@ export const ArticleForm = ({
         setIsBodyError(false)
         setBodyHelperText('')
       }
+      const link = customLink.length > 0
+      ? customLink
+      : pictureUrls[selectedPictureIndex]
+      if (file) {
+        await uploadHeader(file)
+        return
+      }
       if (!isInvalid) {
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
@@ -109,9 +149,7 @@ export const ArticleForm = ({
           onSubmit(
             title,
             encodedText,
-            customLink.length > 0
-              ? customLink
-              : pictureUrls[selectedPictureIndex],
+            link,
             published,
             articleId,
           )
@@ -119,29 +157,22 @@ export const ArticleForm = ({
           onSubmit(
             title,
             encodedText,
-            customLink.length > 0
-              ? customLink
-              : pictureUrls[selectedPictureIndex],
+            link,
             published,
           )
         }
         navigate('/profile')
       }
-      e.preventDefault()
     },
-    [title, editorState, customLink, selectedPictureIndex],
+    [title, editorState, customLink, selectedPictureIndex, file, imageURL],
   )
 
-  const handleUpload = (e: FormEvent<HTMLElement>) => {
-      e.preventDefault();
-      // put target file in function
-      // image.uploadHeader()
-    }
 
   useEffect(() => {
     if (article !== undefined) {
       setTitle(article.title)
       setCustomLink(article.header_image)
+      setFile(null)
       setEditorState(() =>
         EditorState.createWithContent(
           convertFromRaw(JSON.parse(article.content)),
@@ -150,7 +181,7 @@ export const ArticleForm = ({
     }
   }, [])
 
-  return (
+  const container =  (
     <Container>
       <form
         style={{
@@ -158,8 +189,8 @@ export const ArticleForm = ({
           justifyItems: 'space-between',
           flex: 1,
         }}
-        onSubmit={(event) => {
-          handleSubmit(event, true)
+        onSubmit={async (event) => {
+          await handleSubmit(event, true)
         }}
       >
         <Stack
@@ -173,8 +204,8 @@ export const ArticleForm = ({
             <Button
               variant='contained'
               style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
-              onClick={(event) => {
-                handleSubmit(event, false)
+              onClick={async (event) => {
+                await handleSubmit(event, false)
               }}
             >
               SAVE DRAFT
@@ -261,6 +292,12 @@ export const ArticleForm = ({
             multiline={false}
             value={customLink}
           />
+          <Stack direction={"row"} sx={{alignItems: 'flex-start', justifyContent: 'flex-start'}} spacing={80}>
+          <Typography variant='title' sx={{ color: 'black' }}>
+            or
+          </Typography>
+          <FileUploader setFile={setFile} file={file} />
+          </Stack>
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
@@ -325,6 +362,7 @@ export const ArticleForm = ({
       </form>
     </Container>
   )
+  return !uploadLoading ? container : <Spinner />
 }
 
 function countWords(text: string): number {
