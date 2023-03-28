@@ -6,18 +6,20 @@ import { NotificationProvider } from '../context/NotificationContext'
 import { AuthProvider } from '../context/AuthContext'
 import { theme } from '../theme/Theme'
 import { AppRouter } from './AppRouter'
+import { PipelineUI } from './pipelineUI'
 
 export const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <AuthProvider>
+      <PipelineUI />
+      {/* <AuthProvider>
         <NotificationProvider>
           <NotificationSnackbar />
           <ErrorBoundary>
             <AppRouter />
           </ErrorBoundary>
         </NotificationProvider>
-      </AuthProvider>
+      </AuthProvider> */}
     </ThemeProvider>
   )
 }
