@@ -17,7 +17,7 @@ export const UpdateArticle = ({ isDraft = false }: UpdateArticleProps) => {
   const {
     editArticle,
     error: errorArticleUpdate,
-    loading: loadingArticleEdit,
+    loading: loadingArticleEdit
   } = useArticleEdit()
   const {
     error: errorArticleRead,

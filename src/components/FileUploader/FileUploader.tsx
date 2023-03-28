@@ -16,7 +16,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
       return file
     }
     const newFile = files[0]
-    if (newFile.size <= 1024 ** 3) {
+    if (newFile.size <= 3000000) {
       return newFile
     } else {
       dispatch({
@@ -34,10 +34,11 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
       width={'300px'}
       sx={{ justifyContent: 'space-evenly', alignItems: 'center' }}
     >
-      <Button dark text='RESET' onClick={() => setFile(null)} />
+      <Button dark text='RESET' data-testid="reset" onClick={() => setFile(null)} />
       <MUIButton
         size={'small'}
         component='label'
+        data-testid="upload-btn"
         variant='contained'
         sx={{ backgroundColor: 'white.main', border: '2px solid black' }}
       >
@@ -45,6 +46,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
           UPLOAD
         </Typography>
         <input
+          data-testid="upload-input"
           type='file'
           hidden
           accept='image/*'
@@ -54,7 +56,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
             e.value = ''
           }}
           onChange={(event) =>
-            setFile(event.target?.files ? event.target.files[0] : file)
+            setFile(fileSizeHandler(event.target.files))
           }
         />
       </MUIButton>

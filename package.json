@@ -92,7 +92,8 @@
       "<rootDir>/src/pages",
       "<rootDir>/src/firebaseApp.ts",
       "<rootDir>/src/components/Routes",
-      "<rootDir>/src/index.tsx"
+      "<rootDir>/src/index.tsx",
+      "<rootDir>/src/context"
     ]
   }
 }
