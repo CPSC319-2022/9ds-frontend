@@ -7,29 +7,29 @@ import { BuildStep } from 'components/BuildStep'
 
 export const PipelineUI: FC = () => {
   return (
-    <AppWrapper>
+    <Stack>
       <Stack
         direction='column'
         alignItems='center'
-        spacing={60}
         border='4px solid black'
         width='100%'
+        height='100%'
       >
         <Typography variant='h2'>Build UI</Typography>
       </Stack>
       <Stack>
         <Typography variant='h2'>Dev</Typography>
-        <Stack>
-          <Divider />
-          <Stack justifyContent='space-evenly'>
-            <BuildStep type='cancel' />
-            <BuildStep type='cancel' />
-            <BuildStep type='cancel' />
-            <BuildStep type='cancel' />
+        <div>
+          <Divider position='relative' sx={{ x: '0', y: '0' }} />
+          <Stack direction='row' justifyContent='space-evenly'>
+            <BuildStep type='check' />
+            <BuildStep type='check' />
+            <BuildStep type='check' />
+            <BuildStep type='check' />
             <BuildStep type='cancel' />
           </Stack>
-        </Stack>
+        </div>
       </Stack>
-    </AppWrapper>
+    </Stack>
   )
 }
