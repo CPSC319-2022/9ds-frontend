@@ -308,7 +308,7 @@ export const useArticleCreate = () => {
       })
   }
 
-  return { createArticle, error, loading, articleId }
+  return { createArticle, error, loading, articleId, setLoading }
 }
 
 export const useArticleEdit = () => {
@@ -341,7 +341,7 @@ export const useArticleEdit = () => {
     setLoading(false)
   }
 
-  return { editArticle, error, loading }
+  return { editArticle, error, loading, setLoading }
 }
 
 export const useArticleDelete = (articleID: string) => {

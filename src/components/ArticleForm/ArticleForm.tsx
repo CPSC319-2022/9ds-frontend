@@ -41,6 +41,7 @@ interface ArticleFormProps {
     published: boolean,
     articleId?: string,
   ) => void
+  setLoading: Function
   article?: Article
   articleId?: string
 }
@@ -50,6 +51,7 @@ export const ArticleForm = ({
   onSubmit,
   article,
   articleId,
+  setLoading
 }: ArticleFormProps) => {
   const navigate = useNavigate()
   const { queriedUser } = useUser()
@@ -81,6 +83,7 @@ export const ArticleForm = ({
         const encodedText = JSON.stringify(
             convertToRaw(editorState.getCurrentContent()),
         )
+        setLoading(true)
         if (articleId !== undefined) {
             onSubmit(
             title,
