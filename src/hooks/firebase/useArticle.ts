@@ -22,11 +22,10 @@ import {
 import { useState, useEffect, useContext } from 'react'
 import { getUser, UserData } from './useUser'
 import { comment } from './useComment'
-import { db } from '../../firebaseApp'
+import {db, storage} from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import {getDownloadURL, ref, uploadBytes} from "@firebase/storage";
 
 export interface ArticlePreview {
   title: string
@@ -224,6 +223,51 @@ export const useArticleComments = (articleID: string, n: number) => {
   return { getNext, error, loading, loadingNext, comments, endOfCollection }
 }
 
+export const useUploadHeader = () => {
+    const { user: currentUser } = useAuth()
+    const [error, setError] = useState<string>()
+    const [loading, setLoading] = useState(false)
+    const [imageURL, setImageURL] = useState("")
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const uuid = require('uuid')
+
+    const uploadHeader = async (file: File) => {
+        if(currentUser == null) {
+            setError("unauthenticated");
+            return
+        }
+        setLoading(true)
+        const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
+        // const storageRef = ref(storage, `${currentUser.uid}/${file.name}${uuid.v4()}`)
+        // try {
+        //     await uploadBytes(storageRef, file)
+        //     const url = await getDownloadURL(storageRef)
+        //     setImageURL(url)
+        //     setLoading(false)
+        // } catch (err) {
+        //     if (err instanceof FirestoreError) {
+        //         setError(err.code)
+        //     } else {
+        //         setError("unknown-error")
+        //     }
+        //     setLoading(false)
+        const storageRef = ref(storage, path)
+        uploadBytes(storageRef, file).then(() => {
+            getDownloadURL(storageRef).then((res) => {
+                setLoading(false)
+                setImageURL(res)
+            })
+        }).catch((err) => {
+            setLoading(false)
+            setError(err.code)
+        })
+        
+    }
+
+    return {uploadHeader, error, loading, imageURL}
+}
+
 export const useArticleCreate = () => {
   const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
@@ -264,7 +308,7 @@ export const useArticleCreate = () => {
       })
   }
 
-  return { createArticle, error, loading, articleId }
+  return { createArticle, error, loading, articleId, setLoading }
 }
 
 export const useArticleEdit = () => {
@@ -297,29 +341,7 @@ export const useArticleEdit = () => {
     setLoading(false)
   }
 
-  return { editArticle, error, loading }
-}
-
-export const useArticlePost = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
-
-  const postArticle = (articleID: string) => {
-    updateDoc(doc(db, 'article', articleID), {
-      edit_time: serverTimestamp(),
-      published: true,
-      publish_time: serverTimestamp(),
-    }).then(
-      () => {
-        setLoading(false)
-      },
-      (err) => {
-        setError(err.code)
-      },
-    )
-  }
-
-  return { postArticle, error, loading }
+  return { editArticle, error, loading, setLoading }
 }
 
 export const useArticleDelete = (articleID: string) => {

@@ -16,6 +16,7 @@ describe('ArticleForm', () => {
           <ArticleForm
             purpose={ArticleFormPurpose.CREATE}
             onSubmit={onSubmitMock}
+            setLoading={jest.fn()}
           />
         </Router>,
       ),

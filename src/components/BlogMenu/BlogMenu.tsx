@@ -53,7 +53,10 @@ export const BlogMenu: FC<BlogMenuProps> = ({
   }
 
   return (
-    <Stack sx={{ position: 'absolute', top: '4px', right: '4px', zIndex: 1 }}>
+    <Stack
+      sx={{ position: 'absolute', top: '4px', right: '4px', zIndex: 1 }}
+      data-testid='blog-menu'
+    >
       <IconButton
         sx={{
           backgroundColor: 'grey.500',

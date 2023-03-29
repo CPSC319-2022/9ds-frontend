@@ -33,8 +33,11 @@ export const PasswordField: FC<PasswordProps> = ({
 
   return (
     <FormControl variant='outlined'>
-      <InputLabel htmlFor={label} error={error.length > 0}>{label}</InputLabel>
+      <InputLabel htmlFor={label} error={error.length > 0}>
+        {label}
+      </InputLabel>
       <OutlinedInput
+        data-testid='password-input'
         id={label}
         type={showPassword ? 'text' : 'password'}
         endAdornment={
@@ -55,9 +58,7 @@ export const PasswordField: FC<PasswordProps> = ({
         error={error.length > 0}
       />
       {error.length > 0 && (
-        <FormHelperText error={true}>
-          {error}
-        </FormHelperText>
+        <FormHelperText error={true}>{error}</FormHelperText>
       )}
     </FormControl>
   )

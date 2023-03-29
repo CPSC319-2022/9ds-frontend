@@ -18,6 +18,7 @@ export const ItemGrid = ({ items, type }: ItemGridProps) => {
     <Grid container columns={16} rowSpacing={35} alignSelf='stretch'>
       {items.map((article) => (
         <Grid
+          data-testid='grid-item'
           key={article.articleId}
           item
           xs={4}
