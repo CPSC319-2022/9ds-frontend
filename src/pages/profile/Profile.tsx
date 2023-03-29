@@ -37,7 +37,6 @@ export const Profile: FC = () => {
   const { applyPromotion } = useApplyPromotion()
 
   useEffect(() => {
-    console.log(error, articleError, draftError)
     if (error || articleError || draftError) {
       dispatch({
         notificationActionType: 'error',

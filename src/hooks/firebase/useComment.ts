@@ -15,15 +15,6 @@ import { getUser } from 'utils/firebase/user'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-export interface comment {
-  commenter_uid: string
-  commenter_image: string
-  commenter_username: string
-  content: string
-  post_time: Timestamp
-  commentID: string
-}
-
 export const useCommentCreate = () => {
   const { user: currentUser } = useAuth()
   const [error, setError] = useState<FirestoreErrorCode>()
