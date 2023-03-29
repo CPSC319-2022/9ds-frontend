@@ -294,6 +294,7 @@ export const ArticleForm = ({
             labelWidth={1}
             multiline={false}
             value={customLink}
+            type='TextField'
           />
           <Stack direction={"row"} sx={{alignItems: 'flex-start', justifyContent: 'flex-start'}} spacing={80}>
           <Typography variant='title' sx={{ color: 'black' }}>
@@ -315,6 +316,7 @@ export const ArticleForm = ({
             error={isTitleError}
             helperText={titleHelperText}
             value={title}
+            type='TextField'
           />
           <TextEditor
             editorInfo={editorInfo}

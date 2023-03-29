@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const onChange = (user: User | null) => {
     setCurrentUser(user)
-    setInitializing(!user)
+    setInitializing(false)
   }
 
   useEffect(() => {
