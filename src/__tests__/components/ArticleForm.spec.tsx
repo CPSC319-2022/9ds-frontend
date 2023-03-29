@@ -1,7 +1,6 @@
 import {MemoryRouter as Router} from 'react-router-dom'
 import {fireEvent, render, screen, act} from '@testing-library/react';
 import {ArticleForm, ArticleFormPurpose} from '../../components/ArticleForm';
-import {useNavigate} from 'react-router-dom';
 import {useUser} from '../../hooks/firebase/useUser'
 
 const mockedUsedNavigate = jest.fn();
@@ -53,8 +52,13 @@ describe('ArticleForm UPDATE', () => {
     useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.UPDATE} onSubmit={onSubmitMock} article={mockArticle}
-                       articleId='hello'/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            articleId='hello'
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -73,8 +77,13 @@ describe('ArticleForm UPDATE', () => {
     useUser.mockReturnValue({queriedUser: {uid: '567', role: 'admin'}});
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.UPDATE} onSubmit={onSubmitMock} article={mockArticle}
-                       articleId='hello'/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            articleId='hello'
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -93,8 +102,13 @@ describe('ArticleForm UPDATE', () => {
     useUser.mockReturnValue({queriedUser: {uid: '567', role: 'contributor'}});
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.UPDATE} onSubmit={onSubmitMock} article={mockArticle}
-                       articleId='hello'/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            articleId='hello'
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -109,8 +123,13 @@ describe('ArticleForm UPDATE', () => {
     useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.UPDATE} onSubmit={onSubmitMock} article={mockArticle}
-                       articleId='hello'/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            articleId='hello'
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -128,8 +147,13 @@ describe('ArticleForm UPDATE', () => {
     useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.UPDATE} onSubmit={onSubmitMock} article={mockArticle}
-                       articleId='hello'/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            articleId='hello'
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -151,8 +175,13 @@ describe('ArticleForm UPDATE', () => {
     useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.UPDATE} onSubmit={onSubmitMock} article={mockArticleWithEmptyBody}
-                       articleId='hello'/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticleWithEmptyBody}
+            articleId='hello'
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -174,7 +203,12 @@ describe('ArticleForm CREATE/DRAFT', () => {
   test('should render create form', async () => {
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.CREATE} onSubmit={onSubmitMock} article={mockArticle}/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -193,7 +227,12 @@ describe('ArticleForm CREATE/DRAFT', () => {
   test('should render draft form', async () => {
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.DRAFT} onSubmit={onSubmitMock} article={mockArticle}/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.DRAFT}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -211,7 +250,11 @@ describe('ArticleForm CREATE/DRAFT', () => {
   test('should display error message when title is empty', async () => {
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.CREATE} onSubmit={onSubmitMock}/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -223,7 +266,11 @@ describe('ArticleForm CREATE/DRAFT', () => {
   test('should display error message when title is too long', async () => {
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.CREATE} onSubmit={onSubmitMock} />
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );
@@ -244,7 +291,11 @@ describe('ArticleForm CREATE/DRAFT', () => {
   test('should display error message when body is empty', async () => {
     await act(async () => render(
         <Router>
-          <ArticleForm purpose={ArticleFormPurpose.CREATE} onSubmit={onSubmitMock}/>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={jest.fn()}
+          />
         </Router>
       )
     );

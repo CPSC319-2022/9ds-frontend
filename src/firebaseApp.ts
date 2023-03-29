@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
+import {getStorage} from "@firebase/storage";
 
 let firebaseConfig
 
@@ -56,10 +57,11 @@ switch (process.env.REACT_APP_ENV) {
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 const auth = getAuth(app)
+const storage = getStorage(app)
 
 if (!process.env.REACT_APP_ENV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
 }
 
-export { db, auth }
+export { db, auth, storage }
