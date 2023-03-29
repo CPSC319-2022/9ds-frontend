@@ -70,7 +70,7 @@ describe('Footer Styling', () => {
   test('test applying to become a contributor', async () => {
     const becomeAContributorButton = screen.getByRole('button')
     expect(becomeAContributorButton).toContainElement(screen.getByText('Become a contributor'))
-    await userEvent.click(becomeAContributorButton)
+    await act( async () => userEvent.click(becomeAContributorButton))
     })
 
 })
