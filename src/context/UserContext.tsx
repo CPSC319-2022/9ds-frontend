@@ -43,6 +43,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (!initializing) {
       setLoading(true)
+      setQueriedUser({
+        role: '',
+        profile_image: '',
+        username: '',
+        uid: '',
+      })
       getUser(user?.uid ?? null)
         .then((user) => {
           setQueriedUser(user)
