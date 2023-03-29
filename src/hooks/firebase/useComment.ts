@@ -5,7 +5,6 @@ import {
   collection,
   updateDoc,
   serverTimestamp,
-  Timestamp,
   FirestoreErrorCode,
 } from 'firebase/firestore'
 import { db } from '../../firebaseApp'

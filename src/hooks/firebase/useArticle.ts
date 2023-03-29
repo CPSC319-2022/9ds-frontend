@@ -26,7 +26,7 @@ import { NotificationContext } from '../../context/NotificationContext'
 import { Article, ArticlePreview } from 'types/Article'
 import { articlePreviewTranslator } from 'utils/firebase/article'
 import { UserData } from 'types/UserData'
-import { Comment } from 'types/Comment'
+import { UserComment } from 'types/Comment'
 import { getUser } from 'utils/firebase/user'
 
 export const useArticleRecents = (n: number) => {
@@ -102,7 +102,7 @@ export const useArticleRead = (articleID: string) => {
 export const useArticleComments = (articleID: string, n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<UserComment[]>([])
   const [loadingNext, setLoadingNext] = useState(false)
 
   const q = query(
@@ -117,7 +117,7 @@ export const useArticleComments = (articleID: string, n: number) => {
   useEffect(() => {
     getDocs(query(q, limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: Comment[] = []
+        const commentsData: UserComment[] = []
         docs.forEach((doc) => {
           commentsData.push({
             commenter_uid: doc.data().commenter_uid,
@@ -142,7 +142,7 @@ export const useArticleComments = (articleID: string, n: number) => {
     setLoadingNext(true)
     getDocs(query(q, startAfter(lastComment), limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: Comment[] = []
+        const commentsData: UserComment[] = []
         docs.forEach((doc) => {
           commentsData.push({
             commenter_uid: doc.data().commenter_uid,

@@ -14,7 +14,6 @@ import { BlogMenu } from '../../components/BlogMenu/BlogMenu'
 import { handleLoading } from '../../components/Spinner/Spinner'
 import { useUser } from '../../hooks/firebase/useUser'
 import {
-  Comment,
   useCommentCreate,
   useCommentDelete,
   useCommentEdit,
@@ -26,6 +25,7 @@ import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useAuth } from '../../hooks/firebase/useAuth'
 import { UserData } from 'types/UserData'
+import { UserComment } from 'types/Comment'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -45,7 +45,7 @@ export const IndividualBlogPost = () => {
 
   //  eslint-disable-next-line
   const articleComments = useArticleComments(articleId!, PAGINATION_COUNT)
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<UserComment[]>([])
   const [commentCount, setCommentCount] = useState(0)
 
   const commentCreate = useCommentCreate()
@@ -115,7 +115,7 @@ export const IndividualBlogPost = () => {
   // setCommentID on comment after creating using useCommentCreate
   useEffect(() => {
     if (commentCreate.commentId) {
-      const commentToSubmit: Comment = {
+      const commentToSubmit: UserComment = {
         commenter_uid: user.uid,
         commenter_image: user.profile_image,
         commenter_username: user.username,

@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
-export interface Comment {
+export interface UserComment {
   commenter_uid: string
   commenter_image: string
   commenter_username: string
