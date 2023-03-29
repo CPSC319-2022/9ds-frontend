@@ -11,7 +11,6 @@ describe('Footer Styling', () => {
     useApplyPromotion: () => ({ applyPromotion: mockApplyPromotion }),
   }))
 
-  // @ts-ignore
   jest.mock('../../context/NotificationContext', () => ({
     NotificationContext: {
       Consumer: ({ children }: { children: ({ dispatch }: { dispatch: Function }) => React.ReactNode }) => children({ dispatch: mockDispatch }),
