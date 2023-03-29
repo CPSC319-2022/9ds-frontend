@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, useEffect } from 'react'
+import React, { useState, FormEvent, useEffect, useContext } from 'react'
 import {
   Stack,
   TextField,
@@ -18,8 +18,18 @@ import {
   useCreateUserEmailPassword,
   useSignInWithGoogle,
 } from '../../hooks/firebase/useAuth'
+import { FileUploader } from '../../components/FileUploader/FileUploader'
+import { storage } from '../../firebaseApp'
+import {getDownloadURL, ref, uploadBytes} from "@firebase/storage"
+import { NotificationContext } from '../../context/NotificationContext'
+import { useNavigate } from 'react-router-dom'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const uuid = require('uuid')
+
 
 export const SignUpForm = () => {
+
+
   const [email, setEmail] = useState('')
   const [isEmailError, setIsEmailError] = useState(false)
   const [emailHelperText, setEmailHelperText] = useState('')
@@ -32,13 +42,12 @@ export const SignUpForm = () => {
   const [isNameError, setIsNameError] = useState(false)
   const [nameHelperText, setnameHelperText] = useState('')
 
-  const [profImageLink, setProfImageLink] = useState(
-    'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg',
-  )
-
   const [showPassword, setShowPassword] = React.useState(false)
+  const [file, setFile] = React.useState<File | null>(null)
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
+
+  const { dispatch } = useContext(NotificationContext)
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -48,11 +57,26 @@ export const SignUpForm = () => {
 
   const emailAccountCreate = useCreateUserEmailPassword()
   const signInWithGoogle = useSignInWithGoogle()
+  
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (emailAccountCreate.user) {
+        navigate('/')
+    }
+  }, [emailAccountCreate.user])
 
   // signUp Error
   // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword
   useEffect(() => {
     const error = emailAccountCreate.error?.toString() ?? ''
+    if (error.includes("storage")) {
+        dispatch({
+            notificationActionType: 'error',
+            message: 'Error uploading image',
+        })
+        return
+    }
     switch (error) {
       case 'auth/email-already-in-use':
         setIsEmailError(true)
@@ -91,7 +115,10 @@ export const SignUpForm = () => {
     }
   }, [emailAccountCreate.error])
 
+
+
   const handleSignUp = (e: FormEvent<HTMLElement>) => {
+    
     let isInvalid = false
     if (!email.length) {
       isInvalid = true
@@ -120,12 +147,12 @@ export const SignUpForm = () => {
       setPasswordHelperText('')
     }
     if (!isInvalid) {
-      emailAccountCreate.createWithEmailAndPasswordWrapper(
-        email,
-        password,
-        name,
-        profImageLink,
-      )
+        emailAccountCreate.createWithEmailAndPasswordWrapper(
+            email,
+            password,
+            name,
+            file != null ? file : 'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg',
+        )
     }
     e.preventDefault()
   }
@@ -220,21 +247,7 @@ export const SignUpForm = () => {
             </FormHelperText>
           )}
         </FormControl>
-
-        <TextField
-          id='profImgLink'
-          label='Profile image link'
-          variant='outlined'
-          onChange={(event) => {
-            if (!isProfImgLinkValid(event.target.value)) {
-              setProfImageLink(
-                'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg',
-              )
-            } else {
-              setProfImageLink(event.target.value)
-            }
-          }}
-        />
+        <FileUploader setFile={setFile} file={file}/>
         <Button
           variant='contained'
           sx={{
@@ -253,3 +266,4 @@ export const SignUpForm = () => {
 const IMAGE_LINK_REGEX = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/
 
 export const isProfImgLinkValid = (link: string) => IMAGE_LINK_REGEX.test(link)
+
