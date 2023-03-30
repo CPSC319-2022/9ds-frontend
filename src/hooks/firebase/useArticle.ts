@@ -146,10 +146,6 @@ export const useArticleRead = (articleID: string) => {
         } else {
           setLoading(false)
           setArticle(data as Article)
-          // console.log(data.header_image)
-          // //console.log(ref(storage, data.header_image))
-          // console.log("hi")
-
         }
       })
       .catch((err: FirestoreError) => {
