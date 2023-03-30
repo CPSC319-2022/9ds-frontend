@@ -34,8 +34,6 @@ import {
 import fb from "firebase/compat";
 import Firestore = fb.firestore.Firestore;
 
-const PROJECT_ID = "ds-blog-local";
-
 describe('Testing firestore security rules', () => {
   let testEnv: firebase.RulesTestEnvironment;
   let visitor: Firestore;
@@ -45,7 +43,7 @@ describe('Testing firestore security rules', () => {
 
   beforeAll(async () => {
     testEnv = await firebase.initializeTestEnvironment({
-      projectId: PROJECT_ID,
+      projectId: "test",
       firestore: {
         rules: fs.readFileSync("firestore.rules", "utf8"),
         host: 'localhost',

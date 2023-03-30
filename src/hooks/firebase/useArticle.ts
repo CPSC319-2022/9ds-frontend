@@ -25,7 +25,7 @@ import { comment } from './useComment'
 import {db, storage} from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
-import {getDownloadURL, ref, uploadBytes} from "@firebase/storage";
+import {deleteObject, getDownloadURL, ref, StorageError, uploadBytes} from "@firebase/storage";
 
 export interface ArticlePreview {
   title: string
@@ -146,6 +146,10 @@ export const useArticleRead = (articleID: string) => {
         } else {
           setLoading(false)
           setArticle(data as Article)
+          // console.log(data.header_image)
+          // //console.log(ref(storage, data.header_image))
+          // console.log("hi")
+
         }
       })
       .catch((err: FirestoreError) => {
@@ -239,19 +243,6 @@ export const useUploadHeader = () => {
         }
         setLoading(true)
         const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
-        // const storageRef = ref(storage, `${currentUser.uid}/${file.name}${uuid.v4()}`)
-        // try {
-        //     await uploadBytes(storageRef, file)
-        //     const url = await getDownloadURL(storageRef)
-        //     setImageURL(url)
-        //     setLoading(false)
-        // } catch (err) {
-        //     if (err instanceof FirestoreError) {
-        //         setError(err.code)
-        //     } else {
-        //         setError("unknown-error")
-        //     }
-        //     setLoading(false)
         const storageRef = ref(storage, path)
         uploadBytes(storageRef, file).then(() => {
             getDownloadURL(storageRef).then((res) => {
@@ -266,6 +257,32 @@ export const useUploadHeader = () => {
     }
 
     return {uploadHeader, error, loading, imageURL}
+}
+
+const deleteStorage = (imageURL: string): Promise<void> => {
+    try{
+        const reference = ref(storage, imageURL)
+        return deleteObject(reference)
+    }
+    catch (e) {
+        return Promise.resolve(); // Not a storage image, no behaviour required
+    }
+}
+
+export const useDeleteHeader = () => {
+    const [error, setError] = useState<string>()
+    const [loading, setLoading] = useState(false)
+
+    const deleteHeader = (imageURL: string) => {
+        setLoading(true)
+        deleteStorage(imageURL).then(() => {
+            setLoading(false)
+        }).catch((err)=> {
+            setError(err.code)
+        })
+    }
+
+    return {deleteHeader, error, loading}
 }
 
 export const useArticleCreate = () => {
@@ -347,25 +364,37 @@ export const useArticleEdit = () => {
 export const useArticleDelete = (articleID: string) => {
   const { dispatch } = useContext(NotificationContext)
   const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const deleteArticle = async () =>
-    deleteDoc(doc(db, 'article', articleID)).then(
-      () => {
-        dispatch({
-          notificationActionType: 'success',
-          message: `Successfuly deleted article`,
-        })
-        setLoading(false)
-      },
-      (err) => {
-        dispatch({
-          notificationActionType: 'error',
-          message: `Error deleting article. Error code: ${err.code}`,
-        })
-        setError(err.code)
-      },
+    getDoc(doc(db, 'article', articleID))
+        .then((document) => {
+            const data = document.data()
+            if (data === undefined) {
+                setError('not-found')
+                return
+            }
+            deleteStorage(data.header_image)
+            deleteDoc(doc(db, 'article', articleID)).then(
+                () => {
+                    dispatch({
+                        notificationActionType: 'success',
+                        message: `Successfuly deleted article`,
+                    })
+                    setLoading(false)
+                },
+                (err) => {
+                    dispatch({
+                        notificationActionType: 'error',
+                        message: `Error deleting article. Error code: ${err.code}`,
+                    })
+                    setError(err.code)
+                },
+            )
+    }
     )
+
+
 
   return { deleteArticle, error, loading }
 }
