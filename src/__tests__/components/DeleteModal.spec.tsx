@@ -34,9 +34,7 @@ describe('DeleteModal', () => {
 
     const deleteButton = getByTestId('test-delete-button')
     fireEvent.click(deleteButton)
-    expect(
-      getByText('Are you sure you want to delete this article?'),
-    ).toBeInTheDocument()
+    expect(getByText('Are you sure you want to delete?')).toBeInTheDocument()
 
     const deleteConfirmButton = getByTestId('delete-confirm-button')
 
