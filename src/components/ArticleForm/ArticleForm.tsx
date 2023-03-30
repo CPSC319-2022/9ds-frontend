@@ -3,7 +3,7 @@ import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
 import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Article, useUploadHeader } from '../../hooks/firebase/useArticle'
+import { Article, useDeleteHeader, useUploadHeader } from '../../hooks/firebase/useArticle'
 import { useUser } from '../../hooks/firebase/useUser'
 import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
@@ -59,6 +59,7 @@ export const ArticleForm = ({
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
   const [file, setFile] = useState<File | null>(null)
   const { dispatch } = useContext(NotificationContext)
+  const [priorLink, setPriorLink] = useState<string | null>(null)
 
   const [isTitleError, setIsTitleError] = useState(false)
   const [title, setTitle] = useState('')
@@ -74,6 +75,7 @@ export const ArticleForm = ({
   const [customLink, setCustomLink] = useState('')
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const {deleteHeader} = useDeleteHeader()
 
 
   const {uploadHeader, error: uploadError, imageURL, loading: uploadLoading} = useUploadHeader()
@@ -140,11 +142,14 @@ export const ArticleForm = ({
       const link = customLink.length > 0
       ? customLink
       : pictureUrls[selectedPictureIndex]
-      if (file && !isInvalid) {
-        uploadHeader(file)
-        return
-      }
       if (!isInvalid) {
+        if (priorLink != null && (priorLink != link || file)) {
+            deleteHeader(priorLink)
+        }
+        if (file) {
+            uploadHeader(file)
+            return
+          }
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
@@ -174,6 +179,7 @@ export const ArticleForm = ({
   useEffect(() => {
     if (article !== undefined) {
       setTitle(article.title)
+      setPriorLink(article.header_image)
       setCustomLink(article.header_image)
       setFile(null)
       setEditorState(() =>
