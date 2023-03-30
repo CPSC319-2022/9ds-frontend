@@ -1,10 +1,14 @@
 import {MemoryRouter as Router} from 'react-router-dom'
-import {fireEvent, render, screen, act} from '@testing-library/react';
+import {userEvent, fireEvent, render, screen, act} from '@testing-library/react';
 import {ArticleForm, ArticleFormPurpose} from '../../components/ArticleForm';
 import {useUser} from '../../hooks/firebase/useUser'
+import {useUploadHeader} from '../../hooks/firebase/useArticle'
+// import file from 'files'
 
 const mockedUsedNavigate = jest.fn();
+const mockedUsedUploadHeader = jest.fn();
 const onSubmitMock = jest.fn();
+const mockLoading = jest.fn();
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -14,6 +18,11 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../../hooks/firebase/useUser', () => ({
   ...jest.requireActual('../../hooks/firebase/useUser'),
   useUser: jest.fn(),
+}));
+
+jest.mock('../../hooks/firebase/useArticle', () => ({
+  ...jest.requireActual('../../hooks/firebase/useArticle'),
+  useUploadHeader: () => mockedUsedUploadHeader,
 }));
 
 const mockArticle = {
@@ -57,7 +66,7 @@ describe('ArticleForm UPDATE', () => {
             onSubmit={onSubmitMock}
             article={mockArticle}
             articleId='hello'
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -82,7 +91,7 @@ describe('ArticleForm UPDATE', () => {
             onSubmit={onSubmitMock}
             article={mockArticle}
             articleId='hello'
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -107,7 +116,7 @@ describe('ArticleForm UPDATE', () => {
             onSubmit={onSubmitMock}
             article={mockArticle}
             articleId='hello'
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -128,7 +137,7 @@ describe('ArticleForm UPDATE', () => {
             onSubmit={onSubmitMock}
             article={mockArticle}
             articleId='hello'
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -152,7 +161,7 @@ describe('ArticleForm UPDATE', () => {
             onSubmit={onSubmitMock}
             article={mockArticle}
             articleId='hello'
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -180,7 +189,7 @@ describe('ArticleForm UPDATE', () => {
             onSubmit={onSubmitMock}
             article={mockArticleWithEmptyBody}
             articleId='hello'
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -200,6 +209,35 @@ describe('ArticleForm CREATE/DRAFT', () => {
     jest.clearAllMocks();
   });
 
+  test('submits form data on successful image upload', async () => {
+    mockedUsedUploadHeader.mockReturnValue({
+      uploadHeader: jest.fn(),
+      error: null,
+      imageURL: 'https://example.com/image.jpg',
+      loading: false,
+    });
+    await act(async () => render(
+        <ArticleForm
+          purpose={ArticleFormPurpose.CREATE}
+          onSubmit={onSubmitMock}
+          article={mockArticle}
+          setLoading={mockLoading}
+        />
+      )
+    );
+    const file = new File(['test'], 'filename', { type: 'image/png' })
+    console.log(file)
+    const fileInput = screen.getByTestId('upload-input');
+    await userEvent.upload(fileInput, file);
+    expect(onSubmitMock).toHaveBeenCalledWith(
+      'Test article',
+      expect.any(String),
+      'https://example.com/image.jpg',
+      true
+    );
+    expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile');
+  });
+
   test('should render create form', async () => {
     await act(async () => render(
         <Router>
@@ -207,7 +245,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
             purpose={ArticleFormPurpose.CREATE}
             onSubmit={onSubmitMock}
             article={mockArticle}
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -231,7 +269,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
             purpose={ArticleFormPurpose.DRAFT}
             onSubmit={onSubmitMock}
             article={mockArticle}
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -253,7 +291,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
           <ArticleForm
             purpose={ArticleFormPurpose.CREATE}
             onSubmit={onSubmitMock}
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -269,7 +307,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
           <ArticleForm
             purpose={ArticleFormPurpose.CREATE}
             onSubmit={onSubmitMock}
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
@@ -294,7 +332,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
           <ArticleForm
             purpose={ArticleFormPurpose.CREATE}
             onSubmit={onSubmitMock}
-            setLoading={jest.fn()}
+            setLoading={mockLoading}
           />
         </Router>
       )
