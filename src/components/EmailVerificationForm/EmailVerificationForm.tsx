@@ -4,6 +4,7 @@ import { FC, FormEvent, useState } from 'react'
 import { Button } from '../Button'
 import { useForgotPasswordEmail } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
+import React from 'react'
 
 enum ForgotPasswordErrors {
   invalidEmail = 'auth/invalid-email',
@@ -11,8 +12,8 @@ enum ForgotPasswordErrors {
 }
 
 export const EmailVerificationForm: FC = () => {
-  const [emailError, setEmailError] = useState('')
-  const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = React.useState('')
+  const [email, setEmail] = React.useState('')
 
   const navigate = useNavigate()
   const forgotPasswordHandler = useForgotPasswordEmail()
@@ -62,7 +63,7 @@ export const EmailVerificationForm: FC = () => {
             sx={{ width: '100%' }}
           />
           {emailError.length > 0 && (
-            <FormHelperText error={true} sx={{ pl: '13px' }}>
+            <FormHelperText data-testid="error-msg" error={true} sx={{ pl: '13px' }}>
               {emailError}
             </FormHelperText>
           )}

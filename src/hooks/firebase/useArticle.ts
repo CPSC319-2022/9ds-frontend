@@ -239,19 +239,6 @@ export const useUploadHeader = () => {
         }
         setLoading(true)
         const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
-        // const storageRef = ref(storage, `${currentUser.uid}/${file.name}${uuid.v4()}`)
-        // try {
-        //     await uploadBytes(storageRef, file)
-        //     const url = await getDownloadURL(storageRef)
-        //     setImageURL(url)
-        //     setLoading(false)
-        // } catch (err) {
-        //     if (err instanceof FirestoreError) {
-        //         setError(err.code)
-        //     } else {
-        //         setError("unknown-error")
-        //     }
-        //     setLoading(false)
         const storageRef = ref(storage, path)
         uploadBytes(storageRef, file).then(() => {
             getDownloadURL(storageRef).then((res) => {

@@ -29,7 +29,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --testPathIgnorePatterns=src/__tests__/firestore --watchAll=false",
+    "test": "react-scripts test --watchAll=false",
     "test:rules": "firebase emulators:exec \"react-scripts test src/__tests__/firestore/security_rules.test.ts --watchAll=false\"",
     "cypress:open": "cypress open --project src/__tests__",
     "cypress:run": "cypress run --config video=false,screenshotOnRunFailure=false --project src/__tests__",
