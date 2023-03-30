@@ -5,10 +5,10 @@ import { Footer, UserRole } from '../../components/Footer'
 describe('Footer Styling', () => {
   beforeAll(async () => {
     await act( async () => render(
-      <Router>
-        <Footer role={UserRole.VISITOR}/>
-      </Router>,
-    )
+        <Router>
+          <Footer role={UserRole.ADMIN}/>
+        </Router>,
+      )
     )
     jest.setTimeout(15000)
   })
@@ -25,11 +25,17 @@ describe('Footer Styling', () => {
     expect(logo).toHaveAttribute('height', '35rem')
     expect(logo).toHaveAttribute('width', '60rem')
 
-    const getStartedButton = screen.getByRole('button')
-    expect(getStartedButton).toBeInTheDocument()
-    expect(getStartedButton).toBeEnabled()
-    expect(getStartedButton).toContainElement(screen.getByText('Get started'))
-    expect(screen.getByText('Get started')).toBeInTheDocument()
+    const createBlogButton = screen.getByRole('button')
+    expect(createBlogButton).toBeInTheDocument()
+    expect(createBlogButton).toBeEnabled()
+    expect(createBlogButton).toContainElement(screen.getByText('Create blog'))
+    expect(screen.getByText('Create blog')).toBeInTheDocument()
+
+    const getStartedButton = screen.queryByRole('button', { name: /get started/i });
+    expect(getStartedButton).not.toBeInTheDocument();
+
+    const becomeAContributorButton = screen.queryByRole('button', { name: /Become a contributor/i });
+    expect(becomeAContributorButton).not.toBeInTheDocument();
 
     const homeCaption = screen.getByText('Home')
     expect(homeCaption).toBeInTheDocument()
@@ -42,5 +48,6 @@ describe('Footer Styling', () => {
 
     const callToAction = screen.getByText('Start by writing something simple')
     expect(callToAction).toBeInTheDocument()
+
   })
 })

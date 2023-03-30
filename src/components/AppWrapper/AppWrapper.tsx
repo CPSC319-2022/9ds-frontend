@@ -1,8 +1,6 @@
 import React, { FC, ReactNode } from 'react'
 import { Header, UserRole } from '../Header'
 import { Footer } from '../Footer'
-import { FooterAsReader } from '../Footer/FooterAsReader'
-import { FooterAsContributor } from '../Footer/FooterAsContributor'
 import Stack from '@mui/material/Stack'
 import { useUser } from '../../hooks/firebase/useUser'
 
@@ -14,6 +12,7 @@ export interface IProps {
 export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
   const space = !spacing ? 32 : spacing
   const user = useUser().queriedUser
+
 
   const HeaderComponent: FC = () => {
     if (user.role === 'reader') {
@@ -30,12 +29,15 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
 
   const FooterComponent: FC = () => {
     if (user.role === 'reader') {
-      return <FooterAsReader />
+      return <Footer role={UserRole.READER} />
     }
-    if (user.role === 'contributor' || user.role === 'admin') {
-      return <FooterAsContributor />
+    if (user.role === 'contributor') {
+      return <Footer role={UserRole.CONTRIBUTOR} />
     }
-    return <Footer />
+    if (user.role === 'admin') {
+      return <Footer role={UserRole.ADMIN} />
+    }
+    return <Footer role={UserRole.VISITOR} />
   }
 
   return (
