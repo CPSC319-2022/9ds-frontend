@@ -3,7 +3,7 @@ import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
 import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Article, useDeleteHeader, useUploadHeader } from '../../hooks/firebase/useArticle'
+import { Article } from 'types/Article'
 import { useUser } from '../../hooks/firebase/useUser'
 import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
@@ -11,6 +11,7 @@ import { TextEditor, TextEditorInfo } from '../TextEditor'
 import { FileUploader } from 'components/FileUploader/FileUploader'
 import { NotificationContext } from 'context/NotificationContext'
 import { handleLoading, Spinner } from 'components/Spinner/Spinner'
+import { useUploadHeader } from 'hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -51,7 +52,7 @@ export const ArticleForm = ({
   onSubmit,
   article,
   articleId,
-  setLoading
+  setLoading,
 }: ArticleFormProps) => {
   const navigate = useNavigate()
   const { queriedUser } = useUser()
@@ -77,39 +78,48 @@ export const ArticleForm = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const {deleteHeader} = useDeleteHeader()
 
-
-  const {uploadHeader, error: uploadError, imageURL, loading: uploadLoading} = useUploadHeader()
+  const {
+    uploadHeader,
+    error: uploadError,
+    imageURL,
+    loading: uploadLoading,
+  } = useUploadHeader()
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   useEffect(() => {
     if (!uploadError && imageURL) {
-        const encodedText = JSON.stringify(
-            convertToRaw(editorState.getCurrentContent()),
+      const encodedText = JSON.stringify(
+        convertToRaw(editorState.getCurrentContent()),
+      )
+      setLoading(true)
+      if (articleId !== undefined) {
+        onSubmit(
+          title,
+          encodedText,
+          imageURL,
+          purpose === ArticleFormPurpose.CREATE ||
+            purpose === ArticleFormPurpose.UPDATE,
+          articleId,
         )
-        setLoading(true)
-        if (articleId !== undefined) {
-            onSubmit(
-            title,
-            encodedText,
-            imageURL,
-            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.UPDATE,
-            articleId,
-            )
-        } else {
-            onSubmit(
-            title,
-            encodedText,
-            imageURL,
-            purpose === ArticleFormPurpose.CREATE || purpose === ArticleFormPurpose.UPDATE,
-            )
-        }
-        navigate('/profile')
+      } else {
+        onSubmit(
+          title,
+          encodedText,
+          imageURL,
+          purpose === ArticleFormPurpose.CREATE ||
+            purpose === ArticleFormPurpose.UPDATE,
+        )
+      }
+      navigate('/profile')
     }
     if (uploadError) {
-        dispatch({notificationActionType: "error", message: "Failed to upload image"})
+      dispatch({
+        notificationActionType: 'error',
+        message: 'Failed to upload image',
+      })
     }
-}, [imageURL, uploadError])
+  }, [imageURL, uploadError])
 
-  const allowDelete =
+  const allowDeleteAndUpdate =
     articleId &&
     purpose === ArticleFormPurpose.UPDATE &&
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
@@ -124,7 +134,7 @@ export const ArticleForm = ({
         if (title.length === 0) {
           setTitleHelperText("Title can't be empty.")
         } else {
-          setBodyHelperText('Title must be 60 words or less.')
+          setTitleHelperText('Title must be 60 words or less.')
         }
       } else {
         setIsTitleError(false)
@@ -139,9 +149,12 @@ export const ArticleForm = ({
         setIsBodyError(false)
         setBodyHelperText('')
       }
-      const link = customLink.length > 0
-      ? customLink
-      : pictureUrls[selectedPictureIndex]
+      const link =
+        customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex]
+      if (file && !isInvalid) {
+        uploadHeader(file)
+        return
+      }
       if (!isInvalid) {
         if (priorLink != null && (priorLink != link || file)) {
             deleteHeader(priorLink)
@@ -154,27 +167,15 @@ export const ArticleForm = ({
           convertToRaw(editorState.getCurrentContent()),
         )
         if (articleId !== undefined) {
-          onSubmit(
-            title,
-            encodedText,
-            link,
-            published,
-            articleId,
-          )
+          onSubmit(title, encodedText, link, published, articleId)
         } else {
-          onSubmit(
-            title,
-            encodedText,
-            link,
-            published,
-          )
+          onSubmit(title, encodedText, link, published)
         }
         navigate('/profile')
       }
     },
     [title, editorState, customLink, selectedPictureIndex, file, imageURL],
   )
-
 
   useEffect(() => {
     if (article !== undefined) {
@@ -190,7 +191,7 @@ export const ArticleForm = ({
     }
   }, [])
 
-  const container =  (
+  const container = (
     <Container>
       <form
         style={{
@@ -302,11 +303,15 @@ export const ArticleForm = ({
             value={customLink}
             type='TextField'
           />
-          <Stack direction={"row"} sx={{alignItems: 'flex-start', justifyContent: 'flex-start'}} spacing={80}>
-          <Typography variant='title' sx={{ color: 'black' }}>
-            or
-          </Typography>
-          <FileUploader setFile={setFile} file={file} />
+          <Stack
+            direction={'row'}
+            sx={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
+            spacing={80}
+          >
+            <Typography variant='title' sx={{ color: 'black' }}>
+              or
+            </Typography>
+            <FileUploader setFile={setFile} file={file} />
           </Stack>
           <LabeledTextField
             variant='outlined'
@@ -347,10 +352,11 @@ export const ArticleForm = ({
               {purpose === ArticleFormPurpose.CREATE ||
               purpose === ArticleFormPurpose.DRAFT
                 ? 'CREATE'
-                : 'UPDATE'}
+                : (allowDeleteAndUpdate && 'UPDATE')
+              }
             </Typography>
           </Button>
-          {allowDelete && (
+          {allowDeleteAndUpdate && (
             <>
               <Button
                 sx={{ marginLeft: '8px' }}

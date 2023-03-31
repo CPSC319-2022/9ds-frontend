@@ -9,7 +9,6 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  Timestamp,
   DocumentData,
   QuerySnapshot,
   FirestoreErrorCode,
@@ -18,14 +17,16 @@ import {
   getDoc,
   getDocs,
   startAfter,
+  Timestamp,
 } from 'firebase/firestore'
 import { useState, useEffect, useContext } from 'react'
-import { getUser, UserData } from './useUser'
-import { comment } from './useComment'
-import {db, storage} from '../../firebaseApp'
+import { db, storage } from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
 import {deleteObject, getDownloadURL, ref, StorageError, uploadBytes} from "@firebase/storage";
+import { UserComment } from 'types/Comment'
+import { UserData } from 'types/UserData'
+import { getUser } from 'utils/firebase/user'
 
 export interface ArticlePreview {
   title: string
@@ -159,7 +160,7 @@ export const useArticleRead = (articleID: string) => {
 export const useArticleComments = (articleID: string, n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [comments, setComments] = useState<comment[]>([])
+  const [comments, setComments] = useState<UserComment[]>([])
   const [loadingNext, setLoadingNext] = useState(false)
 
   const q = query(
@@ -174,15 +175,15 @@ export const useArticleComments = (articleID: string, n: number) => {
   useEffect(() => {
     getDocs(query(q, limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: comment[] = []
+        const commentsData: UserComment[] = []
         docs.forEach((doc) => {
           commentsData.push({
-              commenter_uid: doc.data().commenter_uid,
-              commenter_image: doc.data().commenter_image,
-              commenter_username: doc.data().commenter_username,
-              content: doc.data().content,
-              post_time: doc.data().post_time,
-              commentID: doc.id
+            commenter_uid: doc.data().commenter_uid,
+            commenter_image: doc.data().commenter_image,
+            commenter_username: doc.data().commenter_username,
+            content: doc.data().content,
+            post_time: doc.data().post_time,
+            commentID: doc.id,
           })
         })
         setLoading(false)
@@ -199,16 +200,16 @@ export const useArticleComments = (articleID: string, n: number) => {
     setLoadingNext(true)
     getDocs(query(q, startAfter(lastComment), limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: comment[] = []
+        const commentsData: UserComment[] = []
         docs.forEach((doc) => {
           commentsData.push({
-              commenter_uid: doc.data().commenter_uid,
-              commenter_image: doc.data().commenter_image,
-              commenter_username: doc.data().commenter_username,
-              content: doc.data().content,
-              post_time: doc.data().post_time,
-              commentID: doc.id
-        })
+            commenter_uid: doc.data().commenter_uid,
+            commenter_image: doc.data().commenter_image,
+            commenter_username: doc.data().commenter_username,
+            content: doc.data().content,
+            post_time: doc.data().post_time,
+            commentID: doc.id,
+          })
         })
         setLoadingNext(false)
         setComments(comments.concat(commentsData))
@@ -224,13 +225,13 @@ export const useArticleComments = (articleID: string, n: number) => {
 }
 
 export const useUploadHeader = () => {
-    const { user: currentUser } = useAuth()
-    const [error, setError] = useState<string>()
-    const [loading, setLoading] = useState(false)
-    const [imageURL, setImageURL] = useState("")
+  const { user: currentUser } = useAuth()
+  const [error, setError] = useState<string>()
+  const [loading, setLoading] = useState(false)
+  const [imageURL, setImageURL] = useState('')
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const uuid = require('uuid')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const uuid = require('uuid')
 
     const uploadHeader = async (file: File) => {
         if(currentUser == null) {
@@ -251,8 +252,9 @@ export const useUploadHeader = () => {
         })
         
     }
+  
 
-    return {uploadHeader, error, loading, imageURL}
+  return { uploadHeader, error, loading, imageURL }
 }
 
 const deleteStorage = (imageURL: string): Promise<void> => {
@@ -344,7 +346,7 @@ export const useArticleEdit = () => {
       publish_time: published ? serverTimestamp() : null,
       title: title,
     }).then(
-      (doc) => {
+      () => {
         setLoading(false)
       },
       (err) => {

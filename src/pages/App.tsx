@@ -6,17 +6,20 @@ import { NotificationProvider } from '../context/NotificationContext'
 import { AuthProvider } from '../context/AuthContext'
 import { theme } from '../theme/Theme'
 import { AppRouter } from './AppRouter'
+import { UserProvider } from 'context/UserContext'
 
 export const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <NotificationProvider>
-          <NotificationSnackbar />
-          <ErrorBoundary>
-            <AppRouter />
-          </ErrorBoundary>
-        </NotificationProvider>
+        <UserProvider>
+          <NotificationProvider>
+            <NotificationSnackbar />
+            <ErrorBoundary>
+              <AppRouter />
+            </ErrorBoundary>
+          </NotificationProvider>
+        </UserProvider>
       </AuthProvider>
     </ThemeProvider>
   )

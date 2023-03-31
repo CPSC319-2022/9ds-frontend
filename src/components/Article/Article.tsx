@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { ArticlePreview } from '../../hooks/firebase/useArticle'
+import { ArticlePreview } from 'types/Article'
 import { ArticleLarge } from './ArticleLarge'
 import { ArticleSmall } from './ArticleSmall'
 

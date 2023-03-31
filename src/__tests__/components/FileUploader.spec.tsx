@@ -1,54 +1,65 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { FileUploader } from 'components/FileUploader/FileUploader'
-import { NotificationContext, NotificationProvider } from 'context/NotificationContext'
+import {
+  NotificationProvider,
+} from 'context/NotificationContext'
 import userEvent from '@testing-library/user-event'
 
 describe('FileUploader', () => {
-    beforeEach(() => {
-      render(
-        <NotificationProvider>
-            <FileUploader file={null} setFile={jest.fn()} />
-        </NotificationProvider>
-      )
-      jest.setTimeout(15000)
-    })
+  const setFileMock = jest.fn()
+  beforeEach(() => {
+    render(
+      <NotificationProvider>
+        <FileUploader file={null} setFile={setFileMock} />
+      </NotificationProvider>,
+    )
+    jest.setTimeout(15000)
+  })
 
-    test('No file selected', () => {
-        expect(screen.getByText('File Unselected')).toBeInTheDocument();
-        expect(screen.getByText('UPLOAD')).toBeInTheDocument();
-        expect(screen.getByText('RESET')).toBeInTheDocument();
-    })
+  test('No file selected', () => {
+    expect(screen.getByText('File Unselected')).toBeInTheDocument()
+    expect(screen.getByText('UPLOAD')).toBeInTheDocument()
+    expect(screen.getByText('RESET')).toBeInTheDocument()
+  })
 
-    test('Click reset', () => {
-        userEvent.click(screen.getByText('RESET'))
-        expect(screen.getByText('File Unselected')).toBeInTheDocument();
-        
-    })
-    test('Click upload', () => {
-        userEvent.click(screen.getByText('UPLOAD'))
-        expect(screen.getByText('UPLOAD')).toBeInTheDocument(); 
-    })
+  test('Click reset', () => {
+    userEvent.click(screen.getByText('RESET'))
+    expect(screen.getByText('File Unselected')).toBeInTheDocument()
+  })
+  test('Click upload', () => {
+    userEvent.click(screen.getByText('UPLOAD'))
+    expect(screen.getByText('UPLOAD')).toBeInTheDocument()
+  })
 
-    test('renders "File Selected" when a file is passed in as a prop', () => {
-        const file = new File([''], 'filename');
-        render(
-            <NotificationProvider>
-                <FileUploader file={file} setFile={jest.fn()} />
-            </NotificationProvider>
-          )
-        expect(screen.getByText('File Selected')).toBeInTheDocument();
-      });
+  test('File Uploader success', () => {
+    const file = new File(['test'], 'filename', { type: 'image/png' })
+    const uploader = screen.getByTestId('upload-input')
+    userEvent.upload(uploader, file)
+    expect(setFileMock).toBeCalledWith(file)
+  })
+
+  test('File Uploader failure', () => {
+    const file = new File(['a'.repeat(3000001)], 'filename', {
+      type: 'image/png',
+    })
+    const uploader = screen.getByTestId('upload-input')
+    userEvent.upload(uploader, file)
+    expect(setFileMock).not.toBeCalledWith(file)
+  })
 })
 
-describe('FileUploader Part 2', () => {
-    test('displays an error message when the selected file exceeds 3MB', () => {
-        const file = new File(['a'.repeat(3000001)], 'filename');
-        render(
-            <NotificationProvider>
-                <FileUploader file={file} setFile={jest.fn()} />
-            </NotificationProvider>
-          )
-        const fileInput = screen.getByText('UPLOAD');
-        fireEvent.change(fileInput, { target: { files: [file] } });
-      });
+describe('FileUploader Switch case', () => {
+  const setFileMock = jest.fn()
+  beforeEach(() => {
+    const file = new File(['test'], 'filename', { type: 'image/png' })
+    render(
+      <NotificationProvider>
+        <FileUploader file={file} setFile={setFileMock} />
+      </NotificationProvider>,
+    )
+    jest.setTimeout(15000)
+  })
+  test('File Selected shown', () => {
+    expect(screen.getByText('File Selected')).toBeInTheDocument()
+  })
 })
