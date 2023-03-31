@@ -11,7 +11,7 @@ import { TextEditor, TextEditorInfo } from '../TextEditor'
 import { FileUploader } from 'components/FileUploader/FileUploader'
 import { NotificationContext } from 'context/NotificationContext'
 import { handleLoading, Spinner } from 'components/Spinner/Spinner'
-import { useUploadHeader } from 'hooks/firebase/useArticle'
+import { useDeleteHeader, useUploadHeader } from 'hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -151,10 +151,6 @@ export const ArticleForm = ({
       }
       const link =
         customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex]
-      if (file && !isInvalid) {
-        uploadHeader(file)
-        return
-      }
       if (!isInvalid) {
         if (priorLink != null && (priorLink != link || file)) {
             deleteHeader(priorLink)
