@@ -107,7 +107,7 @@ export const ArticleForm = ({
     }
 }, [imageURL, uploadError])
 
-  const allowDelete =
+  const allowDeleteAndUpdate =
     articleId &&
     purpose === ArticleFormPurpose.UPDATE &&
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
@@ -122,7 +122,7 @@ export const ArticleForm = ({
         if (title.length === 0) {
           setTitleHelperText("Title can't be empty.")
         } else {
-          setBodyHelperText('Title must be 60 words or less.')
+          setTitleHelperText('Title must be 60 words or less.')
         }
       } else {
         setIsTitleError(false)
@@ -341,10 +341,11 @@ export const ArticleForm = ({
               {purpose === ArticleFormPurpose.CREATE ||
               purpose === ArticleFormPurpose.DRAFT
                 ? 'CREATE'
-                : 'UPDATE'}
+                : (allowDeleteAndUpdate && 'UPDATE')
+              }
             </Typography>
           </Button>
-          {allowDelete && (
+          {allowDeleteAndUpdate && (
             <>
               <Button
                 sx={{ marginLeft: '8px' }}
