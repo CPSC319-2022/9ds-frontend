@@ -362,33 +362,36 @@ export const useArticleDelete = (articleID: string) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(false)
 
-  const deleteArticle = async () =>
-    getDoc(doc(db, 'article', articleID))
-        .then((document) => {
-            const data = document.data()
-            if (data === undefined) {
-                setError('not-found')
-                return
-            }
-            deleteStorage(data.header_image)
-            deleteDoc(doc(db, 'article', articleID)).then(
-                () => {
-                    dispatch({
-                        notificationActionType: 'success',
-                        message: `Successfuly deleted article`,
-                    })
-                    setLoading(false)
-                },
-                (err) => {
-                    dispatch({
-                        notificationActionType: 'error',
-                        message: `Error deleting article. Error code: ${err.code}`,
-                    })
-                    setError(err.code)
-                },
-            )
-    }
-    )
+  const deleteArticle = async () => {
+      getDoc(doc(db, 'article', articleID))
+          .then((document) => {
+                  const data = document.data()
+                  if (data === undefined) {
+                      setError('not-found')
+                      return
+                  }
+                  deleteStorage(data.header_image).catch((err) => setError(err.code))
+                  deleteDoc(doc(db, 'article', articleID)).then(
+                      () => {
+                          dispatch({
+                              notificationActionType: 'success',
+                              message: `Successfuly deleted article`,
+                          })
+                          setLoading(false)
+                      },
+                      (err) => {
+                          dispatch({
+                              notificationActionType: 'error',
+                              message: `Error deleting article. Error code: ${err.code}`,
+                          })
+                          setError(err.code)
+                      },
+                  )
+              }
+          ).catch((err) => {
+              setError(err.code)
+      })
+  }
 
 
 
