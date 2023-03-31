@@ -200,7 +200,8 @@ export const ArticleForm = ({
           spacing={40}
         >
           {(purpose === ArticleFormPurpose.CREATE ||
-            purpose === ArticleFormPurpose.DRAFT) && (
+            purpose === ArticleFormPurpose.DRAFT || 
+            purpose === ArticleFormPurpose.UPDATE) && (
             <Button
               variant='contained'
               style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
