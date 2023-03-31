@@ -117,9 +117,8 @@ export const ArticleForm = ({
     }
   }, [imageURL, uploadError])
 
-  const allowDeleteAndUpdate =
+  const isAuthorOrAdmin =
     articleId &&
-    purpose === ArticleFormPurpose.UPDATE &&
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
@@ -200,7 +199,7 @@ export const ArticleForm = ({
           spacing={40}
         >
           {(purpose === ArticleFormPurpose.CREATE ||
-            purpose === ArticleFormPurpose.DRAFT || 
+            purpose === ArticleFormPurpose.DRAFT ||
             purpose === ArticleFormPurpose.UPDATE) && (
             <Button
               variant='contained'
@@ -343,29 +342,32 @@ export const ArticleForm = ({
               {purpose === ArticleFormPurpose.CREATE ||
               purpose === ArticleFormPurpose.DRAFT
                 ? 'CREATE'
-                : (allowDeleteAndUpdate && 'UPDATE')
-              }
+                : isAuthorOrAdmin &&
+                  purpose === ArticleFormPurpose.UPDATE &&
+                  'UPDATE'}
             </Typography>
           </Button>
-          {allowDeleteAndUpdate && (
-            <>
-              <Button
-                sx={{ marginLeft: '8px' }}
-                variant='contained'
-                onClick={() => {
-                  setDeleteModalOpen(true)
-                }}
-              >
-                <Typography>DELETE</Typography>
-              </Button>
-              <DeleteModal
-                articleId={articleId}
-                open={deleteModalOpen}
-                handleClose={() => setDeleteModalOpen(false)}
-                redirect
-              />
-            </>
-          )}
+          {isAuthorOrAdmin &&
+            (purpose === ArticleFormPurpose.UPDATE ||
+              purpose === ArticleFormPurpose.DRAFT) && (
+              <>
+                <Button
+                  sx={{ marginLeft: '8px' }}
+                  variant='contained'
+                  onClick={() => {
+                    setDeleteModalOpen(true)
+                  }}
+                >
+                  <Typography>DELETE</Typography>
+                </Button>
+                <DeleteModal
+                  articleId={articleId}
+                  open={deleteModalOpen}
+                  handleClose={() => setDeleteModalOpen(false)}
+                  redirect
+                />
+              </>
+            )}
         </Box>
       </form>
     </Container>
