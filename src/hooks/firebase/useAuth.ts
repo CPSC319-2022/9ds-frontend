@@ -260,7 +260,7 @@ export const useSignOut = () => {
   const [loading, setLoading] = useState(true)
   const [signedOut, setSignedOut] = useState<boolean>()
 
-  const signOutWrapper = () => {
+  const signOutWrapper = () =>
     signOut(auth)
       .then(() => {
         setLoading(false)
@@ -269,7 +269,6 @@ export const useSignOut = () => {
       .catch((err) => {
         setError(err)
       })
-  }
 
   return { signOutWrapper, error, loading, signedOut }
 }
