@@ -99,25 +99,31 @@ describe('EmailVerificationForm', () => {
 //   ...(jest.requireActual('../../hooks/firebase/useAuth') as any),
 //   useForgotPasswordEmail: () => {sendEmail: mockSendEmail},
 // }))
-test('navigates to get-started page if email sent successfully', () => {
-    // mock useForgotPasswordEmail hook
-    const mockSendEmail = jest.fn()
-    jest.mock('../../hooks/firebase/useAuth', () => ({
-      useForgotPasswordEmail: () => ({
-        sendEmail: mockSendEmail,
-        error: null,
-      }),
-    }))
-    const mockNavigate = jest.fn()
-    jest.mock('react-router-dom', () => ({
-      useNavigate: () => mockNavigate,
-    }))
+const mockSendEmail = jest.fn()
+// const x = jest.fn().mockReturnValue({sendEmail: mockSendEmail, error: {code: null}, loading: false})
+jest.mock('../../hooks/firebase/useAuth', () => ({
+    ...(jest.requireActual('../../hooks/firebase/useAuth') as any),
+    useForgotPasswordEmail: () => mockSendEmail
+}))
+// const mockNavigate = jest.fn()
+// jest.mock('react-router-dom', () => ({
+//     useNavigate: () => mockNavigate,
+// }))
+test.only('navigates to get-started page if email sent successfully', () => {
+    const x = jest.fn(() => console.log("helloooooo"))
+    mockSendEmail.mockReturnValue({
+        sendEmail: x,
+        error: {code: null},
+        loading: false
+    })
     render(<Router><EmailVerificationForm /></Router>)
-    const emailInput = screen.getByLabelText('Email')
-    const sendButton = screen.getByRole('button', { name: 'SEND RESET PASSWORD LINK' })
-    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } })
-    fireEvent.click(sendButton)
-    expect(mockSendEmail).toHaveBeenCalled()
+    // const emailInput = screen.getByLabelText('Email')
+    // userEvent.type(emailInput, 'invalid-email')
+    const sendButton = screen.getByText('SEND RESET PASSWORD LINK')
+    userEvent.click(sendButton)
+    expect(mockSendEmail).toBeCalled()
+    expect(x).toBeCalledWith("")
+    
   })
 
 

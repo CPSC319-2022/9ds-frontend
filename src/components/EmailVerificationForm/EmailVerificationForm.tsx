@@ -23,6 +23,7 @@ export const EmailVerificationForm: FC = () => {
 
     forgotPasswordHandler.sendEmail(email.trim())
     const error = forgotPasswordHandler.error?.code ?? 'success'
+    console.log("hello")
 
     switch (error) {
       case 'success':
