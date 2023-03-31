@@ -147,11 +147,11 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
               bgcolor: '#4D3188',
             },
           }}
-          onClick={() => {
+          onClick={async () => {
             if (role === UserRole.VISITOR) {
               navigate('/get-started')
             } else {
-              signOut.signOutWrapper()
+              await signOut.signOutWrapper()
               navigate('/get-started')
             }
           }}

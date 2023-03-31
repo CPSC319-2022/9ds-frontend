@@ -4,16 +4,17 @@ import { LoginAndSignUpForm } from './LoginAndSignUpForm'
 import { AppWrapper } from '../../components/AppWrapper'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../../hooks/firebase/useUser'
+import { useAuth } from 'hooks/firebase/useAuth'
 
 export const Login: FC = () => {
   const navigate = useNavigate()
-  const { queriedUser, loading } = useUser()
+  const { user } = useAuth()
 
   useEffect(() => {
-    if (!loading && queriedUser.uid) {
+    if (user) {
       navigate('/')
     }
-  }, [queriedUser, loading])
+  }, [user])
 
   return (
     <AppWrapper>

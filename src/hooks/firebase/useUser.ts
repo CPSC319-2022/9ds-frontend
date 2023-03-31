@@ -6,7 +6,6 @@ import {
   orderBy,
   limit,
   updateDoc,
-  getDoc,
   getDocs,
   QuerySnapshot,
   DocumentData,
@@ -17,45 +16,15 @@ import {
   Query,
 } from 'firebase/firestore'
 import { db } from '../../firebaseApp'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
+import { useAuth } from './useAuth'
+import { userTranslator } from 'utils/firebase/user'
+import { UserContext } from 'context/UserContext'
+import { ArticlePreview } from 'types/Article'
 import {
   articleDraftTranslator,
-  ArticlePreview,
   articlePreviewTranslator,
-} from './useArticle'
-import { useAuth } from './useAuth'
-
-export interface UserData {
-  role: string
-  profile_image: string
-  username: string
-  uid: string
-}
-
-export interface AdminUserData {
-  role: string
-  profile_image: string
-  username: string
-  uid: string
-  promotion_request: string | null;
-}
-
-export const userTranslator = (
-  docs: QuerySnapshot<DocumentData>,
-): UserData[] => {
-  const userData: AdminUserData[] = []
-  docs.forEach((doc) => {
-    userData.push({
-      role: doc.data().role,
-      profile_image: doc.data().profile_image,
-      username: doc.data().username,
-      uid: doc.id,
-      promotion_request: doc.data().promotion_request
-    })
-  })
-
-  return userData
-}
+} from 'utils/firebase/article'
 
 export const useUserRoleDirectory = (n: number | null, roles: string[]) => {
   const [error, setError] = useState<FirestoreErrorCode>()
@@ -123,7 +92,8 @@ export const useUserArticles = (uid: string, n: number) => {
         collection(db, 'article'),
         where('author_uid', '==', uid),
         where('published', '==', true),
-        orderBy('publish_time', 'desc'));
+        orderBy('publish_time', 'desc'),
+      )
       getDocs(query(q.current, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
           setLoading(false)
@@ -177,7 +147,8 @@ export const useUserDrafts = (n: number) => {
         collection(db, 'article'),
         where('author_uid', '==', currentUser.uid),
         where('published', '==', false),
-        orderBy('edit_time', 'desc'))
+        orderBy('edit_time', 'desc'),
+      )
       getDocs(query(q.current, limit(n)))
         .then((docs: QuerySnapshot<DocumentData>) => {
           setLoading(false)
@@ -268,43 +239,8 @@ export const useSetRole = () => {
 }
 
 export const useUser = () => {
-  const { user: currentUser } = useAuth()
-  const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
-  const [queriedUser, setQueriedUser] = useState<UserData>({
-    role: '',
-    profile_image: '',
-    username: '',
-    uid: '',
-  })
-
-  useEffect(() => {
-    getUser(currentUser?.uid ?? null)
-      .then((user) => {
-        setQueriedUser(user)
-        setLoading(false)
-      })
-      .catch((err: FirestoreErrorCode) => {
-        setError(err)
-      })
-  }, [currentUser])
-
-  return { error, loading, queriedUser }
-}
-
-export const getUser = async (uid: string | null): Promise<UserData> => {
-  if (uid === null) {
-    return Promise.reject('unauthenticated')
-  }
-  const document = await getDoc(doc(db, 'users', uid))
-  if (document.exists()) {
-    return {
-      role: document.data().role,
-      profile_image: document.data().profile_image,
-      username: document.data().username,
-      uid: document.id,
-    }
-  } else {
-    return Promise.reject('not-found')
-  }
+  const {
+    state: { queriedUser, loading, error },
+  } = useContext(UserContext)
+  return { queriedUser, loading, error }
 }
