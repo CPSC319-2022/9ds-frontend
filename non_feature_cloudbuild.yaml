@@ -12,10 +12,9 @@ steps:
 - name: 'gcr.io/cloud-builders/yarn'
   args: ['eslint']
 
-# TODO: Add in '--coverage' flag after coverage reaches 80%
 # Test
 - name: 'gcr.io/cloud-builders/yarn'
-  args: ['test']
+  args: ['test', '--coverage']
 
 # TODO: Add in integration testing step
 

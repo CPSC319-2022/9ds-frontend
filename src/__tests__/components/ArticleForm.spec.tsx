@@ -304,4 +304,30 @@ describe('ArticleForm CREATE/DRAFT', () => {
     expect(screen.getByText(/body can't be empty/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
   });
+
+  test('click arrows', async () => {
+    await act(async () => render(
+        <Router>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={mockLoading}
+          />
+        </Router>
+      )
+    );
+    screen.getAllByLabelText('picture-selection').forEach(element => {
+        expect(element).toBeInTheDocument()
+    })
+    const rightArrow = screen.getByTestId('right')
+    fireEvent.click(rightArrow)
+    screen.getAllByLabelText('picture-selection').forEach(element => {
+        expect(element).toBeInTheDocument()
+    })
+    const leftArrow = screen.getByTestId('left')
+    fireEvent.click(leftArrow)
+    screen.getAllByLabelText('picture-selection').forEach(element => {
+        expect(element).toBeInTheDocument()
+    })
+  });
 });

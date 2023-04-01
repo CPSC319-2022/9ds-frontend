@@ -218,6 +218,7 @@ export const ArticleForm = ({
             direction='row'
           >
             <Button
+              data-testid={"left"}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart - 4 < 0) {
@@ -265,6 +266,7 @@ export const ArticleForm = ({
                 })}
             </Stack>
             <Button
+              data-testid={'right'}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart + 4 >= pictureUrls.length) {

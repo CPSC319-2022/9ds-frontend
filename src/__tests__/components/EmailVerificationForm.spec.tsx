@@ -9,6 +9,14 @@ jest.mock('../../hooks/firebase/useAuth', () => ({
   useForgotPasswordEmail: jest.fn(),
 }))
 
+const mockNavigate = jest.fn()
+jest.mock('react-router-dom', () => ({
+    ...(jest.requireActual('react-router-dom') as any),
+    useNavigate: () => mockNavigate,
+  }))
+
+const mockSendEmail = jest.fn()
+
 describe('EmailVerificationForm', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -21,7 +29,6 @@ describe('EmailVerificationForm', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  // jest.setTimeout(15000)
 
   test('style', () => {
     render(
@@ -59,7 +66,7 @@ describe('EmailVerificationForm', () => {
 
   test('shows error message when email is invalid', () => {
     useForgotPasswordEmail.mockReturnValue({
-          sendEmail: jest.fn(),
+          sendEmail: mockSendEmail,
           error: {code: 'auth/invalid-email'},
           loading: true
     })
@@ -75,73 +82,63 @@ describe('EmailVerificationForm', () => {
     });
     fireEvent.click(sendButton);
     expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
+    expect(mockSendEmail).toBeCalled();
   });
 
-  // test('shows error message when user is not found', () => {
-  //   render(
-  //     <Router>
-  //       <EmailVerificationForm />
-  //     </Router>,
-  //   )
-  //   const emailInput = screen.getByLabelText('Email')
-  //   const sendButton = screen.getByRole('button', {
-  //     name: /send reset password link/i,
-  //   })
-  //
-  //   userEvent.type(emailInput, 'not-found@example.com')
-  //   userEvent.click(sendButton)
-  //
-  //   // const errorMessage = screen.getByText('User was not found')
-  //   // expect(errorMessage).toBeInTheDocument()
-  // })
-//   jest.mock('react', () => ({
-//     ...jest.requireActual('react'),
-//     useState: ["test", jest.fn()],
-//   }))
-// const mockedUsedNavigate = jest.fn()
-// jest.mock('react-router-dom', () => ({
-//   ...(jest.requireActual('react-router-dom') as any),
-//   useNavigate: () => mockedUsedNavigate,
-// }))
-// const mockError = {code: "test"}
-// const mockLoading = false
-// const mockSendEmail = jest.fn()
-// const x = jest.fn().mockReturnValue({sendEmail: mockSendEmail, error: {code: null}, loading: false})
-// const mockNavigate = jest.fn()
-// jest.mock('react-router-dom', () => ({
-//     useNavigate: () => mockNavigate,
-// }))
-
-// test.only('navigates to get-started page if email sent successfully', () => {
-//     const x = jest.fn(() => console.log("helloooooo"))
-//     mockSendEmail.mockReturnValue({
-//         sendEmail: x,
-//         error: {code: null},
-//         loading: false
-//     })
-//     render(<Router><EmailVerificationForm /></Router>)
-//     // const emailInput = screen.getByLabelText('Email')
-//     // userEvent.type(emailInput, 'invalid-email')
-//     const sendButton = screen.getByText('SEND RESET PASSWORD LINK')
-//     fireEvent.click(sendButton)
-//     expect(mockSendEmail).toBeCalled()
-//     expect(x).toBeCalledWith("")
-//
-//   })
-
-
-  test('Error seen', () => {
-
-    // render(
-    //   <Router>
-    //     <EmailVerificationForm />
-    //   </Router>,
-    // )
-    // const sendButton = screen.getByRole('button', {
-    //           name: /send reset password link/i,
-    //         })
-    // fireEvent.click(sendButton)
-    // // expect(mockSendEmail).toHaveBeenCalled()
-    // screen.debug()
+  test('shows error message when user not found', () => {
+    useForgotPasswordEmail.mockReturnValue({
+          sendEmail: mockSendEmail,
+          error: {code: 'auth/user-not-found'},
+          loading: true
+    })
+    render(
+      <Router>
+        <EmailVerificationForm/>
+      </Router>,
+    )
+    const emailInput = screen.getByLabelText('Email')
+    fireEvent.change(emailInput, {target: {value: 'dummy@mail.com'}});
+    const sendButton = screen.getByRole('button', {
+      name: /send reset password link/i,
+    });
+    fireEvent.click(sendButton);
+    expect(screen.getByText(/user was not found/i)).toBeInTheDocument();
+    expect(mockSendEmail).toBeCalled();
   });
+
+  test('shows error message when unknown error', () => {
+    useForgotPasswordEmail.mockReturnValue({
+          sendEmail: mockSendEmail,
+          error: {code: 'unknown'},
+          loading: true
+    })
+    render(
+      <Router>
+        <EmailVerificationForm/>
+      </Router>,
+    )
+    const emailInput = screen.getByLabelText('Email')
+    fireEvent.change(emailInput, {target: {value: 'dummy@mail.com'}});
+    const sendButton = screen.getByRole('button', {
+      name: /send reset password link/i,
+    });
+    fireEvent.click(sendButton);
+    expect(screen.getByText(/unable to send email link/i)).toBeInTheDocument();
+    expect(mockSendEmail).toBeCalled();
+  });
+
+  test('navigate to login page when success', () => {
+    useForgotPasswordEmail.mockReturnValue({
+          sendEmail: mockSendEmail,
+          error: {code: 'unknown'},
+          loading: false
+    })
+    render(
+      <Router>
+        <EmailVerificationForm/>
+      </Router>,
+    )
+    expect(mockNavigate).toBeCalledWith('/get-started');
+  });
+
 });
