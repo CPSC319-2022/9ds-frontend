@@ -11,7 +11,7 @@ import { TextEditor, TextEditorInfo } from '../TextEditor'
 import { FileUploader } from 'components/FileUploader/FileUploader'
 import { NotificationContext } from 'context/NotificationContext'
 import { handleLoading, Spinner } from 'components/Spinner/Spinner'
-import { useUploadHeader } from 'hooks/firebase/useArticle'
+import { useDeleteHeader, useUploadHeader } from 'hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -60,6 +60,7 @@ export const ArticleForm = ({
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
   const [file, setFile] = useState<File | null>(null)
   const { dispatch } = useContext(NotificationContext)
+  const [priorLink, setPriorLink] = useState<string | null>(null)
 
   const [isTitleError, setIsTitleError] = useState(false)
   const [title, setTitle] = useState('')
@@ -75,6 +76,7 @@ export const ArticleForm = ({
   const [customLink, setCustomLink] = useState('')
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const {deleteHeader} = useDeleteHeader()
 
   const {
     uploadHeader,
@@ -148,11 +150,14 @@ export const ArticleForm = ({
       }
       const link =
         customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex]
-      if (file && !isInvalid) {
-        uploadHeader(file)
-        return
-      }
       if (!isInvalid) {
+        if (priorLink != null && (priorLink != link || file)) {
+            deleteHeader(priorLink)
+        }
+        if (file) {
+            uploadHeader(file)
+            return
+          }
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
@@ -170,6 +175,7 @@ export const ArticleForm = ({
   useEffect(() => {
     if (article !== undefined) {
       setTitle(article.title)
+      setPriorLink(article.header_image)
       setCustomLink(article.header_image)
       setFile(null)
       setEditorState(() =>
@@ -218,6 +224,7 @@ export const ArticleForm = ({
             direction='row'
           >
             <Button
+              data-testid={"left"}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart - 4 < 0) {
@@ -265,6 +272,7 @@ export const ArticleForm = ({
                 })}
             </Stack>
             <Button
+              data-testid={'right'}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart + 4 >= pictureUrls.length) {

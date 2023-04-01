@@ -67,10 +67,10 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('textbox', {name: "editor"})).toHaveTextContent('Hello, World!');
     expect(screen.getByRole('button', {name: /update/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /delete/i})).toBeInTheDocument();
-    expect(screen.queryByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
-    expect(onSubmitMock).toHaveBeenCalled();
+    expect(onSubmitMock).toHaveBeenCalled()
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile');
   });
 
@@ -92,8 +92,8 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('textbox', {name: "editor"})).toHaveTextContent('Hello, World!');
     expect(screen.getByRole('button', {name: /update/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /delete/i})).toBeInTheDocument();
-    expect(screen.queryByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(onSubmitMock).toHaveBeenCalled();
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile');
@@ -217,7 +217,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
     expect(screen.getByText(/body/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /create/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/title must be 60 words or less/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/body can't be empty/i)).not.toBeInTheDocument();
@@ -241,7 +241,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
     expect(screen.getByText(/body/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /create/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    await act(async () =>fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/title must be 60 words or less/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/body can't be empty/i)).not.toBeInTheDocument();
@@ -303,5 +303,31 @@ describe('ArticleForm CREATE/DRAFT', () => {
     fireEvent.click(screen.getByRole('button', {name: /create/i}));
     expect(screen.getByText(/body can't be empty/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
+  });
+
+  test('click arrows', async () => {
+    await act(async () => render(
+        <Router>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={mockLoading}
+          />
+        </Router>
+      )
+    );
+    screen.getAllByLabelText('picture-selection').forEach(element => {
+        expect(element).toBeInTheDocument()
+    })
+    const rightArrow = screen.getByTestId('right')
+    fireEvent.click(rightArrow)
+    screen.getAllByLabelText('picture-selection').forEach(element => {
+        expect(element).toBeInTheDocument()
+    })
+    const leftArrow = screen.getByTestId('left')
+    fireEvent.click(leftArrow)
+    screen.getAllByLabelText('picture-selection').forEach(element => {
+        expect(element).toBeInTheDocument()
+    })
   });
 });
