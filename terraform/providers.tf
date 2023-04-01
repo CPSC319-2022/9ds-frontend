@@ -9,18 +9,18 @@ terraform {
 
 provider "google" {
   credentials = file("./gcp_keys/dev_tf_key.json")
-  project     = "ds-blog-dev"
+  project     = var.dev_project_id
   alias       = "dev"
 }
 
 provider "google" {
   credentials = file("./gcp_keys/qa_tf_key.json")
-  project     = "ds-blog-qa"
+  project     = var.qa_project_id
   alias       = "qa"
 }
 
 provider "google" {
   credentials = file("./gcp_keys/prod_tf_key.json")
-  project     = "ds-blog-376905"
+  project     = var.prod_project_id
   alias       = "prod"
 }
