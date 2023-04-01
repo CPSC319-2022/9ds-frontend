@@ -5,11 +5,11 @@ import { ReactComponent as Pencil } from '../../assets/pencil.svg'
 import Typography from '@mui/material/Typography'
 
 type UserTypeProps = {
-  type?: 'reader' | 'contributor'
+  type: 'reader' | 'contributor'
 }
 
 export const UserType: FC<UserTypeProps> = ({ type }) => {
-  const reader = type && type === 'reader'
+  const reader = type === 'reader'
   return (
     <Stack
       direction='column'
@@ -22,7 +22,7 @@ export const UserType: FC<UserTypeProps> = ({ type }) => {
         borderRadius: '12px',
         border: '3px solid',
         borderColor: 'primary.50%',
-        gap:'8px'
+        gap: '8px',
       }}
     >
       <Typography variant='title' color='black.main'>

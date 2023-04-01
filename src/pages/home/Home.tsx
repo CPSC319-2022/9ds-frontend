@@ -2,13 +2,11 @@ import React, { FC, useContext, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { AppWrapper } from '../../components/AppWrapper'
 import { RecentPosts } from './RecentPosts'
-import {
-  ArticlePreview,
-  useArticleRecents,
-} from '../../hooks/firebase/useArticle'
+import { useArticleRecents } from '../../hooks/firebase/useArticle'
 import { UISkeleton } from '../../components/UISkeleton'
 import { handleLoading } from '../../components/Spinner/Spinner'
 import { NotificationContext } from '../../context/NotificationContext'
+import { ArticlePreview } from 'types/Article'
 
 export const Home: FC = () => {
   const { dispatch } = useContext(NotificationContext)
@@ -53,7 +51,5 @@ export const Home: FC = () => {
     </>
   )
 
-  return (<AppWrapper>
-    {handleLoading(loading, component)}
-  </AppWrapper>)
+  return <AppWrapper>{handleLoading(loading, component)}</AppWrapper>
 }

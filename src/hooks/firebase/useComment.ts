@@ -5,24 +5,14 @@ import {
   collection,
   updateDoc,
   serverTimestamp,
-  Timestamp,
   FirestoreErrorCode,
 } from 'firebase/firestore'
 import { db } from '../../firebaseApp'
 import { useState } from 'react'
-import { getUser } from './useUser'
 import { useAuth } from './useAuth'
+import { getUser } from 'utils/firebase/user'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
-export interface comment {
-  commenter_uid: string
-  commenter_image: string
-  commenter_username: string
-  content: string
-  post_time: Timestamp
-  commentID: string
-}
 
 export const useCommentCreate = () => {
   const { user: currentUser } = useAuth()

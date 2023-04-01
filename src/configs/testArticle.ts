@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase/firestore'
-import { ArticlePreview } from '../hooks/firebase/useArticle'
 import sample from '../assets/sample.jpg'
 import profile from '../assets/profile.png'
+import { ArticlePreview } from 'types/Article'
 
 export const TEST_ARTICLE: ArticlePreview = {
   title: 'Article title here',

@@ -39,7 +39,14 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog
+      open={open}
+      onClose={() => {
+        if (!deleting) {
+          handleClose()
+        }
+      }}
+    >
       <DialogTitle id='alert-dialog-title'>
         Are you sure you want to delete?
       </DialogTitle>
@@ -51,6 +58,7 @@ export const DeleteModal: FC<DeleteModalProps> = ({
               marginTop: '5px',
             }}
             size={20}
+            data-testid='deleting-circular-progress'
           />
         ) : (
           <DialogContentText id='alert-dialog-description'>
@@ -59,10 +67,16 @@ export const DeleteModal: FC<DeleteModalProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button variant='contained' onClick={handleClose}>
+        <Button variant='contained' onClick={handleClose} disabled={deleting}>
           No
         </Button>
-        <Button variant='contained' color='error' onClick={handleDelete}>
+        <Button
+          variant='contained'
+          color='error'
+          onClick={handleDelete}
+          disabled={deleting}
+          data-testid='delete-confirm-button'
+        >
           Yes
         </Button>
       </DialogActions>

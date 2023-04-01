@@ -1,10 +1,9 @@
 import { TextField, Box, FormHelperText } from '@mui/material'
 import { Stack } from '@mui/system'
-import { FC, FormEvent, useEffect, useState } from 'react'
 import { Button } from '../Button'
 import { useForgotPasswordEmail } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
-import React from 'react'
+import React, { FC, FormEvent, useEffect, useState } from 'react'
 
 enum ForgotPasswordErrors {
   invalidEmail = 'auth/invalid-email',
@@ -12,32 +11,15 @@ enum ForgotPasswordErrors {
 }
 
 export const EmailVerificationForm: FC = () => {
-  const [emailError, setEmailError] = React.useState('')
-  const [email, setEmail] = React.useState('')
+  const [emailError, setEmailError] = useState('')
+  const [email, setEmail] = useState('')
 
   const navigate = useNavigate()
   const forgotPasswordHandler = useForgotPasswordEmail()
 
   const sendEmailLink = (event: FormEvent<HTMLElement>) => {
     event.preventDefault()
-
     forgotPasswordHandler.sendEmail(email.trim())
-    // const error = forgotPasswordHandler.error?.code ?? 'success'
-
-    // switch (error) {
-    //   case 'success':
-    //     navigate('/get-started')
-    //     break
-    //   case ForgotPasswordErrors.invalidEmail:
-    //     setEmailError('Invalid email')
-    //     break
-    //   case ForgotPasswordErrors.userNotFound:
-    //     setEmailError('User was not found')
-    //     break
-    //   default:
-    //     setEmailError('Unable to send email link')
-    //     break
-    // }
   }
 
   useEffect(() => {
