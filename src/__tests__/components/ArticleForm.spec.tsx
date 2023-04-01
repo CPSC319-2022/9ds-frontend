@@ -68,9 +68,9 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('button', {name: /update/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /delete/i})).toBeInTheDocument();
     expect(screen.queryByRole('button', {name: /save draft/i})).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
-    expect(onSubmitMock).toHaveBeenCalled();
+    expect(onSubmitMock).toHaveBeenCalled()
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile');
   });
 
@@ -93,7 +93,7 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('button', {name: /update/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /delete/i})).toBeInTheDocument();
     expect(screen.queryByRole('button', {name: /save draft/i})).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(onSubmitMock).toHaveBeenCalled();
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile');
@@ -217,7 +217,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
     expect(screen.getByText(/body/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /create/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/title must be 60 words or less/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/body can't be empty/i)).not.toBeInTheDocument();
@@ -241,7 +241,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
     expect(screen.getByText(/body/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /create/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    await act(async () =>fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/title must be 60 words or less/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/body can't be empty/i)).not.toBeInTheDocument();
