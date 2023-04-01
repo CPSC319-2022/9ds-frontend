@@ -1,9 +1,9 @@
 import { TextField, Box, FormHelperText } from '@mui/material'
 import { Stack } from '@mui/system'
-import { FC, FormEvent, useState } from 'react'
 import { Button } from '../Button'
 import { useForgotPasswordEmail } from '../../hooks/firebase/useAuth'
 import { useNavigate } from 'react-router-dom'
+import React, { FC, FormEvent, useEffect, useState } from 'react'
 
 enum ForgotPasswordErrors {
   invalidEmail = 'auth/invalid-email',
@@ -19,25 +19,28 @@ export const EmailVerificationForm: FC = () => {
 
   const sendEmailLink = (event: FormEvent<HTMLElement>) => {
     event.preventDefault()
-
     forgotPasswordHandler.sendEmail(email.trim())
-    const error = forgotPasswordHandler.error?.code ?? 'success'
-
-    switch (error) {
-      case 'success':
-        navigate('/get-started')
-        break
-      case ForgotPasswordErrors.invalidEmail:
-        setEmailError('Invalid email')
-        break
-      case ForgotPasswordErrors.userNotFound:
-        setEmailError('User was not found')
-        break
-      default:
-        setEmailError('Unable to send email link')
-        break
-    }
   }
+
+  useEffect(() => {
+    if (!forgotPasswordHandler.loading) {
+        navigate('/get-started')
+    } else if (forgotPasswordHandler.error) {
+        const error = forgotPasswordHandler.error.code
+        switch (error) {
+        case ForgotPasswordErrors.invalidEmail:
+            setEmailError('Invalid email')
+            break
+        case ForgotPasswordErrors.userNotFound:
+            setEmailError('User was not found')
+            break
+        default:
+            setEmailError('Unable to send email link')
+            break
+        }
+    }
+  }, [forgotPasswordHandler.loading, forgotPasswordHandler.error])
+
   return (
     <form onSubmit={sendEmailLink}>
       <Stack
@@ -62,7 +65,7 @@ export const EmailVerificationForm: FC = () => {
             sx={{ width: '100%' }}
           />
           {emailError.length > 0 && (
-            <FormHelperText error={true} sx={{ pl: '13px' }}>
+            <FormHelperText data-testid="error-msg" error={true} sx={{ pl: '13px' }}>
               {emailError}
             </FormHelperText>
           )}
