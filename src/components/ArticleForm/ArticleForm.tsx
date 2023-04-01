@@ -1,17 +1,17 @@
-import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
-import { Container } from '@mui/system'
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Article } from 'types/Article'
-import { useUser } from '../../hooks/firebase/useUser'
-import { DeleteModal } from '../DeleteModal/DeleteModal'
-import { LabeledTextField } from '../LabeledTextField'
-import { TextEditor, TextEditorInfo } from '../TextEditor'
-import { FileUploader } from 'components/FileUploader/FileUploader'
-import { NotificationContext } from 'context/NotificationContext'
-import { handleLoading, Spinner } from 'components/Spinner/Spinner'
-import { useDeleteHeader, useUploadHeader } from 'hooks/firebase/useArticle'
+import {Box, Button, FormLabel, Stack, Typography} from '@mui/material'
+import {Container} from '@mui/system'
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {useState, FormEvent, useCallback, useEffect, useContext} from 'react'
+import {useNavigate} from 'react-router-dom'
+import {Article} from 'types/Article'
+import {useUser} from '../../hooks/firebase/useUser'
+import {DeleteModal} from '../DeleteModal/DeleteModal'
+import {LabeledTextField} from '../LabeledTextField'
+import {TextEditor, TextEditorInfo} from '../TextEditor'
+import {FileUploader} from 'components/FileUploader/FileUploader'
+import {NotificationContext} from 'context/NotificationContext'
+import {handleLoading, Spinner} from 'components/Spinner/Spinner'
+import {useDeleteHeader, useUploadHeader} from 'hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -48,18 +48,18 @@ interface ArticleFormProps {
 }
 
 export const ArticleForm = ({
-  purpose,
-  onSubmit,
-  article,
-  articleId,
-  setLoading,
-}: ArticleFormProps) => {
+                              purpose,
+                              onSubmit,
+                              article,
+                              articleId,
+                              setLoading,
+                            }: ArticleFormProps) => {
   const navigate = useNavigate()
-  const { queriedUser } = useUser()
+  const {queriedUser} = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
   const [file, setFile] = useState<File | null>(null)
-  const { dispatch } = useContext(NotificationContext)
+  const {dispatch} = useContext(NotificationContext)
   const [priorLink, setPriorLink] = useState<string | null>(null)
 
   const [isTitleError, setIsTitleError] = useState(false)
@@ -70,13 +70,22 @@ export const ArticleForm = ({
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   )
-  const editorInfo: TextEditorInfo = { editorState, setEditorState }
+  const editorInfo: TextEditorInfo = {editorState, setEditorState}
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const {deleteHeader} = useDeleteHeader()
+
+  const [highlightedButtonId, setHighlightedButtonId] = useState(1);
+
+  const handleButtonClick = (id: number) => {
+    if (id === highlightedButtonId) {
+      return;
+    }
+    setHighlightedButtonId(id);
+  };
 
   const {
     uploadHeader,
@@ -97,7 +106,7 @@ export const ArticleForm = ({
           encodedText,
           imageURL,
           purpose === ArticleFormPurpose.CREATE ||
-            purpose === ArticleFormPurpose.UPDATE,
+          purpose === ArticleFormPurpose.UPDATE,
           articleId,
         )
       } else {
@@ -106,7 +115,7 @@ export const ArticleForm = ({
           encodedText,
           imageURL,
           purpose === ArticleFormPurpose.CREATE ||
-            purpose === ArticleFormPurpose.UPDATE,
+          purpose === ArticleFormPurpose.UPDATE,
         )
       }
       navigate('/profile')
@@ -153,12 +162,12 @@ export const ArticleForm = ({
         customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex]
       if (!isInvalid) {
         if (priorLink != null && (priorLink != link || file)) {
-            deleteHeader(priorLink)
+          deleteHeader(priorLink)
         }
         if (file) {
-            uploadHeader(file)
-            return
-          }
+          uploadHeader(file)
+          return
+        }
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
@@ -209,7 +218,7 @@ export const ArticleForm = ({
             purpose === ArticleFormPurpose.DRAFT) && (
             <Button
               variant='contained'
-              style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
+              style={{backgroundColor: 'black', alignSelf: 'flex-end'}}
               onClick={(event) => {
                 handleSubmit(event, false)
               }}
@@ -217,7 +226,7 @@ export const ArticleForm = ({
               SAVE DRAFT
             </Button>
           )}
-          <FormLabel style={{ color: 'black' }}>Pick an image</FormLabel>
+          <FormLabel style={{color: 'black'}}>Pick an image</FormLabel>
           <Stack
             justifyContent={'space-between'}
             alignSelf={'stretch'}
@@ -225,7 +234,7 @@ export const ArticleForm = ({
           >
             <Button
               data-testid={"left"}
-              style={{ color: 'black' }}
+              style={{color: 'black'}}
               onClick={() => {
                 if (pictureIndexStart - 4 < 0) {
                   setPictureIndexStart(
@@ -273,7 +282,7 @@ export const ArticleForm = ({
             </Stack>
             <Button
               data-testid={'right'}
-              style={{ color: 'black' }}
+              style={{color: 'black'}}
               onClick={() => {
                 if (pictureIndexStart + 4 >= pictureUrls.length) {
                   setPictureIndexStart(0)
@@ -287,36 +296,55 @@ export const ArticleForm = ({
               {'>'}
             </Button>
           </Stack>
-          <LabeledTextField
-            variant='outlined'
-            onTextChange={setCustomLink}
-            placeholder='Paste link to image'
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                or
-              </Typography>
-            }
-            labelWidth={1}
-            multiline={false}
-            value={customLink}
-            type='TextField'
-          />
-          <Stack
-            direction={'row'}
-            sx={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
-            spacing={80}
-          >
-            <Typography variant='title' sx={{ color: 'black' }}>
+
+
+          <Container>
+            <Typography variant='title' sx={{color: 'black'}}>
               or
             </Typography>
-            <FileUploader setFile={setFile} file={file} />
-          </Stack>
+            <Typography variant="h5" gutterBottom>
+              Upload Your Own
+            </Typography>
+            <Button
+              variant={highlightedButtonId === 1 ? "contained" : "outlined"}
+              color={highlightedButtonId === 1 ? "success" : "primary"}
+              onClick={() => handleButtonClick(1)}
+            >
+              Computer
+            </Button>
+            <Button
+              variant={highlightedButtonId === 2 ? "contained" : "outlined"}
+              color={highlightedButtonId === 2 ? "success" : "primary"}
+              onClick={() => handleButtonClick(2)}
+            >
+              Web
+            </Button>
+            {highlightedButtonId === 1 ? (<FileUploader setFile={setFile} file={file}/>): (<LabeledTextField
+              variant='outlined'
+              onTextChange={setCustomLink}
+              placeholder='Paste link to image'
+              text={''}
+              labelWidth={1}
+              multiline={false}
+              value={customLink}
+              type='TextField'
+            />)}
+            {/*{image && (*/}
+            {/*  <img*/}
+            {/*    src={image}*/}
+            {/*    alt="uploaded"*/}
+            {/*    style={{ width: '100%', height: 'auto' }}*/}
+            {/*  />*/}
+            {/*)}*/}
+          </Container>
+
+
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
             placeholder='60 words or less'
             text={
-              <Typography variant='title' sx={{ color: 'black' }}>
+              <Typography variant='title' sx={{color: 'black'}}>
                 Title
               </Typography>
             }
@@ -344,7 +372,7 @@ export const ArticleForm = ({
           <Button
             type='submit'
             variant='contained'
-            style={{ backgroundColor: 'black' }}
+            style={{backgroundColor: 'black'}}
           >
             <Typography>
               {purpose === ArticleFormPurpose.CREATE ||
@@ -357,7 +385,7 @@ export const ArticleForm = ({
           {allowDeleteAndUpdate && (
             <>
               <Button
-                sx={{ marginLeft: '8px' }}
+                sx={{marginLeft: '8px'}}
                 variant='contained'
                 onClick={() => {
                   setDeleteModalOpen(true)
@@ -377,7 +405,7 @@ export const ArticleForm = ({
       </form>
     </Container>
   )
-  return !uploadLoading ? container : <Spinner />
+  return !uploadLoading ? container : <Spinner/>
 }
 
 function countWords(text: string): number {
