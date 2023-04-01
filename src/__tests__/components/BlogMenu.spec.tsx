@@ -27,7 +27,7 @@ describe('BlogMenu', () => {
   });
 
   it('should render correctly as author', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () =>
       render(
         <MemoryRouter>
@@ -39,7 +39,7 @@ describe('BlogMenu', () => {
   });
 
   it('should render correctly as admin', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '456', role: 'admin'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '456', role: 'admin'}});
     await act(async () =>
       render(
         <MemoryRouter>
@@ -51,7 +51,7 @@ describe('BlogMenu', () => {
   });
 
   it('does not render for non-authors or admins (showMenu is false)', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '456', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '456', role: 'contributor'}});
     await act(async () =>
       render(
         <MemoryRouter>
@@ -63,7 +63,7 @@ describe('BlogMenu', () => {
   });
 
   it('opens the popper when the menu button is clicked', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () =>
       render(
         <MemoryRouter>
@@ -71,7 +71,7 @@ describe('BlogMenu', () => {
         </MemoryRouter>
       )
     );
-    const menuButton = screen.getByTestId('blog-menu').querySelector('button');
+    const menuButton = screen.getByTestId('blog-menu').querySelector('button') as HTMLElement;
     fireEvent.click(menuButton);
     expect(screen.getByRole('tooltip')).toBeInTheDocument();
     expect(screen.getByRole('menuitem', {name: /edit article/i})).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('BlogMenu', () => {
   });
 
   test('closes the menu when edit article is clicked and handles navigation', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () =>
       render(
         <MemoryRouter>
@@ -87,7 +87,7 @@ describe('BlogMenu', () => {
         </MemoryRouter>
       )
     );
-    const menuButton = screen.getByTestId('blog-menu').querySelector('button');
+    const menuButton = screen.getByTestId('blog-menu').querySelector('button') as HTMLElement;
     fireEvent.click(menuButton);
     fireEvent.click(screen.getByRole('menuitem', {name: /edit article/i}));
     expect(screen.queryByRole('menuitem', {name: /edit article/i})).toBeNull();
@@ -95,7 +95,7 @@ describe('BlogMenu', () => {
   });
 
   test('closes the menu when delete article is clicked and renders delete modal', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () =>
       render(
         <MemoryRouter>
@@ -103,7 +103,7 @@ describe('BlogMenu', () => {
         </MemoryRouter>
       )
     );
-    const menuButton = screen.getByTestId('blog-menu').querySelector('button');
+    const menuButton = screen.getByTestId('blog-menu').querySelector('button') as HTMLElement;
     fireEvent.click(menuButton);
     fireEvent.click(screen.getByRole('menuitem', {name: /delete article/i}));
     expect(screen.queryByRole('menuitem', {name: /delete article/i})).toBeNull();

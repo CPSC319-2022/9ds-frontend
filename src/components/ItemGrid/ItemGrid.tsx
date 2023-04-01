@@ -1,6 +1,5 @@
 import { Grid } from '@mui/material'
-import { FC } from 'react'
-import { ArticlePreview } from '../../hooks/firebase/useArticle'
+import { ArticlePreview } from 'types/Article'
 import { Article } from '../Article'
 
 export enum ItemGridType {

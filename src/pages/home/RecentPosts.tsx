@@ -1,10 +1,10 @@
-import { Grid, Stack, Typography } from '@mui/material'
 import React, { FC } from 'react'
+import { Grid, Stack, Typography } from '@mui/material'
+import { ArticlePreview } from 'types/Article'
 import { Article } from '../../components/Article'
 import { Button } from '../../components/Button'
 import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 import { UISkeleton } from '../../components/UISkeleton'
-import { ArticlePreview } from '../../hooks/firebase/useArticle'
 
 interface RecentPostsProps {
   articles: ArticlePreview[]

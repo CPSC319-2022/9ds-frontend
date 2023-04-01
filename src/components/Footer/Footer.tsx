@@ -68,7 +68,7 @@ export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
             applyContributor.applyPromotion()
             dispatch({
               notificationActionType: 'success',
-              message: `Successfully applied to become contributor!`,
+              message: `Successfully applied to become contributor, waiting for admin approval!`,
             })
           }}
         />

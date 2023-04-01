@@ -7,6 +7,7 @@ service firebase.storage {
     match /{userID}/{document=**} {
     	allow write: if request.auth != null && request.auth.uid == userID;
         allow read: if true;
+        allow delete: if firestore.get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
     }
   }
 }

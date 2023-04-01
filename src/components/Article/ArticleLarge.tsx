@@ -2,9 +2,9 @@ import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
-import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
 import { convertToPlainText } from '../TextEditor'
+import { ArticlePreview } from 'types/Article'
 
 export interface ArticleLargeProps {
   article: ArticlePreview
