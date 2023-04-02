@@ -1,17 +1,17 @@
-import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
-import { Container } from '@mui/system'
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Article } from 'types/Article'
-import { useUser } from '../../hooks/firebase/useUser'
-import { DeleteModal } from '../DeleteModal/DeleteModal'
-import { LabeledTextField } from '../LabeledTextField'
-import { TextEditor, TextEditorInfo } from '../TextEditor'
-import { FileUploader } from 'components/FileUploader/FileUploader'
-import { NotificationContext } from 'context/NotificationContext'
-import { handleLoading, Spinner } from 'components/Spinner/Spinner'
-import { useDeleteHeader, useUploadHeader } from 'hooks/firebase/useArticle'
+import {TextField, Box, Button, FormLabel, Stack, Typography} from '@mui/material'
+import {Container} from '@mui/system'
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {useState, FormEvent, useCallback, useEffect, useContext} from 'react'
+import {useNavigate} from 'react-router-dom'
+import {Article} from 'types/Article'
+import {useUser} from '../../hooks/firebase/useUser'
+import {DeleteModal} from '../DeleteModal/DeleteModal'
+import {LabeledTextField} from '../LabeledTextField'
+import {TextEditor, TextEditorInfo} from '../TextEditor'
+import {FileUploader} from 'components/FileUploader/FileUploader'
+import {NotificationContext} from 'context/NotificationContext'
+import {handleLoading, Spinner} from 'components/Spinner/Spinner'
+import {useDeleteHeader, useUploadHeader} from 'hooks/firebase/useArticle'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -78,6 +78,38 @@ export const ArticleForm = ({
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const {deleteHeader} = useDeleteHeader()
+
+  const [highlightedButtonId, setHighlightedButtonId] = useState(1);
+
+  const handleButtonClick = (id: number) => {
+    if (id === highlightedButtonId) {
+      return;
+    }
+    setHighlightedButtonId(id);
+  };
+
+  const [isValidImageLink, setIsValidImageLink] = useState(false);
+
+  const checkImageURL = (url: string): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => reject(false);
+      img.src = url;
+    });
+  };
+
+  useEffect(() => {
+    const checkValidity = async () => {
+      try {
+        await checkImageURL(customLink);
+        setIsValidImageLink(true);
+      } catch {
+        setIsValidImageLink(false);
+      }
+    };
+    checkValidity().then(r => {return r});
+  }, [customLink, highlightedButtonId]);
 
   const {
     uploadHeader,
@@ -287,30 +319,63 @@ export const ArticleForm = ({
               {'>'}
             </Button>
           </Stack>
-          <LabeledTextField
-            variant='outlined'
-            onTextChange={setCustomLink}
-            placeholder='Paste link to image'
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                or
-              </Typography>
+          <Typography variant='title' sx={{color: 'black'}}>
+            or
+          </Typography>
+          <Container>
+            <Stack
+              direction='column'
+              justifyContent='flex-start'
+              alignItems='flex-start'
+              spacing={40}
+              sx={{mb: '10px'}}
+            >
+            <FormLabel style={{color: 'black'}}>Upload Your Own</FormLabel>
+            </Stack>
+            <Button
+              variant="contained"
+              color={highlightedButtonId === 1 ? "success" : "primary"}
+              onClick={() => handleButtonClick(1)}
+              sx={{ mb: "10px" }}
+              style={{
+                backgroundColor: highlightedButtonId === 1 ? 'grey' : 'white',
+                color: highlightedButtonId === 1 ? 'white' : 'black',
+                border: '2px solid black'
+              }}
+            >
+              <Typography>Computer</Typography>
+            </Button>
+            <Button
+              variant="contained"
+              color={highlightedButtonId === 2 ? "success" : "primary"}
+              onClick={() => handleButtonClick(2)}
+              sx={{ mb: "10px" }}
+              style={{
+                backgroundColor: highlightedButtonId === 2 ? 'grey' : 'white',
+                color: highlightedButtonId === 2 ? 'white' : 'black',
+                border: '2px solid black'
+              }}
+            >
+              <Typography>Web</Typography>
+            </Button>
+            {highlightedButtonId === 1 ?
+              <FileUploader setFile={setFile} file={file}/>
+              : <Stack direction='row' spacing={20} alignItems='center'>
+                <TextField
+                  variant='outlined'
+                  onChange={(event) => setCustomLink(event.target.value)}
+                  placeholder='Paste link to image'
+                  multiline={false}
+                  value={customLink}
+                  type='TextField'
+                  sx={{width: '75%'}}
+                />
+                <Typography variant={"caption"} noWrap>
+                  {isValidImageLink ? 'Image Found' : 'Image Not Found'}
+                </Typography>
+              </Stack>
             }
-            labelWidth={1}
-            multiline={false}
-            value={customLink}
-            type='TextField'
-          />
-          <Stack
-            direction={'row'}
-            sx={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
-            spacing={80}
-          >
-            <Typography variant='title' sx={{ color: 'black' }}>
-              or
-            </Typography>
-            <FileUploader setFile={setFile} file={file} />
-          </Stack>
+          </Container>
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}

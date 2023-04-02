@@ -34,7 +34,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
       width={'450px'}
       sx={{ justifyContent: 'flex-start', alignItems: 'center' }}
     >
-      <Button dark disabled={file ? false : true} text='DESELECT FILE' data-testid="reset" onClick={() => setFile(null)} />
+      <Button dark disabled={!file} text='DESELECT FILE' data-testid="reset" onClick={() => setFile(null)} />
       <MUIButton
         size={'small'}
         component='label'
