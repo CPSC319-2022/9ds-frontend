@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
-import { Avatar } from '../../components/Avatar'
+import {render, screen} from '@testing-library/react'
+import {Avatar} from '../../components/Avatar'
 
 describe('Avatar Styling', () => {
   beforeAll(() => {
-    render(<Avatar />)
+    render(<Avatar name='test' date={new Date()} avatarImgSrc='example.com'/>)
     jest.setTimeout(15000)
   })
 
