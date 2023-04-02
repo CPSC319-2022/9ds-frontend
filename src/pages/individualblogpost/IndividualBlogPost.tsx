@@ -458,7 +458,9 @@ export const IndividualBlogPost = () => {
         paddingLeft={'32px'}
         paddingRight={'32px'}
       >
-        <Typography variant='h3'>{title}</Typography>
+        <Typography variant='h3' sx={{ wordWrap: 'break-word', width: '100%' }}>
+          {title}
+        </Typography>
         <Box
           width={'100%'}
           sx={{
