@@ -74,6 +74,18 @@ export const IndividualBlogPost = () => {
     setComments(filterDeleted)
   }, [articleComments.comments])
 
+  // useEffect for reply character limit warning
+  useEffect(() => {
+    if (currComment.length >= commentMaxLength) {
+      setIsCurrCommentError(true)
+      setCommentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+    } else {
+      setIsCurrCommentError(false)
+      setCommentHelperText("")
+    }
+  },[currComment])
+
+
   useEffect(() => {
     if (error) {
       dispatch({
@@ -158,21 +170,6 @@ export const IndividualBlogPost = () => {
     const commentDelete = useCommentDelete()
     const ownedBySignedInUser = auth.user && commenter_uid === auth.user.uid
 
-    // character limit for reply
-    useEffect(() => {
-      if (currComment.length === commentMaxLength) {
-        setIsCurrCommentError(true)
-        setCommentHelperText(
-          `Input limit of ${commentMaxLength} characters reached.`,
-        )
-      } else {
-        if (currComment.length !== 0) {
-          setIsCurrCommentError(false)
-          setCommentHelperText('')
-        }
-      }
-    }, [currComment])
-
     // character limit for editing
     useEffect(() => {
       if (editCommentContent.length === commentMaxLength) {
@@ -181,10 +178,8 @@ export const IndividualBlogPost = () => {
           `Input limit of ${commentMaxLength} characters reached.`,
         )
       } else {
-        if (currComment.length !== 0) {
-          setEditCommentContentError(false)
-          setEditCommentContentHelperText('')
-        }
+        setEditCommentContentError(false)
+        setEditCommentContentHelperText('')
       }
     }, [editCommentContent])
 
@@ -376,7 +371,7 @@ export const IndividualBlogPost = () => {
                     if (editCommentContent.trim() === '') {
                       setEditCommentContentError(true)
                       setEditCommentContentHelperText(
-                        'comment cannot be empty.',
+                        'comment cannot be empty.'
                       )
                     } else {
                       setEditCommentContentError(false)
