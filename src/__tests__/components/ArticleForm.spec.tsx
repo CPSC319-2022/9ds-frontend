@@ -67,7 +67,7 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('textbox', {name: "editor"})).toHaveTextContent('Hello, World!');
     expect(screen.getByRole('button', {name: /update/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /delete/i})).toBeInTheDocument();
-    expect(screen.queryByRole('button', {name: /save draft/i})).not.toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
     await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(onSubmitMock).toHaveBeenCalled()
@@ -92,7 +92,7 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('textbox', {name: "editor"})).toHaveTextContent('Hello, World!');
     expect(screen.getByRole('button', {name: /update/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /delete/i})).toBeInTheDocument();
-    expect(screen.queryByRole('button', {name: /save draft/i})).not.toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
     await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(onSubmitMock).toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe('ArticleForm UPDATE', () => {
     expect(screen.getByRole('textbox', {name: "editor"})).toHaveTextContent('Hello, World!');
     expect(screen.queryByRole('button', {name: /update/i})).not.toBeInTheDocument();
     expect(screen.queryByRole('button', {name: /delete/i})).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', {name: /save draft/i})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: /save draft/i})).toBeInTheDocument();
   });
 
   test('should display error message when title is changed to empty', async () => {

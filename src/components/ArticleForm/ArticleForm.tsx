@@ -52,14 +52,14 @@ export const ArticleForm = ({
   onSubmit,
   article,
   articleId,
-  setLoading
+  setLoading,
 }: ArticleFormProps) => {
   const navigate = useNavigate()
-  const {queriedUser} = useUser()
+  const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
   const [file, setFile] = useState<File | null>(null)
-  const {dispatch} = useContext(NotificationContext)
+  const { dispatch } = useContext(NotificationContext)
   const [priorLink, setPriorLink] = useState<string | null>(null)
 
   const [isTitleError, setIsTitleError] = useState(false)
@@ -70,7 +70,7 @@ export const ArticleForm = ({
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(),
   )
-  const editorInfo: TextEditorInfo = {editorState, setEditorState}
+  const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
@@ -151,9 +151,8 @@ export const ArticleForm = ({
     }
   }, [imageURL, uploadError])
 
-  const allowDeleteAndUpdate =
+  const isAuthorOrAdmin =
     articleId &&
-    purpose === ArticleFormPurpose.UPDATE &&
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
@@ -185,12 +184,12 @@ export const ArticleForm = ({
         customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex]
       if (!isInvalid) {
         if (priorLink != null && (priorLink != link || file)) {
-          deleteHeader(priorLink)
+            deleteHeader(priorLink)
         }
         if (file) {
-          uploadHeader(file)
-          return
-        }
+            uploadHeader(file)
+            return
+          }
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
@@ -238,10 +237,11 @@ export const ArticleForm = ({
           spacing={40}
         >
           {(purpose === ArticleFormPurpose.CREATE ||
-            purpose === ArticleFormPurpose.DRAFT) && (
+            purpose === ArticleFormPurpose.DRAFT ||
+            purpose === ArticleFormPurpose.UPDATE) && (
             <Button
               variant='contained'
-              style={{backgroundColor: 'black', alignSelf: 'flex-end'}}
+              style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
               onClick={(event) => {
                 handleSubmit(event, false)
               }}
@@ -249,7 +249,7 @@ export const ArticleForm = ({
               SAVE DRAFT
             </Button>
           )}
-          <FormLabel style={{color: 'black'}}>Pick an image</FormLabel>
+          <FormLabel style={{ color: 'black' }}>Pick an image</FormLabel>
           <Stack
             justifyContent={'space-between'}
             alignSelf={'stretch'}
@@ -257,7 +257,7 @@ export const ArticleForm = ({
           >
             <Button
               data-testid={"left"}
-              style={{color: 'black'}}
+              style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart - 4 < 0) {
                   setPictureIndexStart(
@@ -305,7 +305,7 @@ export const ArticleForm = ({
             </Stack>
             <Button
               data-testid={'right'}
-              style={{color: 'black'}}
+              style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart + 4 >= pictureUrls.length) {
                   setPictureIndexStart(0)
@@ -360,7 +360,7 @@ export const ArticleForm = ({
             </Button>
             {highlightedButtonId === 1 ?
               <FileUploader setFile={setFile} file={file}/>
-              : <Stack direction='row' spacing={5} alignItems='center'>
+              : <Stack direction='row' spacing={20} alignItems='center'>
                 <TextField
                   variant='outlined'
                   onChange={(event) => setCustomLink(event.target.value)}
@@ -370,7 +370,7 @@ export const ArticleForm = ({
                   type='TextField'
                   sx={{width: '75%'}}
                 />
-                <Typography noWrap>
+                <Typography variant={"caption"} noWrap>
                   {isValidImageLink ? 'Image Found' : 'Image Not Found'}
                 </Typography>
               </Stack>
@@ -381,7 +381,7 @@ export const ArticleForm = ({
             onTextChange={setTitle}
             placeholder='60 words or less'
             text={
-              <Typography variant='title' sx={{color: 'black'}}>
+              <Typography variant='title' sx={{ color: 'black' }}>
                 Title
               </Typography>
             }
@@ -409,40 +409,43 @@ export const ArticleForm = ({
           <Button
             type='submit'
             variant='contained'
-            style={{backgroundColor: 'black'}}
+            style={{ backgroundColor: 'black' }}
           >
             <Typography>
               {purpose === ArticleFormPurpose.CREATE ||
               purpose === ArticleFormPurpose.DRAFT
                 ? 'CREATE'
-                : (allowDeleteAndUpdate && 'UPDATE')
-              }
+                : isAuthorOrAdmin &&
+                  purpose === ArticleFormPurpose.UPDATE &&
+                  'UPDATE'}
             </Typography>
           </Button>
-          {allowDeleteAndUpdate && (
-            <>
-              <Button
-                sx={{marginLeft: '8px'}}
-                variant='contained'
-                onClick={() => {
-                  setDeleteModalOpen(true)
-                }}
-              >
-                <Typography>DELETE</Typography>
-              </Button>
-              <DeleteModal
-                articleId={articleId}
-                open={deleteModalOpen}
-                handleClose={() => setDeleteModalOpen(false)}
-                redirect
-              />
-            </>
-          )}
+          {isAuthorOrAdmin &&
+            (purpose === ArticleFormPurpose.UPDATE ||
+              purpose === ArticleFormPurpose.DRAFT) && (
+              <>
+                <Button
+                  sx={{ marginLeft: '8px' }}
+                  variant='contained'
+                  onClick={() => {
+                    setDeleteModalOpen(true)
+                  }}
+                >
+                  <Typography>DELETE</Typography>
+                </Button>
+                <DeleteModal
+                  articleId={articleId}
+                  open={deleteModalOpen}
+                  handleClose={() => setDeleteModalOpen(false)}
+                  redirect
+                />
+              </>
+            )}
         </Box>
       </form>
     </Container>
   )
-  return !uploadLoading ? container : <Spinner/>
+  return !uploadLoading ? container : <Spinner />
 }
 
 function countWords(text: string): number {
