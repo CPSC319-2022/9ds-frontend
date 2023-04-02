@@ -6,15 +6,15 @@ import {connectStorageEmulator, getStorage} from "@firebase/storage";
 let firebaseConfig
 
 switch (process.env.REACT_APP_ENV) {
-  case 'DEV':
+  case 'PROD':
     firebaseConfig = {
-      apiKey: 'AIzaSyCHfU9yLnEnLeKKokIQ9sUGI8Cr9mLYXgE',
-      authDomain: 'ds-blog-dev.firebaseapp.com',
-      projectId: 'ds-blog-dev',
-      storageBucket: 'ds-blog-dev.appspot.com',
-      messagingSenderId: '545518666660',
-      appId: '1:545518666660:web:85badd3f2024480bc07731',
-      measurementId: 'G-BB9M09710P',
+      apiKey: 'AIzaSyCcgzkgm7DJkNLTrBk-vDQgeTZw7bTwdn8',
+      authDomain: 'ds-blog-376905.firebaseapp.com',
+      projectId: 'ds-blog-376905',
+      storageBucket: 'ds-blog-376905.appspot.com',
+      messagingSenderId: '1046661353798',
+      appId: '1:1046661353798:web:e6771cdb184606a1861547',
+      measurementId: 'G-V1G11MYNRB',
     }
     break
 
@@ -30,28 +30,18 @@ switch (process.env.REACT_APP_ENV) {
     }
     break
 
-  case 'PROD':
-    firebaseConfig = {
-      apiKey: 'AIzaSyCcgzkgm7DJkNLTrBk-vDQgeTZw7bTwdn8',
-      authDomain: 'ds-blog-376905.firebaseapp.com',
-      projectId: 'ds-blog-376905',
-      storageBucket: 'ds-blog-376905.appspot.com',
-      messagingSenderId: '1046661353798',
-      appId: '1:1046661353798:web:e6771cdb184606a1861547',
-      measurementId: 'G-V1G11MYNRB',
-    }
-    break
-
+  case 'DEV':
   default:
     firebaseConfig = {
-      apiKey: 'AIzaSyCXZk4iU2LXkWimWFWpH89LEM3Qh2FDog4',
-      authDomain: 'ds-blog-local.firebaseapp.com',
-      projectId: 'ds-blog-local',
-      storageBucket: 'ds-blog-local.appspot.com',
-      messagingSenderId: '312419112403',
-      appId: '1:312419112403:web:166f55b88f498281f80b26',
-      measurementId: 'G-HPWHPJYZV2',
+      apiKey: 'AIzaSyCHfU9yLnEnLeKKokIQ9sUGI8Cr9mLYXgE',
+      authDomain: 'ds-blog-dev.firebaseapp.com',
+      projectId: 'ds-blog-dev',
+      storageBucket: 'ds-blog-dev.appspot.com',
+      messagingSenderId: '545518666660',
+      appId: '1:545518666660:web:85badd3f2024480bc07731',
+      measurementId: 'G-BB9M09710P',
     }
+    break
 }
 
 const app = initializeApp(firebaseConfig)
