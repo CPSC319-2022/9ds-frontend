@@ -42,6 +42,7 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
         <Stack
           sx={{
             display: 'flex',
+            width: '100%',
             height: '100%',
             justifyContent: 'space-between',
             textAlign: 'left',
@@ -53,14 +54,18 @@ export const ArticleSmall: FC<ArticleSmallProps> = ({
             style={{ aspectRatio: 1.75, borderRadius: '12px' }}
           />
           <Stack
-            maxWidth='fit-content'
             spacing={10}
             alignItems='flex-start'
             justifyContent='flex-end'
             boxSizing='border-box'
             width='100%'
           >
-            <Typography variant='title' color='black.main'>
+            <Typography
+              variant='title'
+              color='black.main'
+              noWrap={true}
+              sx={{ width: '100%' }}
+            >
               {article.title}
             </Typography>
             <Typography

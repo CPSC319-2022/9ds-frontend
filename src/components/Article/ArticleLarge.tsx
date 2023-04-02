@@ -63,7 +63,12 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
                 Featured
               </Typography>
             )}
-            <Typography variant='title' color='white.main'>
+            <Typography
+              variant='title'
+              color='white.main'
+              noWrap
+              sx={{ width: '100%' }}
+            >
               {article.title}
             </Typography>
             <Typography
