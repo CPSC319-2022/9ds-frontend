@@ -43,6 +43,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (!initializing) {
       setLoading(true)
+      setError(undefined)
       setQueriedUser({
         role: '',
         profile_image: '',
