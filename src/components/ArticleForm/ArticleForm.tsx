@@ -1,18 +1,26 @@
-import {TextField, Box, Button, FormLabel, Stack, Typography} from '@mui/material'
-import {Container} from '@mui/system'
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-import {useState, FormEvent, useCallback, useEffect, useContext} from 'react'
-import {useNavigate} from 'react-router-dom'
-import {Article} from 'types/Article'
-import {useUser} from '../../hooks/firebase/useUser'
-import {DeleteModal} from '../DeleteModal/DeleteModal'
-import {LabeledTextField} from '../LabeledTextField'
-import {TextEditor, TextEditorInfo} from '../TextEditor'
-import {FileUploader} from 'components/FileUploader/FileUploader'
-import {NotificationContext} from 'context/NotificationContext'
-import {handleLoading, Spinner} from 'components/Spinner/Spinner'
-import {useDeleteHeader, useUploadHeader} from 'hooks/firebase/useArticle'
-
+import {
+  TextField,
+  Box,
+  Button,
+  FormLabel,
+  Stack,
+  Typography,
+} from '@mui/material'
+import { Container } from '@mui/system'
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
+import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Article } from 'types/Article'
+import { useUser } from '../../hooks/firebase/useUser'
+import { DeleteModal } from '../DeleteModal/DeleteModal'
+import { LabeledTextField } from '../LabeledTextField'
+import { TextEditor, TextEditorInfo } from '../TextEditor'
+import { FileUploader } from 'components/FileUploader/FileUploader'
+import { NotificationContext } from 'context/NotificationContext'
+import { Spinner } from 'components/Spinner/Spinner'
+import { useDeleteHeader, useUploadHeader } from 'hooks/firebase/useArticle'
+import { storage } from 'firebaseApp'
+import { ref } from '@firebase/storage'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
 
@@ -57,10 +65,16 @@ export const ArticleForm = ({
   const navigate = useNavigate()
   const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
-  const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
+  const [selectedPictureIndex, setSelectedPictureIndex] = useState<
+    number | null
+  >(null)
   const [file, setFile] = useState<File | null>(null)
   const { dispatch } = useContext(NotificationContext)
   const [priorLink, setPriorLink] = useState<string | null>(null)
+
+  const [firebaseStorageCDNLink, setFirebaseStorageCDNLink] = useState<
+    string | null
+  >(null)
 
   const [isTitleError, setIsTitleError] = useState(false)
   const [title, setTitle] = useState('')
@@ -73,43 +87,48 @@ export const ArticleForm = ({
   const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
+  const [isImageError, setIsImageError] = useState(false)
+  const [imageHelperText, setImageHelperText] = useState('')
+
   const [customLink, setCustomLink] = useState('')
   const [publishWithImage, setPublishWithImage] = useState(false)
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const {deleteHeader} = useDeleteHeader()
+  const { deleteHeader } = useDeleteHeader()
 
-  const [highlightedButtonId, setHighlightedButtonId] = useState(1);
+  const [highlightedButtonId, setHighlightedButtonId] = useState(1)
 
   const handleButtonClick = (id: number) => {
     if (id === highlightedButtonId) {
-      return;
+      return
     }
-    setHighlightedButtonId(id);
-  };
+    setHighlightedButtonId(id)
+  }
 
-  const [isValidImageLink, setIsValidImageLink] = useState(false);
+  const [isValidImageLink, setIsValidImageLink] = useState(false)
 
   const checkImageURL = (url: string): Promise<boolean> => {
     return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => reject(false);
-      img.src = url;
-    });
-  };
+      const img = new Image()
+      img.onload = () => resolve(true)
+      img.onerror = () => reject(false)
+      img.src = url
+    })
+  }
 
   useEffect(() => {
     const checkValidity = async () => {
       try {
-        await checkImageURL(customLink);
-        setIsValidImageLink(true);
+        await checkImageURL(customLink)
+        setIsValidImageLink(true)
       } catch {
-        setIsValidImageLink(false);
+        setIsValidImageLink(false)
       }
-    };
-    checkValidity().then(r => {return r});
-  }, [customLink, highlightedButtonId]);
+    }
+    checkValidity().then((r) => {
+      return r
+    })
+  }, [customLink, highlightedButtonId])
 
   const {
     uploadHeader,
@@ -125,20 +144,9 @@ export const ArticleForm = ({
       )
       setLoading(true)
       if (articleId !== undefined) {
-        onSubmit(
-          title,
-          encodedText,
-          imageURL,
-          publishWithImage,
-          articleId,
-        )
+        onSubmit(title, encodedText, imageURL, publishWithImage, articleId)
       } else {
-        onSubmit(
-          title,
-          encodedText,
-          imageURL,
-          publishWithImage,
-        )
+        onSubmit(title, encodedText, imageURL, publishWithImage)
       }
       navigate('/profile')
     }
@@ -179,17 +187,50 @@ export const ArticleForm = ({
         setIsBodyError(false)
         setBodyHelperText('')
       }
-      const link =
-        customLink.length > 0 ? customLink : pictureUrls[selectedPictureIndex]
+
+      if (
+        selectedPictureIndex === null &&
+        !file &&
+        customLink.length === 0 &&
+        firebaseStorageCDNLink === null
+      ) {
+        isInvalid = true
+        setIsImageError(true)
+        setImageHelperText(
+          'Please pick one of the provided images or provide one yourself',
+        )
+      } else if (
+        +(selectedPictureIndex !== null) +
+          +(file !== null || firebaseStorageCDNLink !== null || false) +
+          +(customLink.length > 0) >=
+        2
+      ) {
+        isInvalid = true
+        setIsImageError(true)
+        setImageHelperText('Please only pick one image option')
+      } else {
+        setIsImageError(false)
+        setImageHelperText('')
+      }
+
       if (!isInvalid) {
-        if (priorLink != null && (priorLink != link || file)) {
-            deleteHeader(priorLink)
+        let link = ''
+
+        if (customLink.length > 0) {
+          link = customLink
+        } else if (selectedPictureIndex !== null) {
+          link = pictureUrls[selectedPictureIndex]
+        } else {
+          link = priorLink || ''
+        }
+        if (priorLink !== null && (priorLink !== link || file)) {
+          deleteHeader(priorLink)
         }
         if (file) {
-            setPublishWithImage(published)
-            uploadHeader(file)
-            return
-          }
+          setPublishWithImage(published)
+          uploadHeader(file)
+          return
+        }
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
@@ -201,14 +242,31 @@ export const ArticleForm = ({
         navigate('/profile')
       }
     },
-    [title, editorState, customLink, selectedPictureIndex, file, imageURL],
+    [
+      title,
+      editorState,
+      customLink,
+      selectedPictureIndex,
+      file,
+      imageURL,
+      firebaseStorageCDNLink,
+    ],
   )
 
   useEffect(() => {
     if (article !== undefined) {
       setTitle(article.title)
       setPriorLink(article.header_image)
-      setCustomLink(article.header_image)
+      if (pictureUrls.includes(article.header_image)) {
+        const defaultPicIndex = pictureUrls.indexOf(article.header_image)
+        setPictureIndexStart(4 * Math.floor(defaultPicIndex / 4))
+        setSelectedPictureIndex(defaultPicIndex)
+      } else if (article.header_image.includes(ref(storage).bucket)) {
+        setFirebaseStorageCDNLink(article.header_image)
+      } else {
+        setCustomLink(article.header_image)
+      }
+
       setFile(null)
       setEditorState(() =>
         EditorState.createWithContent(
@@ -250,13 +308,18 @@ export const ArticleForm = ({
             </Button>
           )}
           <FormLabel style={{ color: 'black' }}>Pick an image</FormLabel>
+          {isImageError && (
+            <FormLabel style={{ color: 'red', marginTop: 0 }}>
+              {imageHelperText}
+            </FormLabel>
+          )}
           <Stack
             justifyContent={'space-between'}
             alignSelf={'stretch'}
             direction='row'
           >
             <Button
-              data-testid={"left"}
+              data-testid={'left'}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart - 4 < 0) {
@@ -282,7 +345,14 @@ export const ArticleForm = ({
                       disabled={!pictureUrls[pictureIndexStart + index]}
                       key={index}
                       onClick={() => {
-                        setSelectedPictureIndex(pictureIndexStart + index)
+                        if (
+                          selectedPictureIndex ===
+                          pictureIndexStart + index
+                        ) {
+                          setSelectedPictureIndex(null)
+                        } else {
+                          setSelectedPictureIndex(pictureIndexStart + index)
+                        }
                       }}
                     >
                       <Box
@@ -290,7 +360,7 @@ export const ArticleForm = ({
                           border:
                             selectedPictureIndex === pictureIndexStart + index
                               ? '5px solid black'
-                              : '0px solid black',
+                              : '5px solid white',
                           width: 150,
                           height: 150,
                           backgroundSize: 'cover',
@@ -319,7 +389,7 @@ export const ArticleForm = ({
               {'>'}
             </Button>
           </Stack>
-          <Typography variant='title' sx={{color: 'black'}}>
+          <Typography variant='title' sx={{ color: 'black' }}>
             or
           </Typography>
           <Container>
@@ -328,39 +398,49 @@ export const ArticleForm = ({
               justifyContent='flex-start'
               alignItems='flex-start'
               spacing={40}
-              sx={{mb: '10px'}}
+              sx={{ mb: '10px' }}
             >
-            <FormLabel style={{color: 'black'}}>Upload Your Own</FormLabel>
+              <FormLabel style={{ color: 'black' }}>Upload Your Own </FormLabel>
             </Stack>
             <Button
-              variant="contained"
-              color={highlightedButtonId === 1 ? "success" : "primary"}
+              variant='contained'
+              color={highlightedButtonId === 1 ? 'success' : 'primary'}
               onClick={() => handleButtonClick(1)}
-              sx={{ mb: "10px" }}
+              sx={{ mb: '10px' }}
               style={{
                 backgroundColor: highlightedButtonId === 1 ? 'grey' : 'white',
                 color: highlightedButtonId === 1 ? 'white' : 'black',
-                border: '2px solid black'
+                border: '2px solid black',
               }}
             >
               <Typography>Computer</Typography>
             </Button>
             <Button
-              variant="contained"
-              color={highlightedButtonId === 2 ? "success" : "primary"}
+              variant='contained'
+              color={highlightedButtonId === 2 ? 'success' : 'primary'}
               onClick={() => handleButtonClick(2)}
-              sx={{ mb: "10px" }}
+              sx={{ mb: '10px' }}
               style={{
                 backgroundColor: highlightedButtonId === 2 ? 'grey' : 'white',
                 color: highlightedButtonId === 2 ? 'white' : 'black',
-                border: '2px solid black'
+                border: '2px solid black',
               }}
             >
               <Typography>Web</Typography>
             </Button>
-            {highlightedButtonId === 1 ?
-              <FileUploader setFile={setFile} file={file}/>
-              : <Stack direction='row' spacing={20} alignItems='center'>
+            {highlightedButtonId === 1 ? (
+              <FileUploader
+                setFile={(file: File | null) => {
+                  setFile(file)
+                  setFirebaseStorageCDNLink(null)
+                }}
+                file={file}
+                {...(firebaseStorageCDNLink !== null
+                  ? { previewFile: firebaseStorageCDNLink }
+                  : {})}
+              />
+            ) : (
+              <Stack direction='row' spacing={20} alignItems='center'>
                 <TextField
                   variant='outlined'
                   onChange={(event) => setCustomLink(event.target.value)}
@@ -368,13 +448,13 @@ export const ArticleForm = ({
                   multiline={false}
                   value={customLink}
                   type='TextField'
-                  sx={{width: '75%'}}
+                  sx={{ width: '75%' }}
                 />
-                <Typography variant={"caption"} noWrap>
+                <Typography variant={'caption'} noWrap>
                   {isValidImageLink ? 'Image Found' : 'Image Not Found'}
                 </Typography>
               </Stack>
-            }
+            )}
           </Container>
           <LabeledTextField
             variant='outlined'
