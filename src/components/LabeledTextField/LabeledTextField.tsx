@@ -46,9 +46,9 @@ export const LabeledTextField: FC<LabeledTextFieldProps> = ({
               }
             }}
           />
-        ) : type === 'Typography' ? (
+        ) : (
           <Typography sx={{borderBottom: '1px solid', width: '220px'}}>{value as string}</Typography>
-        ) : null}
+        )}
       </Grid>
     </Grid>
   )

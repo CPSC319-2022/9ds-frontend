@@ -74,6 +74,7 @@ export const ArticleForm = ({
   const [bodyHelperText, setBodyHelperText] = useState('')
 
   const [customLink, setCustomLink] = useState('')
+  const [publishWithImage, setPublishWithImage] = useState(false)
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const {deleteHeader} = useDeleteHeader()
@@ -128,8 +129,7 @@ export const ArticleForm = ({
           title,
           encodedText,
           imageURL,
-          purpose === ArticleFormPurpose.CREATE ||
-          purpose === ArticleFormPurpose.UPDATE,
+          publishWithImage,
           articleId,
         )
       } else {
@@ -137,8 +137,7 @@ export const ArticleForm = ({
           title,
           encodedText,
           imageURL,
-          purpose === ArticleFormPurpose.CREATE ||
-          purpose === ArticleFormPurpose.UPDATE,
+          publishWithImage,
         )
       }
       navigate('/profile')
@@ -187,6 +186,7 @@ export const ArticleForm = ({
             deleteHeader(priorLink)
         }
         if (file) {
+            setPublishWithImage(published)
             uploadHeader(file)
             return
           }

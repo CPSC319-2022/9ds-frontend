@@ -2,6 +2,8 @@ import {MemoryRouter as Router} from 'react-router-dom'
 import {fireEvent, render, screen, act} from '@testing-library/react';
 import {ArticleForm, ArticleFormPurpose} from '../../components/ArticleForm';
 import {useUser} from '../../hooks/firebase/useUser'
+import profile from "../../assets/profile.png";
+import {Timestamp} from "firebase/firestore";
 
 const mockedUsedNavigate = jest.fn();
 const onSubmitMock = jest.fn();
@@ -18,27 +20,27 @@ jest.mock('../../hooks/firebase/useUser', () => ({
 }));
 
 const mockArticle = {
-  id: 'abc',
   title: 'Test article',
   content: '{"blocks":[{"key":"foo","text":"Hello, World!","type":"unstyled",' +
     '"depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
   header_image: '',
+  author_image: 'profile',
   author_uid: '123',
-  created_at: new Date(),
-  updated_at: new Date(),
-  published: true,
+  edit_time: new Timestamp(1,0),
+  author_username: 'Andy',
+  publish_time: new Timestamp(60,0)
 };
 
 const mockArticleWithEmptyBody = {
-  id: 'abc',
   title: 'Test article',
   content: '{"blocks":[{"key":"foo","text":"","type":"unstyled",' +
     '"depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
   header_image: '',
+  author_image: 'profile',
   author_uid: '123',
-  created_at: new Date(),
-  updated_at: new Date(),
-  published: true,
+  edit_time: new Timestamp(1,0),
+  author_username: 'Andy',
+  publish_time: new Timestamp(60,0)
 };
 
 describe('ArticleForm UPDATE', () => {
@@ -50,7 +52,7 @@ describe('ArticleForm UPDATE', () => {
   });
 
   test('article data as author', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
           <ArticleForm
@@ -75,7 +77,7 @@ describe('ArticleForm UPDATE', () => {
   });
 
   test('article data as admin', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '567', role: 'admin'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '567', role: 'admin'}});
     await act(async () => render(
         <Router>
           <ArticleForm
@@ -100,7 +102,7 @@ describe('ArticleForm UPDATE', () => {
   });
 
   test('article data as contributor who is not author', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '567', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '567', role: 'contributor'}});
     await act(async () => render(
         <Router>
           <ArticleForm
@@ -121,7 +123,7 @@ describe('ArticleForm UPDATE', () => {
   });
 
   test('should display error message when title is changed to empty', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
           <ArticleForm
@@ -145,7 +147,7 @@ describe('ArticleForm UPDATE', () => {
   });
 
   test('should display error message when title is changed to too long', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
           <ArticleForm
@@ -173,7 +175,7 @@ describe('ArticleForm UPDATE', () => {
   });
 
   test('should display error message when body is changed to empty', async () => {
-    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
     await act(async () => render(
         <Router>
           <ArticleForm
@@ -212,7 +214,7 @@ describe('ArticleForm UPDATE', () => {
 
 describe('ArticleForm CREATE/DRAFT', () => {
   beforeEach(() => {
-    useUser.mockReturnValue({queriedUser: {role: 'contributor'}});
+    (useUser as jest.Mock).mockReturnValue({queriedUser: {role: 'contributor'}});
     jest.resetModules();
   });
   afterEach(() => {
