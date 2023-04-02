@@ -247,6 +247,12 @@ export const SignUpForm = () => {
             </FormHelperText>
           )}
         </FormControl>
+        <Typography
+            variant='body1.medium'
+            sx={{ fontSize: '14px', weight: 600 }}
+          >
+            Optional: Select a Profile Picture
+          </Typography>
         <FileUploader setFile={setFile} file={file}/>
         <Button
           variant='contained'

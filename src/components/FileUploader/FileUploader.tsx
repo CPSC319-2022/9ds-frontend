@@ -31,10 +31,10 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
     <Stack
       direction={'row'}
       spacing={2}
-      width={'300px'}
-      sx={{ justifyContent: 'space-evenly', alignItems: 'center' }}
+      width={'450px'}
+      sx={{ justifyContent: 'flex-start', alignItems: 'center' }}
     >
-      <Button dark text='RESET' data-testid="reset" onClick={() => setFile(null)} />
+      <Button dark disabled={file ? false : true} text='DESELECT FILE' data-testid="reset" onClick={() => setFile(null)} />
       <MUIButton
         size={'small'}
         component='label'
@@ -43,7 +43,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
         sx={{ backgroundColor: 'white.main', border: '2px solid black' }}
       >
         <Typography variant='button' sx={{ color: 'black.main' }}>
-          UPLOAD
+          SELECT FILE
         </Typography>
         <input
           data-testid="upload-input"
@@ -61,9 +61,9 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
         />
       </MUIButton>
       {file != null ? (
-        <Typography paddingLeft={'20px'}>File Selected</Typography>
+        <Typography paddingLeft={'20px'} variant={"caption"}>File Selected</Typography>
       ) : (
-        <Typography>File Unselected</Typography>
+        <Typography paddingLeft={'20px'} variant={"caption"}>File Unselected</Typography>
       )}
     </Stack>
   )

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { FileUploader } from 'components/FileUploader/FileUploader'
 import {
   NotificationProvider,
@@ -18,17 +18,14 @@ describe('FileUploader', () => {
 
   test('No file selected', () => {
     expect(screen.getByText('File Unselected')).toBeInTheDocument()
-    expect(screen.getByText('UPLOAD')).toBeInTheDocument()
-    expect(screen.getByText('RESET')).toBeInTheDocument()
+    expect(screen.getByText('DESELECT FILE')).toBeInTheDocument()
+    expect(screen.getByText('SELECT FILE')).toBeInTheDocument()
+    expect(screen.getByText('DESELECT FILE').closest('button')).not.toBeEnabled()
   })
 
-  test('Click reset', () => {
-    userEvent.click(screen.getByText('RESET'))
-    expect(screen.getByText('File Unselected')).toBeInTheDocument()
-  })
   test('Click upload', () => {
-    userEvent.click(screen.getByText('UPLOAD'))
-    expect(screen.getByText('UPLOAD')).toBeInTheDocument()
+    userEvent.click(screen.getByText('SELECT FILE'))
+    expect(screen.getByText('SELECT FILE')).toBeInTheDocument()
   })
 
   test('File Uploader success', () => {
@@ -57,9 +54,14 @@ describe('FileUploader Switch case', () => {
         <FileUploader file={file} setFile={setFileMock} />
       </NotificationProvider>,
     )
-    jest.setTimeout(15000)
   })
   test('File Selected shown', () => {
+    expect(screen.getByText('DESELECT FILE')).toBeEnabled()
     expect(screen.getByText('File Selected')).toBeInTheDocument()
+  })
+
+  test('Click deselect', () => {
+    const deselect = screen.getByText('DESELECT FILE')
+    fireEvent.click(deselect)
   })
 })
