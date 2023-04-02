@@ -134,12 +134,12 @@ describe('ArticleForm UPDATE', () => {
         </Router>
       )
     );
-    fireEvent.change(screen.getByPlaceholderText("60 words or less"), {
+    await act(async () => fireEvent.change(screen.getByPlaceholderText("60 words or less"), {
       target: {
         value: ''
       },
-    });
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    }));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.getByText(/title can't be empty/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
   });
@@ -158,7 +158,7 @@ describe('ArticleForm UPDATE', () => {
         </Router>
       )
     );
-    fireEvent.change(screen.getByPlaceholderText("60 words or less"), {
+    await act(async () => fireEvent.change(screen.getByPlaceholderText("60 words or less"), {
       target: {
         value: 'From Gutenberg to Google: A Comprehensive Analysis of the Evolution of Communication ' +
           'Technologies and their Societal Impacts on Language, Culture, and Knowledge Acquisition in the ' +
@@ -166,8 +166,8 @@ describe('ArticleForm UPDATE', () => {
           'Computing. Unraveling the Complexities of the Human Brain and its Implications for Advancements ' +
           'in Neuroscience and Artificial Intelligence: Multi-disciplinary Exploration of Cognitive Computing.'
       },
-    });
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    }));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.getByText(/title must be 60 words or less/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
   });
@@ -186,9 +186,27 @@ describe('ArticleForm UPDATE', () => {
         </Router>
       )
     );
-    fireEvent.click(screen.getByRole('button', {name: /update/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /update/i})));
     expect(screen.getByText(/body can't be empty/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
+  });
+
+  test('should display confirmation modal when delete button is clicked', async () => {
+    useUser.mockReturnValue({queriedUser: {uid: '123', role: 'contributor'}});
+    await act(async () => render(
+        <Router>
+          <ArticleForm
+            purpose={ArticleFormPurpose.UPDATE}
+            onSubmit={onSubmitMock}
+            article={mockArticle}
+            articleId='hello'
+            setLoading={mockLoading}
+          />
+        </Router>
+      )
+    );
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /delete/i})));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 });
 
@@ -213,6 +231,8 @@ describe('ArticleForm CREATE/DRAFT', () => {
         </Router>
       )
     );
+    expect(screen.getByRole('button', {name: /computer/i})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /web/i})).toBeInTheDocument();
     expect(screen.getByText(/title/i)).toBeInTheDocument();
     expect(screen.getByText(/body/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /create/i})).toBeInTheDocument();
@@ -241,7 +261,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
     expect(screen.getByText(/body/i)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /create/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
-    await act(async () =>fireEvent.click(screen.getByRole('button', {name: /create/i})));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/title must be 60 words or less/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/body can't be empty/i)).not.toBeInTheDocument();
@@ -259,7 +279,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
         </Router>
       )
     );
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.getByText(/title can't be empty/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
   });
@@ -275,7 +295,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
         </Router>
       )
     );
-    fireEvent.change(screen.getByPlaceholderText("60 words or less"), {
+    await act(async () => fireEvent.change(screen.getByPlaceholderText("60 words or less"), {
       target: {
         value: 'From Gutenberg to Google: A Comprehensive Analysis of the Evolution of Communication ' +
           'Technologies and their Societal Impacts on Language, Culture, and Knowledge Acquisition in the ' +
@@ -283,8 +303,8 @@ describe('ArticleForm CREATE/DRAFT', () => {
           'Computing. Unraveling the Complexities of the Human Brain and its Implications for Advancements ' +
           'in Neuroscience and Artificial Intelligence: Multi-disciplinary Exploration of Cognitive Computing.'
       },
-    });
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    }));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.getByText(/title must be 60 words or less/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
   });
@@ -300,7 +320,7 @@ describe('ArticleForm CREATE/DRAFT', () => {
         </Router>
       )
     );
-    fireEvent.click(screen.getByRole('button', {name: /create/i}));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /create/i})));
     expect(screen.getByText(/body can't be empty/i)).toBeInTheDocument();
     expect(onSubmitMock).not.toHaveBeenCalled();
   });
@@ -320,14 +340,74 @@ describe('ArticleForm CREATE/DRAFT', () => {
         expect(element).toBeInTheDocument()
     })
     const rightArrow = screen.getByTestId('right')
-    fireEvent.click(rightArrow)
+    await act(async () => fireEvent.click(rightArrow));
     screen.getAllByLabelText('picture-selection').forEach(element => {
         expect(element).toBeInTheDocument()
     })
     const leftArrow = screen.getByTestId('left')
-    fireEvent.click(leftArrow)
+    await act(async () => fireEvent.click(leftArrow));
     screen.getAllByLabelText('picture-selection').forEach(element => {
         expect(element).toBeInTheDocument()
     })
+  });
+
+  test('should display "Save Draft" button for an unpublished article', async () => {
+    const mockUnpublishedArticle = {
+      ...mockArticle,
+      published: false,
+    };
+    await act(async () => render(
+        <Router>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            article={mockUnpublishedArticle}
+            articleId='hello'
+            setLoading={mockLoading}
+          />
+        </Router>
+      )
+    );
+    expect(screen.getByRole('button', {name: /save draft/i})).toBeInTheDocument();
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: /save draft/i})));
+    expect(onSubmitMock).toHaveBeenCalledWith( "Test article", '{"blocks":[{"key":"foo","text":"Hello, World!","type":"unstyled",' +
+      '"depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
+      "https://media.itpro.co.uk/image/upload/v1570816541/itpro/2018/12/bigdata_shutterstock_1142996930.jpg",
+      false, "hello"
+    );
+    expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile');
+  });
+
+  it('renders FileUploader component when "Computer" button is clicked', async () => {
+    await act(async () => render(
+        <Router>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={mockLoading}
+          />
+        </Router>
+      )
+    );
+    const computerButton = screen.getByRole('button', {name: /computer/i});
+    await act(async () => fireEvent.click(computerButton));
+    expect(screen.getByTestId('upload-input')).toBeInTheDocument();
+  });
+
+  it('renders TextField and Typography components when "Web" button is clicked', async () => {
+    await act(async () => render(
+        <Router>
+          <ArticleForm
+            purpose={ArticleFormPurpose.CREATE}
+            onSubmit={onSubmitMock}
+            setLoading={mockLoading}
+          />
+        </Router>
+      )
+    );
+    const webButton = screen.getByRole('button', {name: /web/i});
+    await act(async () => fireEvent.click(webButton));
+    expect(screen.getByPlaceholderText('Paste link to image')).toBeInTheDocument();
+    expect(screen.getByText('Image Not Found')).toBeInTheDocument();
   });
 });

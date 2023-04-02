@@ -343,7 +343,7 @@ export const ArticleForm = ({
                 border: '2px solid black'
               }}
             >
-              Computer
+              <Typography>Computer</Typography>
             </Button>
             <Button
               variant="contained"
@@ -356,7 +356,7 @@ export const ArticleForm = ({
                 border: '2px solid black'
               }}
             >
-              Web
+              <Typography>Web</Typography>
             </Button>
             {highlightedButtonId === 1 ?
               <FileUploader setFile={setFile} file={file}/>
