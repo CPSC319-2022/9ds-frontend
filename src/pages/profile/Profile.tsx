@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { LabeledTextField } from '../../components/LabeledTextField'
@@ -17,6 +17,7 @@ import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 
 export const Profile: FC = () => {
   const { error, loading, queriedUser } = useUser()
+  const [applied, setApplied] = useState(false);
   const {
     getNext: articleGetNext,
     articles: UserArticles,
@@ -46,11 +47,20 @@ export const Profile: FC = () => {
   }, [error, articleError, draftError])
 
   const handleButtonClick = () => {
-    applyPromotion()
-    dispatch({
-      notificationActionType: 'success',
-      message: `Successfully applied to become contributor, waiting for admin approval!`,
-    })
+    if(!applied) {
+      applyPromotion()
+      dispatch({
+        notificationActionType: 'success',
+        message: `Successfully applied to become contributor, waiting for admin approval!`,
+      })
+      setApplied(true);
+    } else {
+      dispatch({
+        notificationActionType: 'error',
+        message: `You have already applied to become contributor, waiting for admin approval!`,
+      })
+    }
+
   }
 
   const component = (
