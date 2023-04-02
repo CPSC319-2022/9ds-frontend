@@ -1,4 +1,4 @@
-import {Box, Button, FormLabel, Stack, Typography} from '@mui/material'
+import {TextField, Box, Button, FormLabel, Stack, Typography} from '@mui/material'
 import {Container} from '@mui/system'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import {useState, FormEvent, useCallback, useEffect, useContext} from 'react'
@@ -48,12 +48,12 @@ interface ArticleFormProps {
 }
 
 export const ArticleForm = ({
-                              purpose,
-                              onSubmit,
-                              article,
-                              articleId,
-                              setLoading,
-                            }: ArticleFormProps) => {
+  purpose,
+  onSubmit,
+  article,
+  articleId,
+  setLoading
+}: ArticleFormProps) => {
   const navigate = useNavigate()
   const {queriedUser} = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
@@ -86,6 +86,29 @@ export const ArticleForm = ({
     }
     setHighlightedButtonId(id);
   };
+
+  const [isValidImageLink, setIsValidImageLink] = useState(false);
+
+  const checkImageURL = (url: string): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => reject(false);
+      img.src = url;
+    });
+  };
+
+  useEffect(() => {
+    const checkValidity = async () => {
+      try {
+        await checkImageURL(customLink);
+        setIsValidImageLink(true);
+      } catch {
+        setIsValidImageLink(false);
+      }
+    };
+    checkValidity().then(r => {return r});
+  }, [customLink, highlightedButtonId]);
 
   const {
     uploadHeader,
@@ -296,49 +319,63 @@ export const ArticleForm = ({
               {'>'}
             </Button>
           </Stack>
-
-
+          <Typography variant='title' sx={{color: 'black'}}>
+            or
+          </Typography>
           <Container>
-            <Typography variant='title' sx={{color: 'black'}}>
-              or
-            </Typography>
-            <Typography variant="h5" gutterBottom>
-              Upload Your Own
-            </Typography>
+            <Stack
+              direction='column'
+              justifyContent='flex-start'
+              alignItems='flex-start'
+              spacing={40}
+              sx={{mb: '10px'}}
+            >
+            <FormLabel style={{color: 'black'}}>Upload Your Own</FormLabel>
+            </Stack>
             <Button
-              variant={highlightedButtonId === 1 ? "contained" : "outlined"}
+              variant="contained"
               color={highlightedButtonId === 1 ? "success" : "primary"}
               onClick={() => handleButtonClick(1)}
+              sx={{ mb: "10px" }}
+              style={{
+                backgroundColor: highlightedButtonId === 1 ? 'grey' : 'white',
+                color: highlightedButtonId === 1 ? 'white' : 'black',
+                border: '2px solid black'
+              }}
             >
               Computer
             </Button>
             <Button
-              variant={highlightedButtonId === 2 ? "contained" : "outlined"}
+              variant="contained"
               color={highlightedButtonId === 2 ? "success" : "primary"}
               onClick={() => handleButtonClick(2)}
+              sx={{ mb: "10px" }}
+              style={{
+                backgroundColor: highlightedButtonId === 2 ? 'grey' : 'white',
+                color: highlightedButtonId === 2 ? 'white' : 'black',
+                border: '2px solid black'
+              }}
             >
               Web
             </Button>
-            {highlightedButtonId === 1 ? (<FileUploader setFile={setFile} file={file}/>): (<LabeledTextField
-              variant='outlined'
-              onTextChange={setCustomLink}
-              placeholder='Paste link to image'
-              text={''}
-              labelWidth={1}
-              multiline={false}
-              value={customLink}
-              type='TextField'
-            />)}
-            {/*{image && (*/}
-            {/*  <img*/}
-            {/*    src={image}*/}
-            {/*    alt="uploaded"*/}
-            {/*    style={{ width: '100%', height: 'auto' }}*/}
-            {/*  />*/}
-            {/*)}*/}
+            {highlightedButtonId === 1 ?
+              <FileUploader setFile={setFile} file={file}/>
+              : <Stack direction='row' spacing={5} alignItems='center'>
+                <TextField
+                  variant='outlined'
+                  onChange={(event) => setCustomLink(event.target.value)}
+                  placeholder='Paste link to image'
+                  multiline={false}
+                  value={customLink}
+                  type='TextField'
+                  sx={{width: '75%'}}
+                />
+                <Typography noWrap>
+                  {isValidImageLink ? 'Image Found' : 'Image Not Found'}
+                </Typography>
+              </Stack>
+            }
           </Container>
-
-
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}

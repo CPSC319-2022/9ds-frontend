@@ -32,7 +32,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
       direction={'row'}
       spacing={2}
       width={'300px'}
-      sx={{ justifyContent: 'space-evenly', alignItems: 'center' }}
+      sx={{ alignItems: 'center' }}
     >
       <Button dark text='RESET' data-testid="reset" onClick={() => setFile(null)} />
       <MUIButton
@@ -61,7 +61,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
         />
       </MUIButton>
       {file != null ? (
-        <Typography paddingLeft={'20px'}>File Selected</Typography>
+        <Typography>File Selected</Typography>
       ) : (
         <Typography>File Unselected</Typography>
       )}
