@@ -218,7 +218,7 @@ const PromoteButton = ({
         setUsersSessionCopy(newUsersSessionCopy)
       }}
       variant='contained'
-      color={role === PromoteButtonRoles.ADMIN ? 'secondary' : 'primary'}
+      color='primary'
     >
       Set
     </Button>
