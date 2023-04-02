@@ -20,7 +20,7 @@ const mockSendEmail = jest.fn()
 describe('EmailVerificationForm', () => {
   beforeEach(() => {
     jest.resetModules();
-    useForgotPasswordEmail.mockReturnValue({
+    (useForgotPasswordEmail as jest.Mock).mockReturnValue({
       sendEmail: jest.fn(),
       error: {code: ''},
       loading: false
@@ -65,7 +65,7 @@ describe('EmailVerificationForm', () => {
   });
 
   test('shows error message when email is invalid', () => {
-    useForgotPasswordEmail.mockReturnValue({
+    (useForgotPasswordEmail as jest.Mock).mockReturnValue({
           sendEmail: mockSendEmail,
           error: {code: 'auth/invalid-email'},
           loading: true
@@ -86,7 +86,7 @@ describe('EmailVerificationForm', () => {
   });
 
   test('shows error message when user not found', () => {
-    useForgotPasswordEmail.mockReturnValue({
+    (useForgotPasswordEmail as jest.Mock).mockReturnValue({
           sendEmail: mockSendEmail,
           error: {code: 'auth/user-not-found'},
           loading: true
@@ -107,7 +107,7 @@ describe('EmailVerificationForm', () => {
   });
 
   test('shows error message when unknown error', () => {
-    useForgotPasswordEmail.mockReturnValue({
+    (useForgotPasswordEmail as jest.Mock).mockReturnValue({
           sendEmail: mockSendEmail,
           error: {code: 'unknown'},
           loading: true
@@ -128,7 +128,7 @@ describe('EmailVerificationForm', () => {
   });
 
   test('navigate to login page when success', () => {
-    useForgotPasswordEmail.mockReturnValue({
+    (useForgotPasswordEmail as jest.Mock).mockReturnValue({
           sendEmail: mockSendEmail,
           error: {code: 'unknown'},
           loading: false
