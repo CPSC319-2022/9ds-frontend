@@ -4,11 +4,12 @@ import { Header, UserRole } from '../../components/Header'
 
 describe('Header Styling', () => {
   beforeAll(async () => {
-    await act( async () => render(
-      <Router>
-        <Header role={UserRole.VISITOR} />
-      </Router>,
-    )
+    await act(async () =>
+      render(
+        <Router>
+          <Header role={UserRole.VISITOR} />
+        </Router>,
+      ),
     )
     jest.setTimeout(15000)
   })
@@ -32,17 +33,7 @@ describe('Header Styling', () => {
       'MuiTypography-root MuiTypography-subheading css-1nrr9hi-MuiTypography-root',
     )
 
-    const [blogButton, loginAndSignUpButton] = screen.getAllByRole('button')
-
-    expect(blogButton).toBeInTheDocument()
-    expect(blogButton).toBeEnabled()
-    expect(blogButton).toHaveClass(
-      'MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium css-1e6y48t-MuiButtonBase-root-MuiButton-root',
-    )
-    expect(blogButton).toContainElement(screen.getByText('BLOG'))
-    expect(screen.getByText('BLOG')).toHaveClass(
-      'MuiTypography-root MuiTypography-button css-9vr8r8-MuiTypography-root',
-    )
+    const [loginAndSignUpButton] = screen.getAllByRole('button')
 
     expect(loginAndSignUpButton).toBeInTheDocument()
     expect(loginAndSignUpButton).toBeEnabled()

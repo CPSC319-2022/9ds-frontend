@@ -15,15 +15,18 @@ describe('Header As Contributor', () => {
 
   jest.mock('../../hooks/firebase/useAuth', () => ({
     ...(jest.requireActual('../../hooks/firebase/useAuth') as any),
-    useSignOut: () => {signOutWrapper: mockSignOutWrapper},
+    useSignOut: () => {
+      signOutWrapper: mockSignOutWrapper
+    },
   }))
   beforeEach(async () => {
-   await act( async() => render(
-      <Router>
-        <Header role={UserRole.CONTRIBUTOR} />
-      </Router>,
+    await act(async () =>
+      render(
+        <Router>
+          <Header role={UserRole.CONTRIBUTOR} />
+        </Router>,
+      ),
     )
-   )
     jest.setTimeout(15000)
   })
 
@@ -40,45 +43,15 @@ describe('Header As Contributor', () => {
     const home = screen.getByText('HOME')
     expect(home).toBeInTheDocument()
 
-    const blog = screen.getByText('BLOG')
+    const blog = screen.getByText('CREATE BLOG POST')
     expect(blog).toBeInTheDocument()
 
     const aboutUs = screen.getByText('ABOUT US')
     expect(aboutUs).toBeInTheDocument()
   })
 
-  test('see menu', () => {
-    const blogBtn = screen.getByTestId('blog-button')
-    userEvent.click(blogBtn)
-
-    const blog = screen.getByText('CREATE BLOG POST')
-    expect(blog).toBeInTheDocument()
-
-    const profile = screen.getByText('PROFILE')
-    expect(profile).toBeInTheDocument()
-  })
-
-  test('click menu', () => {
-    const blogBtn = screen.getByTestId('blog-button')
-    userEvent.click(blogBtn)
-
-
-    const blog = screen.getByText('CREATE BLOG POST')
-    const profile = screen.getByText('PROFILE')
-    userEvent.click(blog)
-
-    userEvent.click(blogBtn)
-    userEvent.click(profile)
-  })
-
-  test('menu close', () => {
-    const blogBtn = screen.getByTestId('blog-button')
-    userEvent.click(blogBtn)
-    userEvent.click(blogBtn)
-  })
-
   test('sign out', async () => {
     const signOutBtn = screen.getByTestId('sign-out-btn')
-    await act( async () => userEvent.click(signOutBtn))
+    await act(async () => userEvent.click(signOutBtn))
   })
 })
