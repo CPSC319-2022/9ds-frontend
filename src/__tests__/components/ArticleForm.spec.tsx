@@ -255,7 +255,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('should display confirmation modal when delete button is clicked', async () => {
-    useUser.mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '123', role: 'contributor' },
     })
     await act(async () =>
