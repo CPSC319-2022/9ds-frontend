@@ -187,7 +187,7 @@ export const IndividualBlogPost = () => {
       // eslint-disable-next-line
       commentEdit.editComment(articleId!, commentID, editCommentContent)
       const updatedComments = comments.map((obj) => {
-        if (obj.content === comment) {
+        if (obj.commentID === commentID) {
           return { ...obj, content: editCommentContent }
         }
         return obj
