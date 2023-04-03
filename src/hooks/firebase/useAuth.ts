@@ -24,6 +24,7 @@ import {
 import { FirestoreErrorCode } from 'firebase/firestore'
 import { UserData } from 'types/UserData'
 import { createNewUser, getUser } from 'utils/firebase/user'
+import { useNavigate } from 'react-router-dom'
 
 export const useAuth = () => {
   const {
@@ -37,6 +38,7 @@ export const useAuth = () => {
 }
 
 export const useCreateUserEmailPassword = () => {
+  const navigate = useNavigate()
   const [error, setError] = useState<FirestoreErrorCode | StorageErrorCode>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
@@ -68,6 +70,7 @@ export const useCreateUserEmailPassword = () => {
                     uid: newUser.uid,
                   })
                   setLoading(false)
+                  navigate('/')
                 })
               })
             })
@@ -85,6 +88,7 @@ export const useCreateUserEmailPassword = () => {
                 uid: newUser.uid,
               })
               setLoading(false)
+              navigate('/')
             })
             .catch((err) => {
               setError(err.code)
@@ -101,6 +105,7 @@ export const useCreateUserEmailPassword = () => {
 }
 
 export const useSignInUserEmailPassword = () => {
+  const navigate = useNavigate()
   const [error, setError] = useState<FirestoreErrorCode | undefined>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
@@ -113,7 +118,6 @@ export const useSignInUserEmailPassword = () => {
     setLoading(true)
     signInWithEmailAndPassword(auth, email, password)
       .then(({ user: newUser }: UserCredential) => {
-        console.log(`Signing in with user uid ${newUser} ${newUser.uid}`)
         getUser(newUser.uid)
           .then((user) => {
             if (user.role === 'banned') {
@@ -124,6 +128,7 @@ export const useSignInUserEmailPassword = () => {
             }
             setLoading(false)
             setUser(user)
+            navigate('/')
           })
           .catch((err) => {
             setError(err)
@@ -143,6 +148,7 @@ export const useSignInUserEmailPassword = () => {
 }
 
 export const useSignInWithGoogle = () => {
+  const navigate = useNavigate()
   const [error, setError] = useState<FirestoreErrorCode | undefined>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
@@ -173,6 +179,7 @@ export const useSignInWithGoogle = () => {
                   username: profile.name as string,
                   uid: result.user.uid,
                 })
+                navigate('/')
               })
               .catch((err) => {
                 setError(err)
@@ -189,6 +196,7 @@ export const useSignInWithGoogle = () => {
               }
               setLoading(false)
               setUser(user)
+              navigate('/')
             })
             .catch((err) => {
               setError(err)
