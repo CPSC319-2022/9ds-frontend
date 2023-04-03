@@ -1,12 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { FileUploader } from 'components/FileUploader/FileUploader'
-import {
-  NotificationProvider,
-} from 'context/NotificationContext'
+import { NotificationProvider } from 'context/NotificationContext'
 import userEvent from '@testing-library/user-event'
 
 describe('FileUploader', () => {
   const setFileMock = jest.fn()
+  global.URL.createObjectURL = jest.fn()
   beforeEach(() => {
     render(
       <NotificationProvider>
@@ -20,7 +19,9 @@ describe('FileUploader', () => {
     expect(screen.getByText('File Unselected')).toBeInTheDocument()
     expect(screen.getByText('DESELECT FILE')).toBeInTheDocument()
     expect(screen.getByText('SELECT FILE')).toBeInTheDocument()
-    expect(screen.getByText('DESELECT FILE').closest('button')).not.toBeEnabled()
+    expect(
+      screen.getByText('DESELECT FILE').closest('button'),
+    ).not.toBeEnabled()
   })
 
   test('Click upload', () => {
@@ -47,6 +48,7 @@ describe('FileUploader', () => {
 
 describe('FileUploader Switch case', () => {
   const setFileMock = jest.fn()
+  global.URL.createObjectURL = jest.fn()
   beforeEach(() => {
     const file = new File(['test'], 'filename', { type: 'image/png' })
     render(
@@ -57,7 +59,7 @@ describe('FileUploader Switch case', () => {
   })
   test('File Selected shown', () => {
     expect(screen.getByText('DESELECT FILE')).toBeEnabled()
-    expect(screen.getByText('File Selected')).toBeInTheDocument()
+    expect(screen.getByTestId('upload-preview')).toBeInTheDocument()
   })
 
   test('Click deselect', () => {
