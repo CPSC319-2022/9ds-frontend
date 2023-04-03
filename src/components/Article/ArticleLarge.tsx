@@ -34,7 +34,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
         borderRadius='12px'
         height='500px'
         sx={{
-          backgroundImage: `url(${article.header_image})`,
+          backgroundImage: `url("${article.header_image}")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: '100%',
           backgroundPosition: 'center center',

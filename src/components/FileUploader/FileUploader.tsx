@@ -6,9 +6,14 @@ import { Button } from '../Button'
 interface FileUploadProps {
   setFile: Function
   file: File | null
+  previewFile?: string
 }
 
-export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
+export const FileUploader: FC<FileUploadProps> = ({
+  setFile,
+  file,
+  previewFile,
+}) => {
   const { dispatch } = useContext(NotificationContext)
 
   const fileSizeHandler = (files: FileList | null) => {
@@ -34,11 +39,17 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
       width={'450px'}
       sx={{ justifyContent: 'flex-start', alignItems: 'center' }}
     >
-      <Button dark disabled={file ? false : true} text='DESELECT FILE' data-testid="reset" onClick={() => setFile(null)} />
+      <Button
+        dark
+        disabled={!file && previewFile === undefined}
+        text='DESELECT FILE'
+        data-testid='reset'
+        onClick={() => setFile(null)}
+      />
       <MUIButton
         size={'small'}
         component='label'
-        data-testid="upload-btn"
+        data-testid='upload-btn'
         variant='contained'
         sx={{ backgroundColor: 'white.main', border: '2px solid black' }}
       >
@@ -46,7 +57,7 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
           SELECT FILE
         </Typography>
         <input
-          data-testid="upload-input"
+          data-testid='upload-input'
           type='file'
           hidden
           accept='image/*'
@@ -55,15 +66,21 @@ export const FileUploader: FC<FileUploadProps> = ({ setFile, file }) => {
             const e = event.target as HTMLInputElement
             e.value = ''
           }}
-          onChange={(event) =>
-            setFile(fileSizeHandler(event.target.files))
-          }
+          onChange={(event) => setFile(fileSizeHandler(event.target.files))}
         />
       </MUIButton>
-      {file != null ? (
-        <Typography paddingLeft={'20px'} variant={"caption"}>File Selected</Typography>
+      {file !== null || previewFile !== undefined ? (
+        <img
+          data-testid='upload-preview'
+          src={file !== null ? URL.createObjectURL(file) : previewFile}
+          width='140px'
+          height='140px'
+          style={{ marginLeft: 30, objectFit: 'contain' }}
+        />
       ) : (
-        <Typography paddingLeft={'20px'} variant={"caption"}>File Unselected</Typography>
+        <Typography paddingLeft={'20px'} variant={'caption'}>
+          File Unselected
+        </Typography>
       )}
     </Stack>
   )
