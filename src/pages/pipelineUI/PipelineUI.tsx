@@ -20,7 +20,7 @@ export const PipelineUI: FC = () => {
       <Stack>
         <Typography variant='h2'>Dev</Typography>
         <div>
-          <Divider position='relative' sx={{ x: '0', y: '0' }} />
+          {/* <Divider position='relative' sx={{ x: '0', y: '0' }} /> */}
           <Stack direction='row' justifyContent='space-evenly'>
             <BuildStep type='check' />
             <BuildStep type='check' />

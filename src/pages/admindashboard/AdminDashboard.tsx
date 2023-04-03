@@ -6,12 +6,13 @@ import {
   useGridApiRef,
 } from '@mui/x-data-grid'
 import { DocumentData } from 'firebase/firestore'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { useSetRole, useUserRoleDirectory } from '../../hooks/firebase/useUser'
 import BlockIcon from '@mui/icons-material/Block'
 import React from 'react'
 import { handleLoading } from '../../components/Spinner/Spinner'
+import { SearchInput } from 'components/SearchInput/SearchInput'
 
 enum PromoteButtonRoles {
   CONTRIBUTOR = 'contributor',
@@ -35,7 +36,6 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <PromoteButton
-          index={params.row.id - 1}
           uid={params.row.uid}
           role={PromoteButtonRoles.READER}
           userCurrentRole={params.row.status}
@@ -52,7 +52,6 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <PromoteButton
-          index={params.row.id - 1}
           uid={params.row.uid}
           role={PromoteButtonRoles.CONTRIBUTOR}
           userCurrentRole={params.row.status}
@@ -69,7 +68,6 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <PromoteButton
-          index={params.row.id - 1}
           uid={params.row.uid}
           role={PromoteButtonRoles.ADMIN}
           userCurrentRole={params.row.status}
@@ -90,11 +88,12 @@ export const AdminDashboard = () => {
     'banned',
   ])
   const { setRole } = useSetRole()
+  const [userSearchTerm, setUserSearchTerm] = useState('')
   const [usersSessionCopy, setUsersSessionCopy] = useState<Array<DocumentData>>(
     [],
   )
   const [selectedRows, setSelectedRows] = useState<Array<DocumentData>>([])
-  const [selectedRowsIndexes, setSelectedRowsIndexes] = useState<Array<number>>(
+  const [selectedRowsIds, setSelectedRowsIds] = useState<Array<string>>(
     [],
   )
 
@@ -103,6 +102,13 @@ export const AdminDashboard = () => {
       setUsersSessionCopy(users)
     }
   }, [users])
+
+  const filteredUsers = useMemo(() => {
+    return usersSessionCopy.filter(({username}) => 
+    (username as string).toLowerCase().includes(userSearchTerm.toLowerCase()))
+  }, [usersSessionCopy, userSearchTerm])
+
+
   const component = (
     <Stack direction={'column'} alignSelf={'stretch'} spacing={10}>
       <Typography variant='h6' color='black.main'>
@@ -112,19 +118,16 @@ export const AdminDashboard = () => {
         <DataGrid
           apiRef={apiRef}
           onRowSelectionModelChange={(rowSelectModel) => {
-            setSelectedRowsIndexes(
-              rowSelectModel.map((v) => parseInt(v as string)),
-            )
+            setSelectedRowsIds(rowSelectModel as string[])
             setSelectedRows(
-              usersSessionCopy.filter((_, i) => {
-                return rowSelectModel.includes(i + 1)
+              usersSessionCopy.filter((v) => {
+                return rowSelectModel.includes(v.uid)
               }),
             )
           }}
-          rows={usersSessionCopy.map((v, i) => {
-            console.log(v)
+          rows={filteredUsers.map((v) => {
             return {
-              id: i + 1,
+              id: v.uid,
               user: v.username,
               uid: v.uid,
               status: v.role,
@@ -154,13 +157,13 @@ export const AdminDashboard = () => {
                 })
                 const newUsersSessionCopy: DocumentData[] =
                   usersSessionCopy.map((v, i) =>
-                    selectedRowsIndexes.includes(i + 1)
+                    selectedRowsIds.includes(v.uid)
                       ? { ...v, role: 'banned' }
                       : v,
                   )
                 setUsersSessionCopy(newUsersSessionCopy)
                 setSelectedRows([])
-                setSelectedRowsIndexes([])
+                setSelectedRowsIds([])
                 apiRef.current.setRowSelectionModel([])
               },
             },
@@ -169,11 +172,18 @@ export const AdminDashboard = () => {
       )}
     </Stack>
   )
-  return <AppWrapper>{handleLoading(loading, component)}</AppWrapper>
+
+  return (
+    <AppWrapper>
+      <Stack sx={{ width: '100%', display: 'flex', justifyContent: 'flex-begin' }}>
+        <SearchInput label='Search by user' handleChange={(value) => setUserSearchTerm(value)} />
+      </Stack>
+      {handleLoading(loading, component)}
+    </AppWrapper>
+  )
 }
 
 interface PromoteButtonProps {
-  index: number
   uid: string
   userCurrentRole: string
   role: PromoteButtonRoles
@@ -182,7 +192,6 @@ interface PromoteButtonProps {
 }
 
 const PromoteButton = ({
-  index,
   uid,
   userCurrentRole,
   role,
@@ -204,21 +213,21 @@ const PromoteButton = ({
         let newUsersSessionCopy: DocumentData[] = []
         if (role === PromoteButtonRoles.ADMIN) {
           newUsersSessionCopy = users.map((v, i) =>
-            i === index ? { ...v, role: 'admin' } : v,
+            v.uid === uid ? { ...v, role: 'admin' } : v,
           )
         } else if (role === PromoteButtonRoles.CONTRIBUTOR) {
           newUsersSessionCopy = users.map((v, i) =>
-            i === index ? { ...v, role: 'contributor' } : v,
+            v.uid === uid ? { ...v, role: 'contributor' } : v,
           )
         } else {
           newUsersSessionCopy = users.map((v, i) =>
-            i === index ? { ...v, role: 'reader' } : v,
+            v.uid === uid ? { ...v, role: 'reader' } : v,
           )
         }
         setUsersSessionCopy(newUsersSessionCopy)
       }}
       variant='contained'
-      color={role === PromoteButtonRoles.ADMIN ? 'secondary' : 'primary'}
+      color='primary'
     >
       Set
     </Button>

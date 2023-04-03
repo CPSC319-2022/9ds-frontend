@@ -1,14 +1,26 @@
-import { Box, Button, FormLabel, Stack, Typography } from '@mui/material'
+import {
+  TextField,
+  Box,
+  Button,
+  FormLabel,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect } from 'react'
+import { useState, FormEvent, useCallback, useEffect, useContext, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Article } from '../../hooks/firebase/useArticle'
+import { Article } from 'types/Article'
 import { useUser } from '../../hooks/firebase/useUser'
 import { DeleteModal } from '../DeleteModal/DeleteModal'
 import { LabeledTextField } from '../LabeledTextField'
 import { TextEditor, TextEditorInfo } from '../TextEditor'
-
+import { FileUploader } from 'components/FileUploader/FileUploader'
+import { NotificationContext } from 'context/NotificationContext'
+import { Spinner } from 'components/Spinner/Spinner'
+import { useDeleteHeader, useUploadHeader } from 'hooks/firebase/useArticle'
+import { storage } from 'firebaseApp'
+import { ref } from '@firebase/storage'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
 
@@ -38,6 +50,7 @@ interface ArticleFormProps {
     published: boolean,
     articleId?: string,
   ) => void
+  setLoading: Function
   article?: Article
   articleId?: string
 }
@@ -47,11 +60,21 @@ export const ArticleForm = ({
   onSubmit,
   article,
   articleId,
+  setLoading,
 }: ArticleFormProps) => {
   const navigate = useNavigate()
   const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
-  const [selectedPictureIndex, setSelectedPictureIndex] = useState(0)
+  const [selectedPictureIndex, setSelectedPictureIndex] = useState<
+    number | null
+  >(null)
+  const [file, setFile] = useState<File | null>(null)
+  const { dispatch } = useContext(NotificationContext)
+  const [priorLink, setPriorLink] = useState<string | null>(null)
+
+  const [firebaseStorageCDNLink, setFirebaseStorageCDNLink] = useState<
+    string | null
+  >(null)
 
   const [isTitleError, setIsTitleError] = useState(false)
   const [title, setTitle] = useState('')
@@ -64,17 +87,86 @@ export const ArticleForm = ({
   const editorInfo: TextEditorInfo = { editorState, setEditorState }
   const [bodyHelperText, setBodyHelperText] = useState('')
 
+  const [isImageError, setIsImageError] = useState(false)
+  const [imageHelperText, setImageHelperText] = useState('')
+
   const [customLink, setCustomLink] = useState('')
+  const [publishWithImage, setPublishWithImage] = useState(false)
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const { deleteHeader } = useDeleteHeader()
 
-  const allowDelete =
+  const [highlightedButtonId, setHighlightedButtonId] = useState(1)
+
+  const handleButtonClick = (id: number) => {
+    if (id === highlightedButtonId) {
+      return
+    }
+    setHighlightedButtonId(id)
+  }
+
+  const [isValidImageLink, setIsValidImageLink] = useState(false)
+
+  const checkImageURL = useMemo(() => {
+    return (url: string): Promise<boolean> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => reject(false);
+        img.src = url;
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkValidity = async () => {
+      try {
+        await checkImageURL(customLink)
+        setIsValidImageLink(true)
+      } catch {
+        setIsValidImageLink(false)
+      }
+    }
+    checkValidity().then((r) => {
+      return r
+    })
+  }, [checkImageURL, customLink, highlightedButtonId])
+
+  const {
+    uploadHeader,
+    error: uploadError,
+    imageURL,
+    loading: uploadLoading,
+  } = useUploadHeader()
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  useEffect(() => {
+    if (!uploadError && imageURL) {
+      const encodedText = JSON.stringify(
+        convertToRaw(editorState.getCurrentContent()),
+      )
+      setLoading(true)
+      if (articleId !== undefined) {
+        onSubmit(title, encodedText, imageURL, publishWithImage, articleId)
+      } else {
+        onSubmit(title, encodedText, imageURL, publishWithImage)
+      }
+      navigate('/profile')
+    }
+    if (uploadError) {
+      dispatch({
+        notificationActionType: 'error',
+        message: 'Failed to upload image',
+      })
+    }
+  }, [imageURL, uploadError])
+
+  const isAuthorOrAdmin =
     articleId &&
-    purpose === ArticleFormPurpose.UPDATE &&
     (queriedUser.role === 'admin' || queriedUser.uid === article?.author_uid)
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLElement>, published: boolean) => {
+      e.preventDefault()
       let isInvalid = false
       if (title.length === 0 || countWords(title) > 60) {
         isInvalid = true
@@ -82,7 +174,7 @@ export const ArticleForm = ({
         if (title.length === 0) {
           setTitleHelperText("Title can't be empty.")
         } else {
-          setBodyHelperText('Title must be 60 words or less.')
+          setTitleHelperText('Title must be 60 words or less.')
         }
       } else {
         setIsTitleError(false)
@@ -97,41 +189,87 @@ export const ArticleForm = ({
         setIsBodyError(false)
         setBodyHelperText('')
       }
+
+      if (
+        selectedPictureIndex === null &&
+        !file &&
+        customLink.length === 0 &&
+        firebaseStorageCDNLink === null
+      ) {
+        isInvalid = true
+        setIsImageError(true)
+        setImageHelperText(
+          'Please pick one of the provided images or provide one yourself',
+        )
+      } else if (
+        +(selectedPictureIndex !== null) +
+          +(file !== null || firebaseStorageCDNLink !== null || false) +
+          +(customLink.length > 0) >=
+        2
+      ) {
+        isInvalid = true
+        setIsImageError(true)
+        setImageHelperText('Please only pick one image option')
+      } else {
+        setIsImageError(false)
+        setImageHelperText('')
+      }
+
       if (!isInvalid) {
+        let link = ''
+
+        if (customLink.length > 0) {
+          link = customLink
+        } else if (selectedPictureIndex !== null) {
+          link = pictureUrls[selectedPictureIndex]
+        } else {
+          link = priorLink || ''
+        }
+        if (priorLink !== null && (priorLink !== link || file)) {
+          deleteHeader(priorLink)
+        }
+        if (file) {
+          setPublishWithImage(published)
+          uploadHeader(file)
+          return
+        }
         const encodedText = JSON.stringify(
           convertToRaw(editorState.getCurrentContent()),
         )
         if (articleId !== undefined) {
-          onSubmit(
-            title,
-            encodedText,
-            customLink.length > 0
-              ? customLink
-              : pictureUrls[selectedPictureIndex],
-            published,
-            articleId,
-          )
+          onSubmit(title, encodedText, link, published, articleId)
         } else {
-          onSubmit(
-            title,
-            encodedText,
-            customLink.length > 0
-              ? customLink
-              : pictureUrls[selectedPictureIndex],
-            published,
-          )
+          onSubmit(title, encodedText, link, published)
         }
         navigate('/profile')
       }
-      e.preventDefault()
     },
-    [title, editorState, customLink, selectedPictureIndex],
+    [
+      title,
+      editorState,
+      customLink,
+      selectedPictureIndex,
+      file,
+      imageURL,
+      firebaseStorageCDNLink,
+    ],
   )
 
   useEffect(() => {
     if (article !== undefined) {
       setTitle(article.title)
-      setCustomLink(article.header_image)
+      setPriorLink(article.header_image)
+      if (pictureUrls.includes(article.header_image)) {
+        const defaultPicIndex = pictureUrls.indexOf(article.header_image)
+        setPictureIndexStart(4 * Math.floor(defaultPicIndex / 4))
+        setSelectedPictureIndex(defaultPicIndex)
+      } else if (article.header_image.includes(ref(storage).bucket)) {
+        setFirebaseStorageCDNLink(article.header_image)
+      } else {
+        setCustomLink(article.header_image)
+      }
+
+      setFile(null)
       setEditorState(() =>
         EditorState.createWithContent(
           convertFromRaw(JSON.parse(article.content)),
@@ -140,7 +278,7 @@ export const ArticleForm = ({
     }
   }, [])
 
-  return (
+  const container = (
     <Container>
       <form
         style={{
@@ -159,7 +297,8 @@ export const ArticleForm = ({
           spacing={40}
         >
           {(purpose === ArticleFormPurpose.CREATE ||
-            purpose === ArticleFormPurpose.DRAFT) && (
+            purpose === ArticleFormPurpose.DRAFT ||
+            purpose === ArticleFormPurpose.UPDATE) && (
             <Button
               variant='contained'
               style={{ backgroundColor: 'black', alignSelf: 'flex-end' }}
@@ -171,12 +310,18 @@ export const ArticleForm = ({
             </Button>
           )}
           <FormLabel style={{ color: 'black' }}>Pick an image</FormLabel>
+          {isImageError && (
+            <FormLabel style={{ color: 'red', marginTop: 0 }}>
+              {imageHelperText}
+            </FormLabel>
+          )}
           <Stack
             justifyContent={'space-between'}
             alignSelf={'stretch'}
             direction='row'
           >
             <Button
+              data-testid={'left'}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart - 4 < 0) {
@@ -202,7 +347,14 @@ export const ArticleForm = ({
                       disabled={!pictureUrls[pictureIndexStart + index]}
                       key={index}
                       onClick={() => {
-                        setSelectedPictureIndex(pictureIndexStart + index)
+                        if (
+                          selectedPictureIndex ===
+                          pictureIndexStart + index
+                        ) {
+                          setSelectedPictureIndex(null)
+                        } else {
+                          setSelectedPictureIndex(pictureIndexStart + index)
+                        }
                       }}
                     >
                       <Box
@@ -210,7 +362,7 @@ export const ArticleForm = ({
                           border:
                             selectedPictureIndex === pictureIndexStart + index
                               ? '5px solid black'
-                              : '0px solid black',
+                              : '5px solid white',
                           width: 150,
                           height: 150,
                           backgroundSize: 'cover',
@@ -224,6 +376,7 @@ export const ArticleForm = ({
                 })}
             </Stack>
             <Button
+              data-testid={'right'}
               style={{ color: 'black' }}
               onClick={() => {
                 if (pictureIndexStart + 4 >= pictureUrls.length) {
@@ -238,20 +391,73 @@ export const ArticleForm = ({
               {'>'}
             </Button>
           </Stack>
-          <LabeledTextField
-            variant='outlined'
-            onTextChange={setCustomLink}
-            placeholder='Paste link to image'
-            text={
-              <Typography variant='title' sx={{ color: 'black' }}>
-                or
-              </Typography>
-            }
-            labelWidth={1}
-            multiline={false}
-            value={customLink}
-            type='TextField'
-          />
+          <Typography variant='title' sx={{ color: 'black' }}>
+            or
+          </Typography>
+          <Container>
+            <Stack
+              direction='column'
+              justifyContent='flex-start'
+              alignItems='flex-start'
+              spacing={40}
+              sx={{ mb: '10px' }}
+            >
+              <FormLabel style={{ color: 'black' }}>Upload Your Own </FormLabel>
+            </Stack>
+            <Button
+              variant='contained'
+              color={highlightedButtonId === 1 ? 'success' : 'primary'}
+              onClick={() => handleButtonClick(1)}
+              sx={{ mb: '10px' }}
+              style={{
+                backgroundColor: highlightedButtonId === 1 ? 'grey' : 'white',
+                color: highlightedButtonId === 1 ? 'white' : 'black',
+                border: '2px solid black',
+              }}
+            >
+              <Typography>Computer</Typography>
+            </Button>
+            <Button
+              variant='contained'
+              color={highlightedButtonId === 2 ? 'success' : 'primary'}
+              onClick={() => handleButtonClick(2)}
+              sx={{ mb: '10px' }}
+              style={{
+                backgroundColor: highlightedButtonId === 2 ? 'grey' : 'white',
+                color: highlightedButtonId === 2 ? 'white' : 'black',
+                border: '2px solid black',
+              }}
+            >
+              <Typography>Web</Typography>
+            </Button>
+            {highlightedButtonId === 1 ? (
+              <FileUploader
+                setFile={(file: File | null) => {
+                  setFile(file)
+                  setFirebaseStorageCDNLink(null)
+                }}
+                file={file}
+                {...(firebaseStorageCDNLink !== null
+                  ? { previewFile: firebaseStorageCDNLink }
+                  : {})}
+              />
+            ) : (
+              <Stack direction='row' spacing={20} alignItems='center'>
+                <TextField
+                  variant='outlined'
+                  onChange={(event) => setCustomLink(event.target.value)}
+                  placeholder='Paste link to image'
+                  multiline={false}
+                  value={customLink}
+                  type='TextField'
+                  sx={{ width: '75%' }}
+                />
+                <Typography variant={'caption'} noWrap>
+                  {isValidImageLink ? 'Image Found' : 'Image Not Found'}
+                </Typography>
+              </Stack>
+            )}
+          </Container>
           <LabeledTextField
             variant='outlined'
             onTextChange={setTitle}
@@ -291,32 +497,37 @@ export const ArticleForm = ({
               {purpose === ArticleFormPurpose.CREATE ||
               purpose === ArticleFormPurpose.DRAFT
                 ? 'CREATE'
-                : 'UPDATE'}
+                : isAuthorOrAdmin &&
+                  purpose === ArticleFormPurpose.UPDATE &&
+                  'UPDATE'}
             </Typography>
           </Button>
-          {allowDelete && (
-            <>
-              <Button
-                sx={{ marginLeft: '8px' }}
-                variant='contained'
-                onClick={() => {
-                  setDeleteModalOpen(true)
-                }}
-              >
-                <Typography>DELETE</Typography>
-              </Button>
-              <DeleteModal
-                articleId={articleId}
-                open={deleteModalOpen}
-                handleClose={() => setDeleteModalOpen(false)}
-                redirect
-              />
-            </>
-          )}
+          {isAuthorOrAdmin &&
+            (purpose === ArticleFormPurpose.UPDATE ||
+              purpose === ArticleFormPurpose.DRAFT) && (
+              <>
+                <Button
+                  sx={{ marginLeft: '8px' }}
+                  variant='contained'
+                  onClick={() => {
+                    setDeleteModalOpen(true)
+                  }}
+                >
+                  <Typography>DELETE</Typography>
+                </Button>
+                <DeleteModal
+                  articleId={articleId}
+                  open={deleteModalOpen}
+                  handleClose={() => setDeleteModalOpen(false)}
+                  redirect
+                />
+              </>
+            )}
         </Box>
       </form>
     </Container>
   )
+  return !uploadLoading ? container : <Spinner />
 }
 
 function countWords(text: string): number {

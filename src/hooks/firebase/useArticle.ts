@@ -9,7 +9,6 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  Timestamp,
   DocumentData,
   QuerySnapshot,
   FirestoreErrorCode,
@@ -18,15 +17,16 @@ import {
   getDoc,
   getDocs,
   startAfter,
+  Timestamp,
 } from 'firebase/firestore'
 import { useState, useEffect, useContext } from 'react'
-import { getUser, UserData } from './useUser'
-import { comment } from './useComment'
-import { db } from '../../firebaseApp'
+import { db, storage } from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import {deleteObject, getDownloadURL, ref, StorageError, uploadBytes} from "@firebase/storage";
+import { UserComment } from 'types/Comment'
+import { UserData } from 'types/UserData'
+import { getUser } from 'utils/firebase/user'
 
 export interface ArticlePreview {
   title: string
@@ -160,7 +160,7 @@ export const useArticleRead = (articleID: string) => {
 export const useArticleComments = (articleID: string, n: number) => {
   const [error, setError] = useState<FirestoreErrorCode>()
   const [loading, setLoading] = useState(true)
-  const [comments, setComments] = useState<comment[]>([])
+  const [comments, setComments] = useState<UserComment[]>([])
   const [loadingNext, setLoadingNext] = useState(false)
 
   const q = query(
@@ -175,15 +175,15 @@ export const useArticleComments = (articleID: string, n: number) => {
   useEffect(() => {
     getDocs(query(q, limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: comment[] = []
+        const commentsData: UserComment[] = []
         docs.forEach((doc) => {
           commentsData.push({
-              commenter_uid: doc.data().commenter_uid,
-              commenter_image: doc.data().commenter_image,
-              commenter_username: doc.data().commenter_username,
-              content: doc.data().content,
-              post_time: doc.data().post_time,
-              commentID: doc.id
+            commenter_uid: doc.data().commenter_uid,
+            commenter_image: doc.data().commenter_image,
+            commenter_username: doc.data().commenter_username,
+            content: doc.data().content,
+            post_time: doc.data().post_time,
+            commentID: doc.id,
           })
         })
         setLoading(false)
@@ -200,16 +200,16 @@ export const useArticleComments = (articleID: string, n: number) => {
     setLoadingNext(true)
     getDocs(query(q, startAfter(lastComment), limit(n)))
       .then((docs: QuerySnapshot<DocumentData>) => {
-        const commentsData: comment[] = []
+        const commentsData: UserComment[] = []
         docs.forEach((doc) => {
           commentsData.push({
-              commenter_uid: doc.data().commenter_uid,
-              commenter_image: doc.data().commenter_image,
-              commenter_username: doc.data().commenter_username,
-              content: doc.data().content,
-              post_time: doc.data().post_time,
-              commentID: doc.id
-        })
+            commenter_uid: doc.data().commenter_uid,
+            commenter_image: doc.data().commenter_image,
+            commenter_username: doc.data().commenter_username,
+            content: doc.data().content,
+            post_time: doc.data().post_time,
+            commentID: doc.id,
+          })
         })
         setLoadingNext(false)
         setComments(comments.concat(commentsData))
@@ -222,6 +222,65 @@ export const useArticleComments = (articleID: string, n: number) => {
   }
 
   return { getNext, error, loading, loadingNext, comments, endOfCollection }
+}
+
+export const useUploadHeader = () => {
+  const { user: currentUser } = useAuth()
+  const [error, setError] = useState<string>()
+  const [loading, setLoading] = useState(false)
+  const [imageURL, setImageURL] = useState('')
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const uuid = require('uuid')
+
+    const uploadHeader = async (file: File) => {
+        if(currentUser == null) {
+            setError("unauthenticated");
+            return
+        }
+        setLoading(true)
+        const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
+        const storageRef = ref(storage, path)
+        uploadBytes(storageRef, file).then(() => {
+            getDownloadURL(storageRef).then((res) => {
+                setLoading(false)
+                setImageURL(res)
+            })
+        }).catch((err) => {
+            setLoading(false)
+            setError(err.code)
+        })
+        
+    }
+  
+
+  return { uploadHeader, error, loading, imageURL }
+}
+
+const deleteStorage = (imageURL: string): Promise<void> => {
+    try{
+        const reference = ref(storage, imageURL)
+        return deleteObject(reference)
+    }
+    catch (e) {
+        return Promise.resolve(); // Not a storage image, no behaviour required
+    }
+}
+
+export const useDeleteHeader = () => {
+    const [error, setError] = useState<string>()
+    const [loading, setLoading] = useState(false)
+
+    const deleteHeader = (imageURL: string) => {
+        setLoading(true)
+        deleteStorage(imageURL).then(() => {
+            setLoading(false)
+        }).catch((err)=> {
+            setError(err.code)
+        })
+    }
+
+    return {deleteHeader, error, loading}
 }
 
 export const useArticleCreate = () => {
@@ -264,7 +323,7 @@ export const useArticleCreate = () => {
       })
   }
 
-  return { createArticle, error, loading, articleId }
+  return { createArticle, error, loading, articleId, setLoading }
 }
 
 export const useArticleEdit = () => {
@@ -287,7 +346,7 @@ export const useArticleEdit = () => {
       publish_time: published ? serverTimestamp() : null,
       title: title,
     }).then(
-      (doc) => {
+      () => {
         setLoading(false)
       },
       (err) => {
@@ -297,53 +356,46 @@ export const useArticleEdit = () => {
     setLoading(false)
   }
 
-  return { editArticle, error, loading }
-}
-
-export const useArticlePost = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
-
-  const postArticle = (articleID: string) => {
-    updateDoc(doc(db, 'article', articleID), {
-      edit_time: serverTimestamp(),
-      published: true,
-      publish_time: serverTimestamp(),
-    }).then(
-      () => {
-        setLoading(false)
-      },
-      (err) => {
-        setError(err.code)
-      },
-    )
-  }
-
-  return { postArticle, error, loading }
+  return { editArticle, error, loading, setLoading }
 }
 
 export const useArticleDelete = (articleID: string) => {
   const { dispatch } = useContext(NotificationContext)
   const [error, setError] = useState<FirestoreErrorCode>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
-  const deleteArticle = async () =>
-    deleteDoc(doc(db, 'article', articleID)).then(
-      () => {
-        dispatch({
-          notificationActionType: 'success',
-          message: `Successfuly deleted article`,
-        })
-        setLoading(false)
-      },
-      (err) => {
-        dispatch({
-          notificationActionType: 'error',
-          message: `Error deleting article. Error code: ${err.code}`,
-        })
-        setError(err.code)
-      },
-    )
+  const deleteArticle = async () => {
+      getDoc(doc(db, 'article', articleID))
+          .then((document) => {
+                  const data = document.data()
+                  if (data === undefined) {
+                      setError('not-found')
+                      return
+                  }
+                  deleteStorage(data.header_image).catch((err) => setError(err.code))
+                  deleteDoc(doc(db, 'article', articleID)).then(
+                      () => {
+                          dispatch({
+                              notificationActionType: 'success',
+                              message: `Successfuly deleted article`,
+                          })
+                          setLoading(false)
+                      },
+                      (err) => {
+                          dispatch({
+                              notificationActionType: 'error',
+                              message: `Error deleting article. Error code: ${err.code}`,
+                          })
+                          setError(err.code)
+                      },
+                  )
+              }
+          ).catch((err) => {
+              setError(err.code)
+      })
+  }
+
+
 
   return { deleteArticle, error, loading }
 }

@@ -1,3 +1,4 @@
+# Dev Environment resources
 resource "google_cloudbuild_trigger" "tf-feature-build" {
   provider = google.dev
   location = "us-west2"
@@ -42,6 +43,7 @@ resource "google_cloudbuild_trigger" "tf-dev-build" {
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
 }
 
+# QA Environment resources
 resource "google_cloudbuild_trigger" "tf-qa-build" {
   provider = google.qa
   location = "us-west2"
@@ -64,6 +66,7 @@ resource "google_cloudbuild_trigger" "tf-qa-build" {
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
 }
 
+# Prod Environment Resources
 resource "google_cloudbuild_trigger" "tf-prod-build" {
   provider = google.prod
   location = "us-west2"

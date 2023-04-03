@@ -7,18 +7,21 @@ import { AuthProvider } from '../context/AuthContext'
 import { theme } from '../theme/Theme'
 import { AppRouter } from './AppRouter'
 import { PipelineUI } from './pipelineUI'
+import { UserProvider } from 'context/UserContext'
 
 export const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <PipelineUI />
       {/* <AuthProvider>
-        <NotificationProvider>
-          <NotificationSnackbar />
-          <ErrorBoundary>
-            <AppRouter />
-          </ErrorBoundary>
-        </NotificationProvider>
+        <UserProvider>
+          <NotificationProvider>
+            <NotificationSnackbar />
+            <ErrorBoundary>
+              <AppRouter />
+            </ErrorBoundary>
+          </NotificationProvider>
+        </UserProvider>
       </AuthProvider> */}
     </ThemeProvider>
   )

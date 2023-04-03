@@ -12,9 +12,8 @@ import { Editor } from 'react-draft-wysiwyg'
 import { AppWrapper } from '../../components/AppWrapper'
 import { BlogMenu } from '../../components/BlogMenu/BlogMenu'
 import { handleLoading } from '../../components/Spinner/Spinner'
-import { UserData, useUser } from '../../hooks/firebase/useUser'
+import { useUser } from '../../hooks/firebase/useUser'
 import {
-  comment,
   useCommentCreate,
   useCommentDelete,
   useCommentEdit,
@@ -25,6 +24,8 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useAuth } from '../../hooks/firebase/useAuth'
+import { UserData } from 'types/UserData'
+import { UserComment } from 'types/Comment'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable security/detect-object-injection */
@@ -43,8 +44,8 @@ export const IndividualBlogPost = () => {
     'https://t4.ftcdn.net/jpg/00/64/67/63/240_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
 
   //  eslint-disable-next-line
-  const articleComments = useArticleComments(articleId!, 5)
-  const [comments, setComments] = useState<comment[]>([])
+  const articleComments = useArticleComments(articleId!, PAGINATION_COUNT)
+  const [comments, setComments] = useState<UserComment[]>([])
   const [commentCount, setCommentCount] = useState(0)
 
   const commentCreate = useCommentCreate()
@@ -61,17 +62,29 @@ export const IndividualBlogPost = () => {
   const auth = useAuth()
   const commentMaxLength = 1200
 
-  const isSignedIn = user.role !== ""
+  const isSignedIn = user.role !== ''
 
   // after useArticleComments finish, update comments
   useEffect(() => {
     // filter articleComments with deletedCommentIDs check
     // because when deleting comment it does not interact with useArticleComments.comments
     const filterDeleted = articleComments.comments.filter(
-      (comment) => !deletedCommentIDs.includes(comment.commentID)
+      (comment) => !deletedCommentIDs.includes(comment.commentID),
     )
     setComments(filterDeleted)
   }, [articleComments.comments])
+
+  // useEffect for reply character limit warning
+  useEffect(() => {
+    if (currComment.length >= commentMaxLength) {
+      setIsCurrCommentError(true)
+      setCommentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+    } else {
+      setIsCurrCommentError(false)
+      setCommentHelperText("")
+    }
+  },[currComment])
+
 
   useEffect(() => {
     if (error) {
@@ -114,7 +127,7 @@ export const IndividualBlogPost = () => {
   // setCommentID on comment after creating using useCommentCreate
   useEffect(() => {
     if (commentCreate.commentId) {
-      const commentToSubmit: comment = {
+      const commentToSubmit: UserComment = {
         commenter_uid: user.uid,
         commenter_image: user.profile_image,
         commenter_username: user.username,
@@ -130,14 +143,13 @@ export const IndividualBlogPost = () => {
     }
   }, [commentCreate.commentId])
 
-
   const Comment = ({
     profilePic,
     comment,
     post_time,
     commenter_uid,
     commenter_username,
-    commentID
+    commentID,
   }: CommentProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
@@ -149,39 +161,27 @@ export const IndividualBlogPost = () => {
     }
     const [isEditing, setIsEditing] = useState(false)
     const [editCommentContent, setEditCommentContent] = useState(comment)
-    const [editCommentContentError, setEditCommentContentError] = useState(false)
-    const [editCommentContentHelperText, setEditCommentContentHelperText] = useState('')
+    const [editCommentContentError, setEditCommentContentError] =
+      useState(false)
+    const [editCommentContentHelperText, setEditCommentContentHelperText] =
+      useState('')
 
     const commentEdit = useCommentEdit()
     const commentDelete = useCommentDelete()
     const ownedBySignedInUser = auth.user && commenter_uid === auth.user.uid
 
-    // character limit for reply
-    useEffect(() => {
-      if (currComment.length === commentMaxLength) {
-        setIsCurrCommentError(true)
-        setCommentHelperText(`Input limit of ${commentMaxLength} characters reached.`)
-      } else {
-        if (currComment.length !== 0) {
-          setIsCurrCommentError(false)
-          setCommentHelperText("")
-        }
-      }
-    },[currComment])
-
     // character limit for editing
     useEffect(() => {
       if (editCommentContent.length === commentMaxLength) {
         setEditCommentContentError(true)
-        setEditCommentContentHelperText(`Input limit of ${commentMaxLength} characters reached.`)
+        setEditCommentContentHelperText(
+          `Input limit of ${commentMaxLength} characters reached.`,
+        )
       } else {
-        if (currComment.length !== 0) {
-          setEditCommentContentError(false)
-          setEditCommentContentHelperText("")
-        }
+        setEditCommentContentError(false)
+        setEditCommentContentHelperText('')
       }
-    },[editCommentContent])
-
+    }, [editCommentContent])
 
     const handleSave = () => {
       // eslint-disable-next-line
@@ -245,7 +245,9 @@ export const IndividualBlogPost = () => {
                     // eslint-disable-next-line
                     commentDelete.deleteComment(articleId!, commentID)
                     setDeletedCommentIDs([...deletedCommentIDs, commentID])
-                    const updatedComments = comments.filter((currComment) => currComment.commentID !== commentID)
+                    const updatedComments = comments.filter(
+                      (currComment) => currComment.commentID !== commentID,
+                    )
                     setComments(updatedComments)
                     setCommentCount((commentCount) => commentCount - 1)
                     dispatch({
@@ -299,7 +301,9 @@ export const IndividualBlogPost = () => {
                       // eslint-disable-next-line
                       commentDelete.deleteComment(articleId!, commentID)
                       setDeletedCommentIDs([...deletedCommentIDs, commentID])
-                      const updatedComments =  comments.filter((currComment) => currComment.commentID !== commentID)
+                      const updatedComments = comments.filter(
+                        (currComment) => currComment.commentID !== commentID,
+                      )
                       setComments(updatedComments)
                       setCommentCount((commentCount) => commentCount - 1)
                       dispatch({
@@ -340,7 +344,7 @@ export const IndividualBlogPost = () => {
             padding: 15,
             backgroundColor: theme.palette.black['50%'],
             overflow: 'hidden',
-            maxWidth: '1200px'
+            maxWidth: '1200px',
           }}
         >
           {isEditing ? (
@@ -366,7 +370,9 @@ export const IndividualBlogPost = () => {
                   onClick={() => {
                     if (editCommentContent.trim() === '') {
                       setEditCommentContentError(true)
-                      setEditCommentContentHelperText('comment cannot be empty.')
+                      setEditCommentContentHelperText(
+                        'comment cannot be empty.'
+                      )
                     } else {
                       setEditCommentContentError(false)
                       setEditCommentContentHelperText('')
@@ -404,7 +410,7 @@ export const IndividualBlogPost = () => {
                     wordWrap: 'break-word',
                     wordBreak: 'break-all',
                     whiteSpace: 'pre-line',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
                   }}
                 >
                   {comment}
@@ -447,7 +453,9 @@ export const IndividualBlogPost = () => {
         paddingLeft={'32px'}
         paddingRight={'32px'}
       >
-        <Typography variant='h3'>{title}</Typography>
+        <Typography variant='h3' sx={{ wordWrap: 'break-word', width: '100%' }}>
+          {title}
+        </Typography>
         <Box
           width={'100%'}
           sx={{
@@ -467,71 +475,71 @@ export const IndividualBlogPost = () => {
           Comments
         </Typography>
         {isSignedIn ? (
-        <Stack
-          direction='row'
-          spacing={28}
-          boxSizing='border-box'
-          alignItems={'baseline'}
-        >
-          <img
-            src={
-              user.profile_image === ''
-                ? defaultProfilePicture
-                : user.profile_image
-            }
-            width='42px'
-            height='42px'
-            style={{ borderRadius: '50%' }}
-          />
-          <Paper
-            style={{
-              borderBottomLeftRadius: 25,
-              borderTopRightRadius: 25,
-              padding: 15,
-              backgroundColor: theme.palette.black['50%'],
-            }}
+          <Stack
+            direction='row'
+            spacing={28}
+            boxSizing='border-box'
+            alignItems={'baseline'}
           >
-            <TextField
-              variant='standard'
-              style={{ minWidth: '500px' }}
-              value={currComment}
-              placeholder='Comment away...'
-              multiline
-              inputProps={{ maxLength: commentMaxLength }}
-              color='primary'
-              onChange={(event) => setCurrComment(event.target.value)}
-              error={isCurrCommentError}
-              helperText={commentHelperText}
+            <img
+              src={
+                user.profile_image === ''
+                  ? defaultProfilePicture
+                  : user.profile_image
+              }
+              width='42px'
+              height='42px'
+              style={{ borderRadius: '50%' }}
             />
-            <Stack
-              direction='row'
-              justifyContent='flex-end'
-              alignItems='center'
-              spacing={2}
-              p='10px'
+            <Paper
+              style={{
+                borderBottomLeftRadius: 25,
+                borderTopRightRadius: 25,
+                padding: 15,
+                backgroundColor: theme.palette.black['50%'],
+              }}
             >
-              <Button
-                variant='contained'
-                onClick={() => {
-                  if (currComment.trim() === '') {
-                    setIsCurrCommentError(true)
-                    setCommentHelperText('Comment cannot be empty.')
-                  } else {
-                    if (user.role === '') {
-                      setIsCurrCommentError(true)
-                      setCommentHelperText('Please sign up or sign in first.')
-                    } else {
-                      handleSubmitComment()
-                    }
-                  }
-                }}
+              <TextField
+                variant='standard'
+                style={{ minWidth: '500px' }}
+                value={currComment}
+                placeholder='Comment away...'
+                multiline
+                inputProps={{ maxLength: commentMaxLength }}
+                color='primary'
+                onChange={(event) => setCurrComment(event.target.value)}
+                error={isCurrCommentError}
+                helperText={commentHelperText}
+              />
+              <Stack
+                direction='row'
+                justifyContent='flex-end'
+                alignItems='center'
+                spacing={2}
+                p='10px'
               >
-                REPLY
-              </Button>
-            </Stack>
-          </Paper>
-        </Stack>
-          ) : (
+                <Button
+                  variant='contained'
+                  onClick={() => {
+                    if (currComment.trim() === '') {
+                      setIsCurrCommentError(true)
+                      setCommentHelperText('Comment cannot be empty.')
+                    } else {
+                      if (user.role === '') {
+                        setIsCurrCommentError(true)
+                        setCommentHelperText('Please sign up or sign in first.')
+                      } else {
+                        handleSubmitComment()
+                      }
+                    }
+                  }}
+                >
+                  REPLY
+                </Button>
+              </Stack>
+            </Paper>
+          </Stack>
+        ) : (
           <Stack
             direction='row'
             spacing={28}
@@ -561,7 +569,10 @@ export const IndividualBlogPost = () => {
                 spacing={20}
                 p='10px'
               >
-                <Typography variant='h6'> Please sign in or sign up to comment</Typography>
+                <Typography variant='h6'>
+                  {' '}
+                  Please sign in or sign up to comment
+                </Typography>
                 <Button
                   variant='outlined'
                   size='large'
@@ -574,7 +585,7 @@ export const IndividualBlogPost = () => {
                     },
                   }}
                   onClick={() => {
-                    if (user.role === "") {
+                    if (user.role === '') {
                       navigate('/get-started')
                     }
                   }}
@@ -582,7 +593,7 @@ export const IndividualBlogPost = () => {
                   <Typography
                     variant='button'
                     noWrap
-                    sx={{color: 'white.main',textTransform: 'none',}}
+                    sx={{ color: 'white.main', textTransform: 'none' }}
                   >
                     LOGIN
                   </Typography>
@@ -624,8 +635,7 @@ export const IndividualBlogPost = () => {
               articleComments.getNext(4)
             }}
           >
-            <
-              Typography
+            <Typography
               variant='button'
               noWrap
               sx={{

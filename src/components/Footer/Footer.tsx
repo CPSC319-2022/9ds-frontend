@@ -2,11 +2,27 @@ import { Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import feather from '../../assets/feather.png'
 import logo from '../../assets/logo.png'
-import React, { FC } from 'react'
+import React, { FC, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../Button/Button'
+import { useApplyPromotion } from '../../hooks/firebase/useUser'
+import { NotificationContext } from '../../context/NotificationContext'
 
-export const Footer: FC = () => {
+export enum UserRole {
+  READER = 'reader',
+  CONTRIBUTOR = 'contributor',
+  ADMIN = 'admin',
+  VISITOR = 'visitor',
+}
+
+interface FooterProps {
+  role: UserRole
+}
+
+export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
+  const applyContributor = useApplyPromotion()
+  const { dispatch } = useContext(NotificationContext)
+
   return (
     <Stack
       spacing={32}
@@ -31,14 +47,42 @@ export const Footer: FC = () => {
         </Typography>
         <img src={feather} width='80rem' height='60rem' />
       </Stack>
-      <Link to={'/get-started'} style={{ textDecoration: 'none' }}>
+      {role === UserRole.VISITOR && (
+        <Link to={'/get-started'} style={{ textDecoration: 'none' }}>
+          <Button
+            variant='outlined'
+            style={{ color: 'white.main', height: '60px', width: '140px' }}
+            text='Get started'
+            size='large'
+          />
+        </Link>
+      )}
+      {role === UserRole.READER && (
         <Button
           variant='outlined'
-          style={{ color: 'white.main', height: '60px', width: '140px' }}
-          text='Get started'
+          data-testid='apply-contributor-btn'
+          style={{ color: 'white.main', height: '66px', width: '266.67px' }}
+          text='Become a contributor'
           size='large'
+          onClick={() => {
+            applyContributor.applyPromotion()
+            dispatch({
+              notificationActionType: 'success',
+              message: `Successfully applied to become contributor, waiting for admin approval!`,
+            })
+          }}
         />
-      </Link>
+      )}
+      {(role === UserRole.ADMIN || role === UserRole.CONTRIBUTOR) && (
+        <Link to={'/create'} style={{ textDecoration: 'none' }}>
+          <Button
+            variant='outlined'
+            style={{ color: 'white.main', height: '66px', width: '153.67px' }}
+            text='Create blog'
+            size='large'
+          />
+        </Link>
+      )}
 
       <Stack
         spacing={5}
@@ -62,6 +106,13 @@ export const Footer: FC = () => {
               About Us
             </Typography>
           </Link>
+          {role !== UserRole.VISITOR && (
+            <Link to={'/profile'} style={{ textDecoration: 'none' }}>
+              <Typography variant='caption' color='white.main'>
+                Profile
+              </Typography>
+            </Link>
+          )}
         </Stack>
         <Typography variant='small' color='white.main'>
           @2023

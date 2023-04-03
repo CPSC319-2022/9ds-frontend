@@ -1,8 +1,7 @@
 {
   "projects": {
-    "default": "ds-blog-local",
-    "dev": "ds-blog-dev",
+    "default": "ds-blog-dev",
     "qa": "ds-blog-qa",
-    "prod": "ds-blog-376905"
+    "prod": "ds-blog-376905",
   }
 }

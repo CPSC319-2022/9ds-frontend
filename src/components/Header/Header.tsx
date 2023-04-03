@@ -1,13 +1,11 @@
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import logo from '../../assets/logo.png'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import Button from '@mui/material/Button'
 import { Link, useNavigate } from 'react-router-dom'
-import { MenuItem, Paper, Popper } from '@mui/material'
 import { useUser } from '../../hooks/firebase/useUser'
 import { useSignOut } from '../../hooks/firebase/useAuth'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 export enum UserRole {
   READER = 'reader',
@@ -24,17 +22,6 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
   const user = useUser().queriedUser
   const signOut = useSignOut()
   const navigate = useNavigate()
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const [open, setOpen] = React.useState<boolean>(false)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (role === UserRole.VISITOR) {
-      navigate('/')
-    } else {
-      setOpen(!open)
-      setAnchorEl(event.currentTarget)
-    }
-  }
 
   return (
     <Stack
@@ -59,53 +46,14 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
           </Typography>
         </Link>
 
-        <Button
-          data-testid='blog-button'
-          id='basic-button'
-          aria-controls={open ? 'basic-menu' : undefined}
-          aria-haspopup='true'
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
-          endIcon={role === UserRole.VISITOR ? null : <KeyboardArrowDownIcon />}
-        >
-          <Typography variant='button' color='black.main'>
-            BLOG
-          </Typography>
-        </Button>
+        {role !== UserRole.VISITOR && role !== UserRole.READER && (
+          <Link to={'/create'} style={{ textDecoration: 'none' }}>
+            <Typography variant='subheading' color='black.main'>
+              CREATE BLOG POST
+            </Typography>
+          </Link>
+        )}
 
-        <Popper id='basic-menu' anchorEl={anchorEl} open={open}>
-          <Paper>
-            {(role === UserRole.ADMIN || role === UserRole.CONTRIBUTOR) && (
-              <MenuItem
-                data-testid='create-menu'
-                sx={{
-                  ':hover': {
-                    bgcolor: '#A292C5',
-                  },
-                }}
-                onClick={() => navigate('/create')}
-              >
-                <Typography variant='subheading' color='black.main'>
-                  CREATE BLOG POST
-                </Typography>
-              </MenuItem>
-            )}
-            <MenuItem
-              aria-label='profile'
-              data-testid='profile'
-              sx={{
-                ':hover': {
-                  bgcolor: '#A292C5',
-                },
-              }}
-              onClick={() => navigate('/profile')}
-            >
-              <Typography variant='subheading' color='black.main'>
-                PROFILE
-              </Typography>
-            </MenuItem>
-          </Paper>
-        </Popper>
         {role === UserRole.ADMIN && (
           <Link to={'/admin'} style={{ textDecoration: 'none' }}>
             <Typography variant='subheading' color='black.main'>
@@ -147,11 +95,11 @@ export const Header: FC<HeaderProps> = ({ role }: HeaderProps) => {
               bgcolor: '#4D3188',
             },
           }}
-          onClick={() => {
+          onClick={async () => {
             if (role === UserRole.VISITOR) {
               navigate('/get-started')
             } else {
-              signOut.signOutWrapper()
+              await signOut.signOutWrapper()
               navigate('/get-started')
             }
           }}

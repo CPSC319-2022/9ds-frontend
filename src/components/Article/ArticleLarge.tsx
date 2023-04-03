@@ -2,9 +2,9 @@ import React, { FC } from 'react'
 import Stack from '@mui/material/Stack'
 import { ButtonBase, Typography } from '@mui/material'
 import { Avatar } from '../Avatar'
-import { ArticlePreview } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
 import { convertToPlainText } from '../TextEditor'
+import { ArticlePreview } from 'types/Article'
 
 export interface ArticleLargeProps {
   article: ArticlePreview
@@ -34,7 +34,7 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
         borderRadius='12px'
         height='500px'
         sx={{
-          backgroundImage: `url(${article.header_image})`,
+          backgroundImage: `url("${article.header_image}")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: '100%',
           backgroundPosition: 'center center',
@@ -63,7 +63,12 @@ export const ArticleLarge: FC<ArticleLargeProps> = ({
                 Featured
               </Typography>
             )}
-            <Typography variant='title' color='white.main'>
+            <Typography
+              variant='title'
+              color='white.main'
+              noWrap
+              sx={{ width: '100%' }}
+            >
               {article.title}
             </Typography>
             <Typography

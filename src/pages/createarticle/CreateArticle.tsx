@@ -11,13 +11,16 @@ export const CreateArticle = () => {
     error: errorArticleCreate,
     loading: loadingArticleCreate,
     articleId,
+    setLoading
   } = useArticleCreate()
   const component = (
     <ArticleForm
     purpose={ArticleFormPurpose.CREATE}
+    setLoading={setLoading}
     onSubmit={(
       title: string,
       body: string,
+
       imagelink: string,
       published: boolean,
       articleId?: string,

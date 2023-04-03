@@ -1,13 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { MemoryRouter as Router } from 'react-router-dom'
-import { Footer } from '../../components/Footer'
+import { Footer, UserRole } from '../../components/Footer'
 
 describe('Footer Styling', () => {
-  beforeAll(() => {
-    render(
+  beforeAll(async () => {
+    await act( async () => render(
       <Router>
-        <Footer />
+        <Footer role={UserRole.VISITOR}/>
       </Router>,
+    )
     )
     jest.setTimeout(15000)
   })

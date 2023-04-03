@@ -1,6 +1,5 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext } from 'react'
 import {
-  User,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -11,12 +10,20 @@ import {
   verifyPasswordResetCode,
   confirmPasswordReset,
   UserCredential,
+  deleteUser,
 } from 'firebase/auth'
-import { doc, FirestoreErrorCode, setDoc } from 'firebase/firestore'
-import { auth, db } from '../../firebaseApp'
-import { UserData, getUser } from './useUser'
+import { auth, storage } from '../../firebaseApp'
 import { FirebaseError } from 'firebase/app'
 import { AuthContext } from '../../context/AuthContext'
+import {
+  getDownloadURL,
+  ref,
+  StorageErrorCode,
+  uploadBytes,
+} from '@firebase/storage'
+import { FirestoreErrorCode } from 'firebase/firestore'
+import { UserData } from 'types/UserData'
+import { createNewUser, getUser } from 'utils/firebase/user'
 
 export const useAuth = () => {
   const {
@@ -29,23 +36,8 @@ export const useAuth = () => {
   }
 }
 
-const createNewUser = (
-  currentUser: User | null,
-  username: string,
-  profile_image: string,
-): Promise<void> => {
-  if (!currentUser) {
-    return Promise.reject('failed_precondition')
-  }
-  return setDoc(doc(db, 'users', currentUser.uid), {
-    role: 'reader',
-    username: username,
-    profile_image: profile_image,
-  })
-}
-
 export const useCreateUserEmailPassword = () => {
-  const [error, setError] = useState<FirestoreErrorCode>()
+  const [error, setError] = useState<FirestoreErrorCode | StorageErrorCode>()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData>()
 
@@ -53,23 +45,52 @@ export const useCreateUserEmailPassword = () => {
     email: string,
     password: string,
     username: string,
-    profile_image: string,
+    profile_image: string | File,
   ) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(({ user: newUser }) => {
-        createNewUser(newUser, username, profile_image)
-          .then(() => {
-            setLoading(false)
-            setUser({
-              role: 'reader',
-              profile_image: profile_image,
-              username: username,
-              uid: newUser.uid,
+        if (!(typeof profile_image === 'string')) {
+          const storageRef = ref(
+            storage,
+            `${newUser.uid}/${profile_image.name}`,
+          )
+          uploadBytes(
+            ref(storage, `${newUser.uid}/${profile_image.name}`),
+            profile_image,
+          )
+            .then(() => {
+              getDownloadURL(storageRef).then((res) => {
+                createNewUser(newUser, username, res).then(() => {
+                  setUser({
+                    role: 'reader',
+                    profile_image: res,
+                    username: username,
+                    uid: newUser.uid,
+                  })
+                  setLoading(false)
+                })
+              })
             })
-          })
-          .catch((err) => {
-            setError(err)
-          })
+            .catch((err) => {
+              setError(err.code)
+              return deleteUser(newUser)
+            })
+        } else {
+          createNewUser(newUser, username, profile_image as string)
+            .then(() => {
+              setUser({
+                role: 'reader',
+                profile_image: profile_image as string,
+                username: username,
+                uid: newUser.uid,
+              })
+              setLoading(false)
+            })
+            .catch((err) => {
+              setError(err.code)
+              return deleteUser(newUser)
+            })
+        }
       })
       .catch((err) => {
         setError(err.code)
@@ -239,7 +260,7 @@ export const useSignOut = () => {
   const [loading, setLoading] = useState(true)
   const [signedOut, setSignedOut] = useState<boolean>()
 
-  const signOutWrapper = () => {
+  const signOutWrapper = () =>
     signOut(auth)
       .then(() => {
         setLoading(false)
@@ -248,7 +269,6 @@ export const useSignOut = () => {
       .catch((err) => {
         setError(err)
       })
-  }
 
   return { signOutWrapper, error, loading, signedOut }
 }
