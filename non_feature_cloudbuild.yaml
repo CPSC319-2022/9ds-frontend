@@ -4,6 +4,7 @@
 # https://dev.to/johannesvitt/a-cicd-pipeline-for-a-react-app-with-google-cloud-build-2cjf
 
 steps:
+
 # Install
 - name: 'gcr.io/cloud-builders/yarn'
   args: ['add', 'package.json']
