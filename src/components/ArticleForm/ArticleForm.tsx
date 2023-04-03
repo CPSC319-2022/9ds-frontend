@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect, useContext } from 'react'
+import { useState, FormEvent, useCallback, useEffect, useContext, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Article } from 'types/Article'
 import { useUser } from '../../hooks/firebase/useUser'
@@ -107,14 +107,16 @@ export const ArticleForm = ({
 
   const [isValidImageLink, setIsValidImageLink] = useState(false)
 
-  const checkImageURL = (url: string): Promise<boolean> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => resolve(true)
-      img.onerror = () => reject(false)
-      img.src = url
-    })
-  }
+  const checkImageURL = useMemo(() => {
+    return (url: string): Promise<boolean> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => reject(false);
+        img.src = url;
+      });
+    };
+  }, []);
 
   useEffect(() => {
     const checkValidity = async () => {
@@ -128,7 +130,7 @@ export const ArticleForm = ({
     checkValidity().then((r) => {
       return r
     })
-  }, [customLink, highlightedButtonId])
+  }, [checkImageURL, customLink, highlightedButtonId])
 
   const {
     uploadHeader,
