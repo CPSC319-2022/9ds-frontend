@@ -7,15 +7,6 @@ import { useUser } from '../../hooks/firebase/useUser'
 import { useAuth } from 'hooks/firebase/useAuth'
 
 export const Login: FC = () => {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-
-  useEffect(() => {
-    if (user) {
-      navigate('/')
-    }
-  }, [user])
-
   return (
     <AppWrapper>
       <GetStartedTitle />
