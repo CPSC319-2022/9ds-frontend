@@ -71,6 +71,7 @@ export const FileUploader: FC<FileUploadProps> = ({
       </MUIButton>
       {file !== null || previewFile !== undefined ? (
         <img
+          data-testid='upload-preview'
           src={file !== null ? URL.createObjectURL(file) : previewFile}
           width='140px'
           height='140px'
