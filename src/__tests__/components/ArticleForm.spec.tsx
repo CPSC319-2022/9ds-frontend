@@ -56,7 +56,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('article data as author', async () => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '123', role: 'contributor' },
     })
     await act(async () =>
@@ -92,7 +92,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('article data as admin', async () => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '567', role: 'admin' },
     })
     await act(async () =>
@@ -128,7 +128,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('article data as contributor who is not author', async () => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '567', role: 'contributor' },
     })
     await act(async () =>
@@ -162,7 +162,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('should display error message when title is changed to empty', async () => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '123', role: 'contributor' },
     })
     await act(async () =>
@@ -193,7 +193,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('should display error message when title is changed to too long', async () => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '123', role: 'contributor' },
     })
     await act(async () =>
@@ -231,7 +231,7 @@ describe('ArticleForm UPDATE', () => {
   })
 
   test('should display error message when body is changed to empty', async () => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { uid: '123', role: 'contributor' },
     })
     await act(async () =>
@@ -280,7 +280,7 @@ describe('ArticleForm UPDATE', () => {
 
 describe('ArticleForm CREATE/DRAFT', () => {
   beforeEach(() => {
-    ;(useUser as jest.Mock).mockReturnValue({
+    (useUser as jest.Mock).mockReturnValue({
       queriedUser: { role: 'contributor' },
     })
     jest.resetModules()
