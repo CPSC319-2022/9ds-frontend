@@ -278,7 +278,6 @@ export const IndividualBlogPost = () => {
                 endIcon={<KeyboardArrowDownIcon />}
               />
               <Menu
-                disableScrollLock={true}
                 id='basic-menu'
                 anchorEl={anchorEl}
                 open={open}
