@@ -1,11 +1,8 @@
-import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Paper, Popper, Stack, TextField, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { theme } from '../../theme/Theme'
-import {
-  useArticleComments,
-  useArticleRead,
-} from '../../hooks/firebase/useArticle'
+import { useArticleComments, useArticleRead } from '../../hooks/firebase/useArticle'
 import { useNavigate, useParams } from 'react-router-dom'
 import { convertFromRaw, EditorState } from 'draft-js'
 import { Editor } from 'react-draft-wysiwyg'
@@ -13,14 +10,9 @@ import { AppWrapper } from '../../components/AppWrapper'
 import { BlogMenu } from '../../components/BlogMenu/BlogMenu'
 import { handleLoading } from '../../components/Spinner/Spinner'
 import { useUser } from '../../hooks/firebase/useUser'
-import {
-  useCommentCreate,
-  useCommentDelete,
-  useCommentEdit,
-} from '../../hooks/firebase/useComment'
+import { useCommentCreate, useCommentDelete, useCommentEdit } from '../../hooks/firebase/useComment'
 import { Timestamp } from 'firebase/firestore'
 import { NotificationContext } from '../../context/NotificationContext'
-import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useAuth } from '../../hooks/firebase/useAuth'
@@ -78,12 +70,12 @@ export const IndividualBlogPost = () => {
   useEffect(() => {
     if (currComment.length >= commentMaxLength) {
       setIsCurrCommentError(true)
-      setCommentHelperText("Input limit of " + commentMaxLength + " characters reached.")
+      setCommentHelperText('Input limit of ' + commentMaxLength + ' characters reached.')
     } else {
       setIsCurrCommentError(false)
-      setCommentHelperText("")
+      setCommentHelperText('')
     }
-  },[currComment])
+  }, [currComment])
 
 
   useEffect(() => {
@@ -144,13 +136,13 @@ export const IndividualBlogPost = () => {
   }, [commentCreate.commentId])
 
   const Comment = ({
-    profilePic,
-    comment,
-    post_time,
-    commenter_uid,
-    commenter_username,
-    commentID,
-  }: CommentProps) => {
+                     profilePic,
+                     comment,
+                     post_time,
+                     commenter_uid,
+                     commenter_username,
+                     commentID,
+                   }: CommentProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -199,38 +191,35 @@ export const IndividualBlogPost = () => {
     }
 
     const renderMenuButton: any = () => {
-      if (ownedBySignedInUser) {
-        return (
-          <>
-            <Button
-              id='basic-button'
-              aria-controls={open ? 'basic-menu' : undefined}
-              aria-haspopup='true'
-              aria-expanded={open ? 'true' : undefined}
-              onClick={handleClick}
-              endIcon={<KeyboardArrowDownIcon />}
-            />
-            <Menu
-              id='basic-menu'
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <MenuItem
-                sx={{
-                  ':hover': {
-                    bgcolor: '#A292C5',
-                  },
-                }}
-                onClick={() => setIsEditing(true)}
-              >
-                <Typography variant='subheading' color='black.main'>
-                  edit
-                </Typography>
-              </MenuItem>
+      return (
+        <>
+          <Button
+            id='basic-button'
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup='true'
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            endIcon={<KeyboardArrowDownIcon />}
+          />
+          <Popper
+            anchorEl={anchorEl}
+            open={open}
+          >
+            <Paper>
+              {ownedBySignedInUser && (
+                <MenuItem
+                  sx={{
+                    ':hover': {
+                      bgcolor: '#A292C5',
+                    },
+                  }}
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Typography variant='subheading' color='black.main'>
+                    edit
+                  </Typography>
+                </MenuItem>
+              )}
               <MenuItem
                 sx={{
                   ':hover': {
@@ -261,66 +250,10 @@ export const IndividualBlogPost = () => {
                   delete
                 </Typography>
               </MenuItem>
-            </Menu>
-          </>
-        )
-      } else {
-        if (user.role === 'admin') {
-          // only has delete button
-          return (
-            <>
-              <Button
-                id='basic-button'
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup='true'
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                endIcon={<KeyboardArrowDownIcon />}
-              />
-              <Menu
-                id='basic-menu'
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button',
-                }}
-              >
-                <MenuItem
-                  sx={{
-                    ':hover': {
-                      bgcolor: '#A292C5',
-                    },
-                  }}
-                  onClick={() => {
-                    const response = confirm(
-                      'Are you sure? You cannot restore comments that have been deleted.',
-                    )
-                    if (response) {
-                      // eslint-disable-next-line
-                      commentDelete.deleteComment(articleId!, commentID)
-                      setDeletedCommentIDs([...deletedCommentIDs, commentID])
-                      const updatedComments = comments.filter(
-                        (currComment) => currComment.commentID !== commentID,
-                      )
-                      setComments(updatedComments)
-                      setCommentCount((commentCount) => commentCount - 1)
-                      dispatch({
-                        notificationActionType: 'success',
-                        message: `Comment deleted.`,
-                      })
-                    }
-                  }}
-                >
-                  <Typography variant='subheading' color='black.main'>
-                    delete
-                  </Typography>
-                </MenuItem>
-              </Menu>
-            </>
-          )
-        }
-      }
+            </Paper>
+          </Popper>
+        </>
+      )
     }
 
     return (
@@ -370,7 +303,7 @@ export const IndividualBlogPost = () => {
                     if (editCommentContent.trim() === '') {
                       setEditCommentContentError(true)
                       setEditCommentContentHelperText(
-                        'comment cannot be empty.'
+                        'comment cannot be empty.',
                       )
                     } else {
                       setEditCommentContentError(false)
@@ -415,7 +348,7 @@ export const IndividualBlogPost = () => {
                   {comment}
                 </Typography>
               </Stack>
-              {renderMenuButton()}
+              {(user.role === 'admin' || ownedBySignedInUser) && renderMenuButton()}
             </Stack>
           )}
         </Paper>
