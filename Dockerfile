@@ -6,9 +6,11 @@ COPY . ./
 
 # declare required arguments to pass into Docker for build
 ARG REACT_APP_ENV
+ARG REACT_APP_CF_URL
 
 # set arguments as build time env variables
 ENV REACT_APP_ENV=${REACT_APP_ENV}
+ENV REACT_APP_CF_URL=${REACT_APP_CF_URL}
 
 # build react app
 RUN yarn

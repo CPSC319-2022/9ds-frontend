@@ -16,12 +16,11 @@ steps:
 - name: 'gcr.io/cloud-builders/yarn'
   args: ['test', '--coverage']
 
-# TODO: Add in integration testing step
-
 # Build Docker Image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend:$COMMIT_SHA', '.',
-  '--build-arg', 'REACT_APP_ENV=$_REACT_APP_ENV'
+  '--build-arg', 'REACT_APP_ENV=$_REACT_APP_ENV',
+  '--build-arg', 'REACT_APP_CF_URL=$_CF_URL'
   ]
 
 # Push Docker Image to GCP Container Registry
