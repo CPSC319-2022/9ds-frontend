@@ -38,7 +38,6 @@ export const PipelineUI: FC = () => {
       .get(DEV_URL, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
         setDevBuildStatus(response.data)
-        console.log(response.data)
       })
       .catch(() => {
         setDevError("Pending to fetch progress for Dev, refresh")
@@ -48,7 +47,6 @@ export const PipelineUI: FC = () => {
       .get(QA_URL, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
         setQABuildStatus(response.data)
-        console.log(response.data)
       })
       .catch(() => {
         setQAError("Pending to fetch progress for QA, refresh")
@@ -58,7 +56,6 @@ export const PipelineUI: FC = () => {
       .get(PROD_URL, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
         setProdBuildStatus(response.data)
-        console.log(response.data)
       })
       .catch(() => {
         setProdError("Pending to fetch progress for Prod, refresh")

@@ -113,7 +113,6 @@ export const useSignInUserEmailPassword = () => {
     setLoading(true)
     signInWithEmailAndPassword(auth, email, password)
       .then(({ user: newUser }: UserCredential) => {
-        console.log(`Signing in with user uid ${newUser} ${newUser.uid}`)
         getUser(newUser.uid)
           .then((user) => {
             if (user.role === 'banned') {
