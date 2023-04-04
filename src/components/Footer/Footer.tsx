@@ -5,7 +5,7 @@ import logo from '../../assets/logo.png'
 import React, { FC, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../Button/Button'
-import { useApplyPromotion } from '../../hooks/firebase/useUser'
+import { useApplyPromotion, useUser } from '../../hooks/firebase/useUser'
 import { NotificationContext } from '../../context/NotificationContext'
 
 export enum UserRole {
@@ -20,6 +20,7 @@ interface FooterProps {
 }
 
 export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
+  const { queriedUser } = useUser();
   const applyContributor = useApplyPromotion()
   const { dispatch } = useContext(NotificationContext)
 
@@ -65,11 +66,20 @@ export const Footer: FC<FooterProps> = ({ role }: FooterProps) => {
           text='Become a contributor'
           size='large'
           onClick={() => {
-            applyContributor.applyPromotion()
-            dispatch({
-              notificationActionType: 'success',
-              message: `Successfully applied to become contributor, waiting for admin approval!`,
-            })
+            if(!queriedUser.promotion_request) {
+              applyContributor.applyPromotion()
+              queriedUser.promotion_request = "requested"
+              dispatch({
+                notificationActionType: 'success',
+                message: `Successfully applied to become contributor, waiting for admin approval!`,
+              })
+            } else {
+              dispatch({
+                notificationActionType: 'error',
+                message: `You have already applied to become contributor, waiting for admin approval!`,
+              })
+            }
+
           }}
         />
       )}
