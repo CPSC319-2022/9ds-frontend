@@ -88,7 +88,6 @@ describe('ArticleForm UPDATE', () => {
     )
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument()
     expect(onSubmitMock).toHaveBeenCalled()
-    expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile')
   })
 
   test('article data as admin', async () => {
@@ -124,7 +123,6 @@ describe('ArticleForm UPDATE', () => {
     )
     expect(screen.queryByText(/title can't be empty/i)).not.toBeInTheDocument()
     expect(onSubmitMock).toHaveBeenCalled()
-    expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile')
   })
 
   test('article data as contributor who is not author', async () => {
@@ -321,7 +319,6 @@ describe('ArticleForm CREATE/DRAFT', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByText(/body can't be empty/i)).not.toBeInTheDocument()
     expect(onSubmitMock).toHaveBeenCalled()
-    expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile')
   })
 
   test('should render draft form', async () => {
@@ -484,7 +481,6 @@ describe('ArticleForm CREATE/DRAFT', () => {
       false,
       'hello',
     )
-    expect(mockedUsedNavigate).toHaveBeenCalledWith('/profile')
   })
 
   it('renders FileUploader component when "Computer" button is clicked', async () => {

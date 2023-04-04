@@ -23,7 +23,13 @@ import { useState, useEffect, useContext } from 'react'
 import { db, storage } from '../../firebaseApp'
 import { useAuth } from './useAuth'
 import { NotificationContext } from '../../context/NotificationContext'
-import {deleteObject, getDownloadURL, ref, StorageError, uploadBytes} from "@firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  StorageError,
+  uploadBytes,
+} from '@firebase/storage'
 import { UserComment } from 'types/Comment'
 import { UserData } from 'types/UserData'
 import { getUser } from 'utils/firebase/user'
@@ -233,54 +239,55 @@ export const useUploadHeader = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const uuid = require('uuid')
 
-    const uploadHeader = async (file: File) => {
-        if(currentUser == null) {
-            setError("unauthenticated");
-            return
-        }
-        setLoading(true)
-        const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
-        const storageRef = ref(storage, path)
-        uploadBytes(storageRef, file).then(() => {
-            getDownloadURL(storageRef).then((res) => {
-                setLoading(false)
-                setImageURL(res)
-            })
-        }).catch((err) => {
-            setLoading(false)
-            setError(err.code)
-        })
-        
+  const uploadHeader = async (file: File) => {
+    if (currentUser == null) {
+      setError('unauthenticated')
+      return
     }
-  
+    setLoading(true)
+    const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
+    const storageRef = ref(storage, path)
+    uploadBytes(storageRef, file)
+      .then(() => {
+        getDownloadURL(storageRef).then((res) => {
+          setLoading(false)
+          setImageURL(res)
+        })
+      })
+      .catch((err) => {
+        setLoading(false)
+        setError(err.code)
+      })
+  }
 
   return { uploadHeader, error, loading, imageURL }
 }
 
 const deleteStorage = (imageURL: string): Promise<void> => {
-    try{
-        const reference = ref(storage, imageURL)
-        return deleteObject(reference)
-    }
-    catch (e) {
-        return Promise.resolve(); // Not a storage image, no behaviour required
-    }
+  try {
+    const reference = ref(storage, imageURL)
+    return deleteObject(reference)
+  } catch (e) {
+    return Promise.resolve() // Not a storage image, no behaviour required
+  }
 }
 
 export const useDeleteHeader = () => {
-    const [error, setError] = useState<string>()
-    const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string>()
+  const [loading, setLoading] = useState(false)
 
-    const deleteHeader = (imageURL: string) => {
-        setLoading(true)
-        deleteStorage(imageURL).then(() => {
-            setLoading(false)
-        }).catch((err)=> {
-            setError(err.code)
-        })
-    }
+  const deleteHeader = (imageURL: string) => {
+    setLoading(true)
+    deleteStorage(imageURL)
+      .then(() => {
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError(err.code)
+      })
+  }
 
-    return {deleteHeader, error, loading}
+  return { deleteHeader, error, loading }
 }
 
 export const useArticleCreate = () => {
@@ -365,37 +372,36 @@ export const useArticleDelete = (articleID: string) => {
   const [loading, setLoading] = useState(false)
 
   const deleteArticle = async () => {
-      getDoc(doc(db, 'article', articleID))
-          .then((document) => {
-                  const data = document.data()
-                  if (data === undefined) {
-                      setError('not-found')
-                      return
-                  }
-                  deleteStorage(data.header_image).catch((err) => setError(err.code))
-                  deleteDoc(doc(db, 'article', articleID)).then(
-                      () => {
-                          dispatch({
-                              notificationActionType: 'success',
-                              message: `Successfuly deleted article`,
-                          })
-                          setLoading(false)
-                      },
-                      (err) => {
-                          dispatch({
-                              notificationActionType: 'error',
-                              message: `Error deleting article. Error code: ${err.code}`,
-                          })
-                          setError(err.code)
-                      },
-                  )
-              }
-          ).catch((err) => {
-              setError(err.code)
+    setLoading(true)
+    getDoc(doc(db, 'article', articleID))
+      .then((document) => {
+        const data = document.data()
+        if (data === undefined) {
+          setError('not-found')
+          return
+        }
+        deleteStorage(data.header_image).catch((err) => setError(err.code))
+        deleteDoc(doc(db, 'article', articleID)).then(
+          () => {
+            dispatch({
+              notificationActionType: 'success',
+              message: `Successfuly deleted article`,
+            })
+            setLoading(false)
+          },
+          (err) => {
+            dispatch({
+              notificationActionType: 'error',
+              message: `Error deleting article. Error code: ${err.code}`,
+            })
+            setError(err.code)
+          },
+        )
+      })
+      .catch((err) => {
+        setError(err.code)
       })
   }
-
-
 
   return { deleteArticle, error, loading }
 }

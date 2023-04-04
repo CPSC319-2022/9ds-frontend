@@ -8,7 +8,14 @@ import {
 } from '@mui/material'
 import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect, useContext, useMemo } from 'react'
+import {
+  useState,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useContext,
+  useMemo,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Article } from 'types/Article'
 import { useUser } from '../../hooks/firebase/useUser'
@@ -110,13 +117,13 @@ export const ArticleForm = ({
   const checkImageURL = useMemo(() => {
     return (url: string): Promise<boolean> => {
       return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => reject(false);
-        img.src = url;
-      });
-    };
-  }, []);
+        const img = new Image()
+        img.onload = () => resolve(true)
+        img.onerror = () => reject(false)
+        img.src = url
+      })
+    }
+  }, [])
 
   useEffect(() => {
     const checkValidity = async () => {
@@ -241,7 +248,6 @@ export const ArticleForm = ({
         } else {
           onSubmit(title, encodedText, link, published)
         }
-        navigate('/profile')
       }
     },
     [

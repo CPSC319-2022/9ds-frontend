@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import { useArticleDelete } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
@@ -25,18 +25,23 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   redirect,
 }) => {
   const navigate = useNavigate()
-  const { deleteArticle, error } = useArticleDelete(articleId)
+  const { deleteArticle, loading, error } = useArticleDelete(articleId)
   const [deleting, setDeleting] = useState(false)
 
   const handleDelete = async () => {
     setDeleting(true)
-    await deleteArticle()
-    setDeleting(false)
-    handleClose()
-    if (redirect && !error) {
-      navigate('/')
-    }
+    deleteArticle()
   }
+
+  useEffect(() => {
+    if (deleting && !loading) {
+      setDeleting(false)
+      handleClose()
+      if (redirect && !error) {
+        navigate('/')
+      }
+    }
+  }, [deleting, loading, error])
 
   return (
     <Dialog

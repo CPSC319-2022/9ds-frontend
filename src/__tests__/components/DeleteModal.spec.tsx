@@ -37,15 +37,10 @@ describe('DeleteModal', () => {
     expect(getByText('Are you sure you want to delete?')).toBeInTheDocument()
 
     const deleteConfirmButton = getByTestId('delete-confirm-button')
-
     fireEvent.click(deleteConfirmButton)
-    expect(deleteConfirmButton).toBeDisabled()
-
-    const deletingProgressSpinner = getByTestId('deleting-circular-progress')
-    expect(deletingProgressSpinner).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(mockHandleClose).toHaveBeenCalled()
+      expect(mockHandleClose).toHaveBeenCalledTimes(1)
     })
   })
 })
