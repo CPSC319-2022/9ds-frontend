@@ -55,7 +55,7 @@ export const BuildStep: FC<BuildStepProps> = ({ type, step }) => {
       minWidth='120px'
     >
       <Typography variant='h5'>Step {step}</Typography>
-      <Typography variant='subheading'>{getStepName(step)}</Typography>
+      <Typography data-testid="step-heading" variant='subheading'>{getStepName(step)}</Typography>
       {type === 'cancel' ? (
         <Cancel color='error' />
       ) : type === 'check' ? (
