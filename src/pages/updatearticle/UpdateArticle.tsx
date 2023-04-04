@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
 import { handleLoading } from '../../components/Spinner/Spinner'
 import { useArticleEdit, useArticleRead } from '../../hooks/firebase/useArticle'
+import { NotificationContext } from 'context/NotificationContext'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -14,12 +15,9 @@ interface UpdateArticleProps {
 export const UpdateArticle = ({ isDraft = false }: UpdateArticleProps) => {
   const { articleId } = useParams()
   const navigate = useNavigate()
-  const {
-    editArticle,
-    error: errorArticleUpdate,
-    loading: loadingArticleEdit,
-    setLoading
-  } = useArticleEdit()
+  const { editArticle } = useArticleEdit()
+  const { dispatch } = useContext(NotificationContext)
+  const [loading, setLoading] = useState(false)
   const {
     error: errorArticleRead,
     loading: loadingArticleRead,
@@ -28,13 +26,14 @@ export const UpdateArticle = ({ isDraft = false }: UpdateArticleProps) => {
 
   useEffect(() => {
     if (errorArticleRead) {
+      dispatch({
+        notificationActionType: 'error',
+        message: `Article does not exist.`,
+      })
       navigate('/profile')
-      throw new Error('Article does not exist.')
-    } else if (errorArticleUpdate) {
-      navigate('/profile')
-      throw new Error('Error updating article')
     }
-  })
+  }, [errorArticleRead])
+
   const component = article && (
     <ArticleForm
       purpose={isDraft ? ArticleFormPurpose.DRAFT : ArticleFormPurpose.UPDATE}
@@ -46,20 +45,40 @@ export const UpdateArticle = ({ isDraft = false }: UpdateArticleProps) => {
         articleId?: string,
       ) => {
         if (articleId) {
+          setLoading(true)
           editArticle(articleId, title, body, imagelink, published)
+            .then(() => {
+              dispatch({
+                notificationActionType: 'success',
+                message: `Successfully updated!`,
+              })
+            })
+            .catch((err) => {
+              dispatch({
+                notificationActionType: 'error',
+                message: `Error editing. Please try again later!`,
+              })
+            })
+            .finally(() => {
+              setLoading(false)
+              navigate('/profile')
+            })
         } else {
-          throw Error('Error editing article. Please try again later!')
+          dispatch({
+            notificationActionType: 'error',
+            message: `Error editing. Please try again later!`,
+          })
+          navigate('/profile')
         }
       }}
       article={article}
       articleId={articleId}
-      setLoading={setLoading}
     />
   )
 
   return (
     <AppWrapper>
-      {handleLoading(loadingArticleRead || loadingArticleEdit, component)}
+      {handleLoading(loadingArticleRead || loading, component)}
     </AppWrapper>
   )
 }
