@@ -59,42 +59,42 @@ export const PipelineUI: FC = () => {
   arr.map((num) => {
     if (devBuildStatus && devBuildStatus['status'] === 'DNE') {
       dev_res.push(<BuildStep key={num + 101} step={num} type='working' />) // Should have a pending status, :salute:
-    } else if (devBuildStatus && devBuildStatus['current_step'] > num) {
-      dev_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
-    } else if (devBuildStatus && devBuildStatus['status'] === 'WORKING') {
-      dev_res.push(<BuildStep key={num + 101} step={num} type='working' />)
     } else if (devBuildStatus && devBuildStatus['status'] === 'DONE') {
       dev_res.push(<BuildStep key={num + 101} step={num} type='check' />)
-    } else {
+    } else if (devBuildStatus && devBuildStatus['current_step'] > num) {
+      dev_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
+    } else if (devBuildStatus && devBuildStatus['status'] === 'ERROR') {
       dev_res.push(<BuildStep key={num + 101} step={num} type='cancel' />)
+    } else {
+      dev_res.push(<BuildStep key={num + 101} step={num} type='working' />)
     }
   })
 
   arr.map((num) => {
     if (qaBuildStatus && qaBuildStatus['status'] === 'DNE') {
       qa_res.push(<BuildStep key={num + 101} step={num} type='working' />) // Should have a pending status, :salute:
-    } else if (qaBuildStatus && qaBuildStatus['current_step'] > num) {
-      qa_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
-    } else if (qaBuildStatus && qaBuildStatus['status'] === 'WORKING') {
-      qa_res.push(<BuildStep key={num + 101} step={num} type='working' />)
     } else if (qaBuildStatus && qaBuildStatus['status'] === 'DONE') {
       qa_res.push(<BuildStep key={num + 101} step={num} type='check' />)
-    } else {
+    } else if (qaBuildStatus && qaBuildStatus['current_step'] > num) {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
+    } else if (qaBuildStatus && qaBuildStatus['status'] === 'ERROR') {
       qa_res.push(<BuildStep key={num + 101} step={num} type='cancel' />)
+    } else {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='working' />)
     }
   })
 
   arr.map((num) => {
     if (prodBuildStatus && prodBuildStatus['status'] === 'DNE') {
       prod_res.push(<BuildStep key={num + 101} step={num} type='working' />) // Should have a pending status, :salute:
-    } else if (prodBuildStatus && prodBuildStatus['current_step'] > num) {
-      prod_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
-    } else if (prodBuildStatus && prodBuildStatus['status'] === 'WORKING') {
-      prod_res.push(<BuildStep key={num + 101} step={num} type='working' />)
     } else if (prodBuildStatus && prodBuildStatus['status'] === 'DONE') {
       prod_res.push(<BuildStep key={num + 101} step={num} type='check' />)
-    } else {
+    } else if (prodBuildStatus && prodBuildStatus['current_step'] > num) {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
+    } else if (prodBuildStatus && prodBuildStatus['status'] === 'ERROR') {
       prod_res.push(<BuildStep key={num + 101} step={num} type='cancel' />)
+    } else {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='working' />)
     }
   })
   return (
