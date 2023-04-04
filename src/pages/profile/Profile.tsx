@@ -16,8 +16,8 @@ import { handleLoading } from '../../components/Spinner/Spinner'
 import { ItemGrid, ItemGridType } from '../../components/ItemGrid'
 
 export const Profile: FC = () => {
- const { error, loading, queriedUser } = useUser()
- const [localUser, setLocalUser] = useState(queriedUser);
+  const { error, loading, queriedUser } = useUser()
+  const [localUser, setLocalUser] = useState(queriedUser)
   const { applyPromotion } = useApplyPromotion()
   const {
     getNext: articleGetNext,
@@ -46,24 +46,23 @@ export const Profile: FC = () => {
     }
   }, [error, articleError, draftError])
 
-
-
   const handleButtonClick = () => {
-    setLocalUser({...localUser,promotion_request:"requested"})
+    setLocalUser({ ...localUser, promotion_request: 'requested' })
 
     if (localUser.promotion_request) {
       dispatch({
         notificationActionType: 'error',
         message: `You have already applied to become contributor, waiting for admin approval!`,
-      });
+      })
     } else {
-      applyPromotion();
+      applyPromotion()
+      queriedUser.promotion_request = 'requested'
       dispatch({
         notificationActionType: 'success',
         message: `Successfully applied to become contributor, waiting for admin approval!`,
-      });
+      })
     }
-  };
+  }
 
   const component = useMemo(() => {
     return (
@@ -125,7 +124,11 @@ export const Profile: FC = () => {
         </Stack>
         {queriedUser.role !== 'reader' && (
           <>
-            <Typography variant='h5' color='black.main' justifyItems='flex-start'>
+            <Typography
+              variant='h5'
+              color='black.main'
+              justifyItems='flex-start'
+            >
               Posts
             </Typography>
             <ItemGrid items={UserArticles} type={ItemGridType.ARTICLES} />
@@ -145,7 +148,7 @@ export const Profile: FC = () => {
                 LOAD MORE...
               </Button>
             )}
-  
+
             <Typography variant='h5' color='black.main'>
               Drafts
             </Typography>
@@ -170,11 +173,11 @@ export const Profile: FC = () => {
         )}
       </Stack>
     )
-  }, [localUser.promotion_request]);
+  }, [localUser.promotion_request])
 
-return (
-  <AppWrapper>
-    {handleLoading(loading || loadingArticles || loadingDrafts, component)}
-  </AppWrapper>
-)
+  return (
+    <AppWrapper>
+      {handleLoading(loading || loadingArticles || loadingDrafts, component)}
+    </AppWrapper>
+  )
 }
