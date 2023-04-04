@@ -7,13 +7,13 @@ import { BuildStep } from 'components/BuildStep'
 import axios from 'axios'
 
 const DEV_URL: any = process.env.REACT_APP_DEV_CF_URL
-const QA_URL: any = process.env.REACT_APP_QA_CF_URL
-const PROD_URL: any = process.env.REACT_APP_PROD_CF_URL
+// const QA_URL: any = process.env.REACT_APP_QA_CF_URL
+// const PROD_URL: any = process.env.REACT_APP_PROD_CF_URL
 
 export const PipelineUI: FC = () => {
   const arr: number[] = [0, 1, 2, 3, 4, 5]
-  const currStep = 4
-  const currStatus = 'WORKING'
+  // const currStep = 4
+  // const currStatus = 'WORKING'
   const res: any = []
 
   const [buildStatus, setBuildStatus] = useState(null)
@@ -61,10 +61,10 @@ export const PipelineUI: FC = () => {
         direction='column'
         alignItems='center'
         border='4px solid black'
-        width='200px'
+        width='280px'
         borderRadius='12px'
       >
-        <Typography variant='h3'>Build UI</Typography>
+        <Typography variant='h3'>Pipeline UI</Typography>
       </Stack>
       <Stack direction='row' spacing={24} width='100%'>
         <Typography variant='h2'>{process.env.REACT_APP_ENV}</Typography>
