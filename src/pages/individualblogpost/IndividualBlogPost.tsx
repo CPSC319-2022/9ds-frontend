@@ -1,4 +1,5 @@
-import { Box, Button, Paper, Popper, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Dialog,
+  DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Popper, Stack, TextField, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { Article } from '../../components/Article'
 import { theme } from '../../theme/Theme'
@@ -143,12 +144,19 @@ export const IndividualBlogPost = () => {
                      commenter_username,
                      commentID,
                    }: CommentProps) => {
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
+    const [dialogOpen, setDialogOpen] = useState(false)
+    const [menuOpen, setMenuOpen] = useState(false)
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation()
+      setMenuOpen(!menuOpen)
       setAnchorEl(event.currentTarget)
     }
     const handleClose = () => {
+      setMenuOpen(false)
       setAnchorEl(null)
     }
     const [isEditing, setIsEditing] = useState(false)
@@ -161,6 +169,8 @@ export const IndividualBlogPost = () => {
     const commentEdit = useCommentEdit()
     const commentDelete = useCommentDelete()
     const ownedBySignedInUser = auth.user && commenter_uid === auth.user.uid
+
+
 
     // character limit for editing
     useEffect(() => {
@@ -203,7 +213,7 @@ export const IndividualBlogPost = () => {
           />
           <Popper
             anchorEl={anchorEl}
-            open={open}
+            open={menuOpen}
           >
             <Paper>
               {ownedBySignedInUser && (
@@ -227,29 +237,59 @@ export const IndividualBlogPost = () => {
                   },
                 }}
                 onClick={() => {
-                  const response = confirm(
-                    'Are you sure? You cannot restore comments that have been deleted.',
-                  )
-                  if (response) {
-                    // eslint-disable-next-line
-                    commentDelete.deleteComment(articleId!, commentID)
-                    setDeletedCommentIDs([...deletedCommentIDs, commentID])
-                    const updatedComments = comments.filter(
-                      (currComment) => currComment.commentID !== commentID,
-                    )
-                    setComments(updatedComments)
-                    setCommentCount((commentCount) => commentCount - 1)
-                    dispatch({
-                      notificationActionType: 'success',
-                      message: `Comment deleted.`,
-                    })
-                  }
+                  setDialogOpen(true)
                 }}
               >
                 <Typography variant='subheading' color='black.main'>
                   delete
                 </Typography>
               </MenuItem>
+              <Dialog
+                open={dialogOpen}
+                onClose={() => {
+                  handleClose()
+                  setDialogOpen(false)
+                }}
+              >
+                <DialogTitle id='alert-dialog-title'>
+                  Are you sure you want to delete?
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id='alert-dialog-description'>
+                    This action cannot be undone
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button variant='contained' onClick={() => {
+                    setDialogOpen(false)
+                    handleClose()
+                  }}>
+                    No
+                  </Button>
+                  <Button
+                    variant='contained'
+                    color='error'
+                    onClick={() => {
+                      setDialogOpen(false)
+                      handleClose()
+                      setComments((comments) =>
+                        comments.filter(
+                          (currComment) => currComment.commentID !== comment
+                        )
+                      )
+                      setCommentCount((commentCount) => commentCount - 1)
+
+                      dispatch({
+                        notificationActionType: 'success',
+                        message: `Comment deleted.`,
+                      })
+                    }}
+                    data-testid='delete-confirm-button'
+                  >
+                    Yes
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Paper>
           </Popper>
         </>
