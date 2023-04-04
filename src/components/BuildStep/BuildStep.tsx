@@ -6,9 +6,10 @@ import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../Button/Button'
 import { CheckCircleOutline, Cancel } from '@mui/icons-material'
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 
 type BuildStepProps = {
-  type: 'cancel' | 'check'
+  type: 'cancel' | 'check' | 'working'
   step: number
 }
 
@@ -57,8 +58,10 @@ export const BuildStep: FC<BuildStepProps> = ({ type, step }) => {
       <Typography variant='subheading'>{getStepName(step)}</Typography>
       {type === 'cancel' ? (
         <Cancel color='error' />
-      ) : (
+      ) : type === 'check' ? (
         <CheckCircleOutline color='success' />
+      ) : (
+        <RemoveCircleIcon color='info' />
       )}
     </Stack>
   )
