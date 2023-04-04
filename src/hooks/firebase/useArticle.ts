@@ -248,11 +248,10 @@ export const useUploadHeader = () => {
     const path = `${currentUser.uid}/${file.name}${uuid.v4()}`
     const storageRef = ref(storage, path)
     uploadBytes(storageRef, file)
-      .then(() => {
-        getDownloadURL(storageRef).then((res) => {
-          setLoading(false)
-          setImageURL(res)
-        })
+      .then(() => getDownloadURL(storageRef))
+      .then((res) => {
+        setLoading(false)
+        setImageURL(res)
       })
       .catch((err) => {
         setLoading(false)
