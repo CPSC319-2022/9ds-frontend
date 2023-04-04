@@ -1,7 +1,5 @@
-import React, { FC, useEffect, useState } from 'react'
-import { AppWrapper } from '../../components/AppWrapper'
-import { Typography, Stack, Divider, IconButton } from '@mui/material'
-import { AboutUsCard } from '../../components/AboutUsCard'
+import { FC, useEffect, useState } from 'react'
+import { Typography, Stack, IconButton } from '@mui/material'
 import { BuildStep } from 'components/BuildStep'
 import { CheckCircleOutline, Cancel } from '@mui/icons-material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
@@ -12,44 +10,91 @@ const DEV_URL: any = process.env.REACT_APP_DEV_CF_URL
 const QA_URL: any = process.env.REACT_APP_QA_CF_URL
 const PROD_URL: any = process.env.REACT_APP_PROD_CF_URL
 
+// The following is the definition of bad code - Luke
 export const PipelineUI: FC = () => {
   const arr: number[] = [0, 1, 2, 3, 4, 5]
 
-  const res: any = []
+  const dev_res: any = []
+  const qa_res: any = []
+  const prod_res: any = []
 
-  const [buildStatus, setBuildStatus] = useState(null)
+  const [devBuildStatus, setDevBuildStatus] = useState(null)
+  const [qaBuildStatus, setQABuildStatus] = useState(null)
+  const [prodBuildStatus, setProdBuildStatus] = useState(null)
   const [refresh, setRefresh] = useState(false)
 
   useEffect(() => {
-    let requestURL: any = ''
-
-    if (process.env.REACT_APP_ENV === 'DEV') {
-      requestURL = DEV_URL
-    } else if (process.env.REACT_APP_ENV === 'PROD') {
-      requestURL = PROD_URL
-    } else {
-      requestURL = QA_URL
-    }
     axios
       .get(DEV_URL, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
-        setBuildStatus(response.data)
+        setDevBuildStatus(response.data)
         console.log(response.data)
       })
       .catch((e) => {
         console.log(e)
       })
+
+    axios
+      .get(QA_URL, { headers: { 'Content-Type': 'application/json' } })
+      .then((response) => {
+        setQABuildStatus(response.data)
+        console.log(response.data)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+
+    axios
+      .get(PROD_URL, { headers: { 'Content-Type': 'application/json' } })
+      .then((response) => {
+        setProdBuildStatus(response.data)
+        console.log(response.data)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+
   }, [refresh])
 
   arr.map((num) => {
-    if (buildStatus && buildStatus['current_step'] > num) {
-      res.push(<BuildStep key={num + 100} step={num} type='check' />)
-    } else if (buildStatus && buildStatus['status'] === 'WORKING') {
-      res.push(<BuildStep key={num + 100} step={num} type='working' />)
-    } else if (buildStatus && buildStatus['status'] === 'DONE') {
-      res.push(<BuildStep key={num + 100} step={num} type='check' />)
+    if (devBuildStatus && devBuildStatus['status'] === 'DNE') {
+      dev_res.push(<BuildStep key={num + 101} step={num} type='working' />) // Should have a pending status, :salute:
+    } else if (devBuildStatus && devBuildStatus['current_step'] > num) {
+      dev_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
+    } else if (devBuildStatus && devBuildStatus['status'] === 'WORKING') {
+      dev_res.push(<BuildStep key={num + 101} step={num} type='working' />)
+    } else if (devBuildStatus && devBuildStatus['status'] === 'DONE') {
+      dev_res.push(<BuildStep key={num + 101} step={num} type='check' />)
     } else {
-      res.push(<BuildStep key={num + 100} step={num} type='cancel' />)
+      dev_res.push(<BuildStep key={num + 101} step={num} type='cancel' />)
+    }
+  })
+
+  arr.map((num) => {
+    if (qaBuildStatus && qaBuildStatus['status'] === 'DNE') {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='working' />) // Should have a pending status, :salute:
+    } else if (qaBuildStatus && qaBuildStatus['current_step'] > num) {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
+    } else if (qaBuildStatus && qaBuildStatus['status'] === 'WORKING') {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='working' />)
+    } else if (qaBuildStatus && qaBuildStatus['status'] === 'DONE') {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='check' />)
+    } else {
+      qa_res.push(<BuildStep key={num + 101} step={num} type='cancel' />)
+    }
+  })
+
+  arr.map((num) => {
+    if (prodBuildStatus && prodBuildStatus['status'] === 'DNE') {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='working' />) // Should have a pending status, :salute:
+    } else if (prodBuildStatus && prodBuildStatus['current_step'] > num) {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='check' />) // I don't know why 100 -> 101 works, but I take it
+    } else if (prodBuildStatus && prodBuildStatus['status'] === 'WORKING') {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='working' />)
+    } else if (prodBuildStatus && prodBuildStatus['status'] === 'DONE') {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='check' />)
+    } else {
+      prod_res.push(<BuildStep key={num + 101} step={num} type='cancel' />)
     }
   })
   return (
@@ -91,7 +136,7 @@ export const PipelineUI: FC = () => {
       </Stack>
 
       <Stack direction='row' spacing={24} width='100%'>
-        <Typography variant='h2'>{process.env.REACT_APP_ENV}</Typography>
+        <Typography variant='h2'>{"Dev"}</Typography>
 
         <Stack
           direction='row'
@@ -99,7 +144,39 @@ export const PipelineUI: FC = () => {
           width='100%'
           alignItems='center'
         >
-          {res}
+          {dev_res}
+        </Stack>
+        <IconButton onClick={() => setRefresh((prev) => !prev)}>
+          <RefreshIcon sx={{ width: '75px', height: '75px' }} />
+        </IconButton>
+      </Stack>
+
+      <Stack direction='row' spacing={24} width='100%'>
+        <Typography variant='h2'>{"QA"}</Typography>
+
+        <Stack
+          direction='row'
+          justifyContent='space-evenly'
+          width='100%'
+          alignItems='center'
+        >
+          {qa_res}
+        </Stack>
+        <IconButton onClick={() => setRefresh((prev) => !prev)}>
+          <RefreshIcon sx={{ width: '75px', height: '75px' }} />
+        </IconButton>
+      </Stack>
+
+      <Stack direction='row' spacing={24} width='100%'>
+        <Typography variant='h2'>{"Prod"}</Typography>
+
+        <Stack
+          direction='row'
+          justifyContent='space-evenly'
+          width='100%'
+          alignItems='center'
+        >
+          {prod_res}
         </Stack>
         <IconButton onClick={() => setRefresh((prev) => !prev)}>
           <RefreshIcon sx={{ width: '75px', height: '75px' }} />

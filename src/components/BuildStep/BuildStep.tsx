@@ -1,10 +1,6 @@
 import { Typography } from '@mui/material'
 import { Stack } from '@mui/system'
-import feather from '../../assets/feather.png'
-import logo from '../../assets/logo.png'
-import React, { FC } from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '../Button/Button'
+import { FC } from 'react'
 import { CheckCircleOutline, Cancel } from '@mui/icons-material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 
@@ -16,22 +12,22 @@ type BuildStepProps = {
 const getStepName = (step: number) => {
   let stepName
   switch (step) {
-    case 1:
+    case 0:
       stepName = 'Install Dependencies'
       break
-    case 2:
+    case 1:
       stepName = 'Lint'
       break
-    case 3:
+    case 2:
       stepName = 'Unit Tests'
       break
-    case 4:
+    case 3:
       stepName = 'Dockerize'
       break
-    case 5:
+    case 4:
       stepName = 'Send to GCR'
       break
-    case 6:
+    case 5:
       stepName = 'Deploy'
       break
     default:
