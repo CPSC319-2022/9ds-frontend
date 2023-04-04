@@ -9,7 +9,57 @@ import { CheckCircleOutline, Cancel } from '@mui/icons-material'
 
 type BuildStepProps = {
   type: 'cancel' | 'check'
+  step: number
 }
-export const BuildStep: FC<BuildStepProps> = ({ type }) => {
-  return type === 'cancel' ? <Cancel /> : <CheckCircleOutline />
+
+const getStepName = (step: number) => {
+  let stepName
+  switch (step) {
+    case 1:
+      stepName = 'Install Dependencies'
+      break
+    case 2:
+      stepName = 'Lint'
+      break
+    case 3:
+      stepName = 'Unit Tests'
+      break
+    case 4:
+      stepName = 'Dockerize'
+      break
+    case 5:
+      stepName = 'Send to GCR'
+      break
+    case 6:
+      stepName = 'Deploy'
+      break
+    default:
+      stepName = 'Install Dependencies'
+      break
+  }
+  return stepName
+}
+
+export const BuildStep: FC<BuildStepProps> = ({ type, step }) => {
+  return (
+    <Stack
+      direction='column'
+      justifyContent='center'
+      alignItems='center'
+      border='2px solid black'
+      borderRadius='12px'
+      spacing={8}
+      boxSizing='border-box'
+      p='4px'
+      minWidth='120px'
+    >
+      <Typography variant='h5'>Step {step}</Typography>
+      <Typography variant='subheading'>{getStepName(step)}</Typography>
+      {type === 'cancel' ? (
+        <Cancel color='error' />
+      ) : (
+        <CheckCircleOutline color='success' />
+      )}
+    </Stack>
+  )
 }
