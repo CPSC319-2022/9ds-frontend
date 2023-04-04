@@ -1,0 +1,11 @@
+{
+    "name": "latest-deployment-reader",
+    "version": "0.0.1",
+    "description": "Cloud function to read the latest deployment from firestore and get information",
+    "main": "deployment-reader.js",
+    "dependencies": {
+        "@google-cloud/firestore": "^6.5.0",
+        "@google-cloud/functions-framework": "^3.1.3",
+        "@google-cloud/storage": "^6.9.5"
+    }
+}

@@ -13,6 +13,9 @@ import BlockIcon from '@mui/icons-material/Block'
 import React from 'react'
 import { handleLoading } from '../../components/Spinner/Spinner'
 import { SearchInput } from 'components/SearchInput/SearchInput'
+import { Button as CustomButton } from '../../components/Button'
+import { useNavigate } from 'react-router-dom'
+
 
 enum PromoteButtonRoles {
   CONTRIBUTOR = 'contributor',
@@ -80,6 +83,7 @@ const columns: GridColDef[] = [
 ]
 
 export const AdminDashboard = () => {
+  const navigate = useNavigate()
   const apiRef = useGridApiRef()
   const { users, loading } = useUserRoleDirectory(null, [
     'reader',
@@ -176,7 +180,10 @@ export const AdminDashboard = () => {
   return (
     <AppWrapper>
       <Stack sx={{ width: '100%', display: 'flex', justifyContent: 'flex-begin' }}>
+        <Stack spacing={40} direction="row" sx={{alignItems: 'center', justifyContent: "space-between"}}>
         <SearchInput label='Search by user' handleChange={(value) => setUserSearchTerm(value)} />
+        <CustomButton text="View Pipeline" onClick={() => navigate('/pipeline/ui')} />
+        </Stack>
       </Stack>
       {handleLoading(loading, component)}
     </AppWrapper>

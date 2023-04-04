@@ -1,0 +1,9 @@
+{
+    "name": "latest-deployment-logger",
+    "version": "0.0.1",
+    "description": "Cloud function to write the logBucket and ID of latest deployment",
+    "main": "deployment-logger.js",
+    "dependencies": {
+        "@google-cloud/firestore": "^6.5.0"
+    }
+}
