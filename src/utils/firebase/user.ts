@@ -37,6 +37,7 @@ export const getUser = async (uid: string | null): Promise<UserData> => {
       profile_image: document.data().profile_image,
       username: document.data().username,
       uid: document.id,
+      promotion_request: document.data().promotion_request,
     }
   } else {
     return Promise.reject('not-found')

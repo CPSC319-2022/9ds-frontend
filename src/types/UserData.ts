@@ -3,6 +3,7 @@ export interface UserData {
   profile_image: string
   username: string
   uid: string
+  promotion_request?: string | null
 }
 
 export interface AdminUserData {
