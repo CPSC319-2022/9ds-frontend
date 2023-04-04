@@ -8,7 +8,14 @@ import {
 } from '@mui/material'
 import { Container } from '@mui/system'
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js'
-import { useState, FormEvent, useCallback, useEffect, useContext, useMemo } from 'react'
+import {
+  useState,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useContext,
+  useMemo,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Article } from 'types/Article'
 import { useUser } from '../../hooks/firebase/useUser'
@@ -50,7 +57,6 @@ interface ArticleFormProps {
     published: boolean,
     articleId?: string,
   ) => void
-  setLoading: Function
   article?: Article
   articleId?: string
 }
@@ -60,9 +66,7 @@ export const ArticleForm = ({
   onSubmit,
   article,
   articleId,
-  setLoading,
 }: ArticleFormProps) => {
-  const navigate = useNavigate()
   const { queriedUser } = useUser()
   const [pictureIndexStart, setPictureIndexStart] = useState(0)
   const [selectedPictureIndex, setSelectedPictureIndex] = useState<
@@ -110,13 +114,13 @@ export const ArticleForm = ({
   const checkImageURL = useMemo(() => {
     return (url: string): Promise<boolean> => {
       return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => reject(false);
-        img.src = url;
-      });
-    };
-  }, []);
+        const img = new Image()
+        img.onload = () => resolve(true)
+        img.onerror = () => reject(false)
+        img.src = url
+      })
+    }
+  }, [])
 
   useEffect(() => {
     const checkValidity = async () => {
@@ -144,13 +148,11 @@ export const ArticleForm = ({
       const encodedText = JSON.stringify(
         convertToRaw(editorState.getCurrentContent()),
       )
-      setLoading(true)
       if (articleId !== undefined) {
         onSubmit(title, encodedText, imageURL, publishWithImage, articleId)
       } else {
         onSubmit(title, encodedText, imageURL, publishWithImage)
       }
-      navigate('/profile')
     }
     if (uploadError) {
       dispatch({
@@ -241,7 +243,6 @@ export const ArticleForm = ({
         } else {
           onSubmit(title, encodedText, link, published)
         }
-        navigate('/profile')
       }
     },
     [

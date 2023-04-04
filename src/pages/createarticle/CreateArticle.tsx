@@ -1,37 +1,48 @@
+import { useContext, useState } from 'react'
 import { AppWrapper } from '../../components/AppWrapper'
 import { ArticleForm, ArticleFormPurpose } from '../../components/ArticleForm'
 import { handleLoading } from '../../components/Spinner/Spinner'
 import { useArticleCreate } from '../../hooks/firebase/useArticle'
+import { useNavigate } from 'react-router-dom'
+import { NotificationContext } from 'context/NotificationContext'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export const CreateArticle = () => {
-  const {
-    createArticle,
-    error: errorArticleCreate,
-    loading: loadingArticleCreate,
-    articleId,
-    setLoading
-  } = useArticleCreate()
+  const { createArticle, articleId } = useArticleCreate()
+  const navigate = useNavigate()
+  const { dispatch } = useContext(NotificationContext)
+  const [loading, setLoading] = useState(false)
   const component = (
     <ArticleForm
-    purpose={ArticleFormPurpose.CREATE}
-    setLoading={setLoading}
-    onSubmit={(
-      title: string,
-      body: string,
-
-      imagelink: string,
-      published: boolean,
-      articleId?: string,
-    ) => {
-      createArticle(title, body, imagelink, published)
-    }}
-  />
+      purpose={ArticleFormPurpose.CREATE}
+      onSubmit={(
+        title: string,
+        body: string,
+        imagelink: string,
+        published: boolean,
+        articleId?: string,
+      ) => {
+        setLoading(true)
+        createArticle(title, body, imagelink, published)
+          .then(() => {
+            dispatch({
+              notificationActionType: 'success',
+              message: `Success!`,
+            })
+          })
+          .catch((err) => {
+            dispatch({
+              notificationActionType: 'error',
+              message: `There was an error. Please try again.`,
+            })
+          })
+          .finally(() => {
+            setLoading(false)
+            navigate('/profile')
+          })
+      }}
+    />
   )
-  return (
-    <AppWrapper>
-      {handleLoading(loadingArticleCreate, component)}
-    </AppWrapper>
-  )
+  return <AppWrapper>{handleLoading(loading, component)}</AppWrapper>
 }

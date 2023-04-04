@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useContext, useState } from 'react'
 import Button from '@mui/material/Button'
 import { useArticleDelete } from '../../hooks/firebase/useArticle'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material'
+import { NotificationContext } from 'context/NotificationContext'
 
 interface DeleteModalProps {
   articleId: string
@@ -25,15 +26,24 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   redirect,
 }) => {
   const navigate = useNavigate()
-  const { deleteArticle, error } = useArticleDelete(articleId)
+  const { dispatch } = useContext(NotificationContext)
+  const { deleteArticle } = useArticleDelete(articleId)
   const [deleting, setDeleting] = useState(false)
 
   const handleDelete = async () => {
     setDeleting(true)
-    await deleteArticle()
+    try {
+      await deleteArticle()
+    } catch (err) {
+      dispatch({
+        notificationActionType: 'error',
+        message: `Error deleting article. `,
+      })
+    }
+
     setDeleting(false)
     handleClose()
-    if (redirect && !error) {
+    if (redirect) {
       navigate('/')
     }
   }
