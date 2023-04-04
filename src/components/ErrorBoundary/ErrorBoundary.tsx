@@ -1,11 +1,11 @@
-import React, { ErrorInfo, ReactElement } from 'react'
+import React, { ErrorInfo, ReactElement, ReactNode } from 'react'
 import {
   NotificationActionType,
   NotificationContext,
 } from '../../context/NotificationContext'
 
 interface ErrorBoundaryProps {
-  children: ReactElement
+  children: ReactNode
 }
 
 // Has to be a class component to use componentDidCatch,
@@ -17,11 +17,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
 
   static contextType = NotificationContext
 
-  static getDerivedStateFromError(error: Error) {
-    return { errorMessage: error.toString() }
+  static getDerivedStateFromError(_error: Error) {
+    return
   }
 
-  // eslint-disable-next-line
   componentDidCatch(error: Error, _errorInfo: ErrorInfo) {
     const { dispatch } = this.context as {
       dispatch: React.Dispatch<{
