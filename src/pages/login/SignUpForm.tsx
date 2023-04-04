@@ -160,7 +160,7 @@ export const SignUpForm = () => {
   return (
     <form onSubmit={(event) => handleSignUp(event)} data-testid='sign-up-form'>
       <Stack
-        width='390px'
+        width='410px'
         direction='column'
         justifyContent='flex-start'
         alignItems='stretch'
