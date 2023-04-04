@@ -1,4 +1,4 @@
-# Dev Environment resources
+# Archive cloud functions
 resource "google_storage_bucket_object" "dev_deployment_reader_archive" {
   provider = google.dev
   name     = "latest-deployment-reader.zip"
@@ -6,6 +6,42 @@ resource "google_storage_bucket_object" "dev_deployment_reader_archive" {
   source   = "latest-deployment-reader.zip"
 }
 
+resource "google_storage_bucket_object" "dev_deploymennt_logger_archive" {
+  provider = google.dev
+  name     = "latest-deployment-logger.zip"
+  bucket   = google_storage_bucket.dev_bucket.name
+  source   = "latest-deployment-logger.zip"
+}
+
+resource "google_storage_bucket_object" "qa_deployment_reader_archive" {
+  provider = google.qa
+  name     = "latest-deployment-reader.zip"
+  bucket   = google_storage_bucket.qa_bucket.name
+  source   = "latest-deployment-reader.zip"
+}
+
+resource "google_storage_bucket_object" "qa_deploymennt_logger_archive" {
+  provider = google.qa
+  name     = "latest-deployment-logger.zip"
+  bucket   = google_storage_bucket.qa_bucket.name
+  source   = "latest-deployment-logger.zip"
+}
+
+resource "google_storage_bucket_object" "prod_deployment_reader_archive" {
+  provider = google.prod
+  name     = "latest-deployment-reader.zip"
+  bucket   = google_storage_bucket.prod_bucket.name
+  source   = "latest-deployment-reader.zip"
+}
+
+resource "google_storage_bucket_object" "prod_deploymennt_logger_archive" {
+  provider = google.prod
+  name     = "latest-deployment-logger.zip"
+  bucket   = google_storage_bucket.prod_bucket.name
+  source   = "latest-deployment-logger.zip"
+}
+
+# deploy readDeployment function
 resource "google_cloudfunctions_function" "dev_readDeployment" {
   provider      = google.dev
   name          = "readDeployment"
@@ -31,6 +67,57 @@ resource "google_cloudfunctions_function_iam_binding" "dev_invoker" {
   members        = ["allUsers"]
 }
 
+resource "google_cloudfunctions_function" "qa_readDeployment" {
+  provider      = google.qa
+  name          = "readDeployment"
+  description   = "Latest Deployment Reader deployed using tf"
+  runtime       = "nodejs18"
+  region        = "us-west2"
+  max_instances = 50
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.qa_bucket.name
+  source_archive_object = google_storage_bucket_object.qa_deployment_reader_archive.name
+  entry_point           = "readDeployment"
+
+  trigger_http = true
+}
+
+resource "google_cloudfunctions_function_iam_binding" "qa_invoker" {
+  provider       = google.qa
+  project        = google_cloudfunctions_function.qa_readDeployment.project
+  region         = google_cloudfunctions_function.qa_readDeployment.region
+  cloud_function = google_cloudfunctions_function.qa_readDeployment.name
+  role           = "roles/cloudfunctions.invoker"
+  members        = ["allUsers"]
+}
+
+resource "google_cloudfunctions_function" "prod_readDeployment" {
+  provider      = google.prod
+  name          = "readDeployment"
+  description   = "Latest Deployment Reader deployed using tf"
+  runtime       = "nodejs18"
+  region        = "us-west2"
+  max_instances = 50
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.prod_bucket.name
+  source_archive_object = google_storage_bucket_object.prod_deployment_reader_archive.name
+  entry_point           = "readDeployment"
+
+  trigger_http = true
+}
+
+resource "google_cloudfunctions_function_iam_binding" "prod_invoker" {
+  provider       = google.prod
+  project        = google_cloudfunctions_function.prod_readDeployment.project
+  region         = google_cloudfunctions_function.prod_readDeployment.region
+  cloud_function = google_cloudfunctions_function.prod_readDeployment.name
+  role           = "roles/cloudfunctions.invoker"
+  members        = ["allUsers"]
+}
+
+# Deploy pipeline
 resource "google_cloudbuild_trigger" "tf-feature-build" {
   provider = google.dev
   location = "us-west2"
@@ -70,19 +157,65 @@ resource "google_cloudbuild_trigger" "tf-dev-build" {
 
   substitutions = {
     _REACT_APP_ENV = "DEV"
-    _CF_URL        = google_cloudfunctions_function.dev_readDeployment.https_trigger_url
+    _DEV_CF_URL    = google_cloudfunctions_function.dev_readDeployment.https_trigger_url
+    _QA_CF_URL     = google_cloudfunctions_function.qa_readDeployment.https_trigger_url
+    _PROD_CF_URL   = google_cloudfunctions_function.prod_readDeployment.https_trigger_url
   }
 
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
 }
 
-resource "google_storage_bucket_object" "dev_deploymennt_logger_archive" {
-  provider = google.dev
-  name     = "latest-deployment-logger.zip"
-  bucket   = google_storage_bucket.dev_bucket.name
-  source   = "latest-deployment-logger.zip"
+resource "google_cloudbuild_trigger" "tf-qa-build" {
+  provider = google.qa
+  location = "us-west2"
+  name     = "tf-qa-build"
+  filename = "non_feature_cloudbuild.yaml"
+
+  github {
+    owner = "CPSC319-2022"
+    name  = "9ds-frontend"
+    push {
+      branch       = "^qa$"
+      invert_regex = false
+    }
+  }
+
+  substitutions = {
+    _REACT_APP_ENV = "QA"
+    _DEV_CF_URL    = google_cloudfunctions_function.dev_readDeployment.https_trigger_url
+    _QA_CF_URL     = google_cloudfunctions_function.qa_readDeployment.https_trigger_url
+    _PROD_CF_URL   = google_cloudfunctions_function.prod_readDeployment.https_trigger_url
+  }
+
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
 }
 
+resource "google_cloudbuild_trigger" "tf-prod-build" {
+  provider = google.prod
+  location = "us-west2"
+  name     = "tf-prod-build"
+  filename = "non_feature_cloudbuild.yaml"
+
+  github {
+    owner = "CPSC319-2022"
+    name  = "9ds-frontend"
+    push {
+      branch       = "^prod$"
+      invert_regex = false
+    }
+  }
+
+  substitutions = {
+    _REACT_APP_ENV = "PROD"
+    _DEV_CF_URL    = google_cloudfunctions_function.dev_readDeployment.https_trigger_url
+    _QA_CF_URL     = google_cloudfunctions_function.qa_readDeployment.https_trigger_url
+    _PROD_CF_URL   = google_cloudfunctions_function.prod_readDeployment.https_trigger_url
+  }
+
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+}
+
+# Deploy logDeployment function
 resource "google_cloudfunctions_function" "dev_logDeployment" {
   provider      = google.dev
   name          = "logDeployment"
@@ -106,69 +239,6 @@ resource "google_cloudfunctions_function" "dev_logDeployment" {
   }
 }
 
-# QA Environment resources
-resource "google_storage_bucket_object" "qa_deployment_reader_archive" {
-  provider = google.qa
-  name     = "latest-deployment-reader.zip"
-  bucket   = google_storage_bucket.qa_bucket.name
-  source   = "latest-deployment-reader.zip"
-}
-
-resource "google_cloudfunctions_function" "qa_readDeployment" {
-  provider      = google.qa
-  name          = "readDeployment"
-  description   = "Latest Deployment Reader deployed using tf"
-  runtime       = "nodejs18"
-  region        = "us-west2"
-  max_instances = 50
-
-  available_memory_mb   = 128
-  source_archive_bucket = google_storage_bucket.qa_bucket.name
-  source_archive_object = google_storage_bucket_object.qa_deployment_reader_archive.name
-  entry_point           = "readDeployment"
-
-  trigger_http = true
-}
-
-resource "google_cloudfunctions_function_iam_binding" "qa_invoker" {
-  provider       = google.qa
-  project        = google_cloudfunctions_function.qa_readDeployment.project
-  region         = google_cloudfunctions_function.qa_readDeployment.region
-  cloud_function = google_cloudfunctions_function.qa_readDeployment.name
-  role           = "roles/cloudfunctions.invoker"
-  members        = ["allUsers"]
-}
-
-resource "google_cloudbuild_trigger" "tf-qa-build" {
-  provider = google.qa
-  location = "us-west2"
-  name     = "tf-qa-build"
-  filename = "non_feature_cloudbuild.yaml"
-
-  github {
-    owner = "CPSC319-2022"
-    name  = "9ds-frontend"
-    push {
-      branch       = "^qa$"
-      invert_regex = false
-    }
-  }
-
-  substitutions = {
-    _REACT_APP_ENV = "QA"
-    _CF_URL        = google_cloudfunctions_function.qa_readDeployment.https_trigger_url
-  }
-
-  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
-}
-
-resource "google_storage_bucket_object" "qa_deploymennt_logger_archive" {
-  provider = google.qa
-  name     = "latest-deployment-logger.zip"
-  bucket   = google_storage_bucket.qa_bucket.name
-  source   = "latest-deployment-logger.zip"
-}
-
 resource "google_cloudfunctions_function" "qa_logDeployment" {
   provider      = google.qa
   name          = "logDeployment"
@@ -190,69 +260,6 @@ resource "google_cloudfunctions_function" "qa_logDeployment" {
   environment_variables = {
     TRIGGER_ID = google_cloudbuild_trigger.tf-qa-build.trigger_id
   }
-}
-
-# Prod Environment Resources
-resource "google_storage_bucket_object" "prod_deployment_reader_archive" {
-  provider = google.prod
-  name     = "latest-deployment-reader.zip"
-  bucket   = google_storage_bucket.prod_bucket.name
-  source   = "latest-deployment-reader.zip"
-}
-
-resource "google_cloudfunctions_function" "prod_readDeployment" {
-  provider      = google.prod
-  name          = "readDeployment"
-  description   = "Latest Deployment Reader deployed using tf"
-  runtime       = "nodejs18"
-  region        = "us-west2"
-  max_instances = 50
-
-  available_memory_mb   = 128
-  source_archive_bucket = google_storage_bucket.prod_bucket.name
-  source_archive_object = google_storage_bucket_object.prod_deployment_reader_archive.name
-  entry_point           = "readDeployment"
-
-  trigger_http = true
-}
-
-resource "google_cloudfunctions_function_iam_binding" "prod_invoker" {
-  provider       = google.prod
-  project        = google_cloudfunctions_function.prod_readDeployment.project
-  region         = google_cloudfunctions_function.prod_readDeployment.region
-  cloud_function = google_cloudfunctions_function.prod_readDeployment.name
-  role           = "roles/cloudfunctions.invoker"
-  members        = ["allUsers"]
-}
-
-resource "google_cloudbuild_trigger" "tf-prod-build" {
-  provider = google.prod
-  location = "us-west2"
-  name     = "tf-prod-build"
-  filename = "non_feature_cloudbuild.yaml"
-
-  github {
-    owner = "CPSC319-2022"
-    name  = "9ds-frontend"
-    push {
-      branch       = "^prod$"
-      invert_regex = false
-    }
-  }
-
-  substitutions = {
-    _REACT_APP_ENV = "PROD"
-    _CF_URL        = google_cloudfunctions_function.prod_readDeployment.https_trigger_url
-  }
-
-  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
-}
-
-resource "google_storage_bucket_object" "prod_deploymennt_logger_archive" {
-  provider = google.prod
-  name     = "latest-deployment-logger.zip"
-  bucket   = google_storage_bucket.prod_bucket.name
-  source   = "latest-deployment-logger.zip"
 }
 
 resource "google_cloudfunctions_function" "prod_logDeployment" {

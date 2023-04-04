@@ -18,6 +18,7 @@ const NO_EXISTING_BUILD_RESPONSE = {
 }
 
 functions.http('readDeployment', (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     (async () => {
         const docRef = firestore.collection(COLLECTION).doc(DOC);
         const doc = await docRef.get();
