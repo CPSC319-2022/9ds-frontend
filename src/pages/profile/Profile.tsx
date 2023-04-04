@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useMemo, useState } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { LabeledTextField } from '../../components/LabeledTextField'
@@ -47,14 +47,14 @@ export const Profile: FC = () => {
   }, [error, articleError, draftError])
 
   const handleButtonClick = () => {
-    setLocalUser({ ...localUser, promotion_request: 'requested' })
-
     if (localUser.promotion_request) {
       dispatch({
         notificationActionType: 'error',
         message: `You have already applied to become contributor, waiting for admin approval!`,
       })
+      return;
     } else {
+      setLocalUser({ ...localUser, promotion_request: 'requested' })
       applyPromotion()
       queriedUser.promotion_request = 'requested'
       dispatch({
@@ -64,8 +64,7 @@ export const Profile: FC = () => {
     }
   }
 
-  const component = useMemo(() => {
-    return (
+  const component = (
       <Stack
         direction='column'
         alignItems='flex-start'
@@ -80,6 +79,7 @@ export const Profile: FC = () => {
         <Stack direction='row' spacing={200} boxSizing='border-box' p='24px'>
           <Stack direction='row' spacing={48} boxSizing='border-box'>
             <img
+              alt={queriedUser.profile_image}
               src={queriedUser.profile_image}
               width='140px'
               height='140px'
@@ -173,7 +173,6 @@ export const Profile: FC = () => {
         )}
       </Stack>
     )
-  }, [localUser.promotion_request])
 
   return (
     <AppWrapper>
