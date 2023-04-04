@@ -9,6 +9,7 @@ import { Profile } from '../../pages/profile/Profile'
 import { AdminDashboard } from '../../pages/admindashboard'
 import { UpdateArticle } from '../../pages/updatearticle'
 import { IndividualBlogPost } from '../../pages/individualblogpost'
+import { PipelineUI } from 'pages/pipelineUI'
 
 export interface RouteConfig {
   path: string
@@ -73,5 +74,9 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   individualBlogPost: {
     path: '/blog/:articleId',
     component: <IndividualBlogPost />,
+  },
+  pipelineUI: {
+    path: '/pipeline/ui',
+    component: <PipelineUI />,
   },
 }
