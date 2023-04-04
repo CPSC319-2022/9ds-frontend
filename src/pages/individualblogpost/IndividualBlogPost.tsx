@@ -272,11 +272,13 @@ export const IndividualBlogPost = () => {
                     onClick={() => {
                       setDialogOpen(false)
                       handleClose()
-                      setComments((comments) =>
-                        comments.filter(
-                          (currComment) => currComment.commentID !== comment
-                        )
+                      // eslint-disable-next-line
+                      commentDelete.deleteComment(articleId!, commentID)
+                      setDeletedCommentIDs([...deletedCommentIDs, commentID])
+                      const updatedComments = comments.filter(
+                        (currComment) => currComment.commentID !== commentID,
                       )
+                      setComments(updatedComments)
                       setCommentCount((commentCount) => commentCount - 1)
 
                       dispatch({
