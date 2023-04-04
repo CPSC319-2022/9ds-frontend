@@ -78,5 +78,7 @@ export const ROUTE_CONFIG: { [name: string]: RouteConfig } = {
   pipelineUI: {
     path: '/pipeline/ui',
     component: <PipelineUI />,
+    isProtected: true,
+    allowedRoles: ['admin'],
   },
 }

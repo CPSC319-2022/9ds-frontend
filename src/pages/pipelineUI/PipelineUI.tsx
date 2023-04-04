@@ -1,10 +1,13 @@
 import { FC, useEffect, useState } from 'react'
-import { Typography, Stack, IconButton } from '@mui/material'
+import { Typography, Stack, IconButton, FormHelperText } from '@mui/material'
 import { BuildStep } from 'components/BuildStep'
 import { CheckCircleOutline, Cancel } from '@mui/icons-material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 import axios from 'axios'
 import RefreshIcon from '@mui/icons-material/Refresh'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '../../components/Button'
+
 
 const DEV_URL: any = process.env.REACT_APP_DEV_CF_URL
 const QA_URL: any = process.env.REACT_APP_QA_CF_URL
@@ -22,16 +25,23 @@ export const PipelineUI: FC = () => {
   const [qaBuildStatus, setQABuildStatus] = useState(null)
   const [prodBuildStatus, setProdBuildStatus] = useState(null)
   const [refresh, setRefresh] = useState(false)
+  const [QAError, setQAError] = useState('')
+  const [prodError, setProdError] = useState('')
+  const [devError, setDevError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
+    setQAError("")
+    setDevError("")
+    setProdError("")
     axios
       .get(DEV_URL, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
         setDevBuildStatus(response.data)
         console.log(response.data)
       })
-      .catch((e) => {
-        console.log(e)
+      .catch(() => {
+        setDevError("Pending to fetch progress for Dev, refresh")
       })
 
     axios
@@ -40,8 +50,8 @@ export const PipelineUI: FC = () => {
         setQABuildStatus(response.data)
         console.log(response.data)
       })
-      .catch((e) => {
-        console.log(e)
+      .catch(() => {
+        setQAError("Pending to fetch progress for QA, refresh")
       })
 
     axios
@@ -50,8 +60,8 @@ export const PipelineUI: FC = () => {
         setProdBuildStatus(response.data)
         console.log(response.data)
       })
-      .catch((e) => {
-        console.log(e)
+      .catch(() => {
+        setProdError("Pending to fetch progress for Prod, refresh")
       })
 
   }, [refresh])
@@ -146,9 +156,16 @@ export const PipelineUI: FC = () => {
         >
           {dev_res}
         </Stack>
+        <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
         <IconButton onClick={() => setRefresh((prev) => !prev)}>
           <RefreshIcon sx={{ width: '75px', height: '75px' }} />
         </IconButton>
+        {devError.length > 0 && (
+            <FormHelperText data-testid="error-msg">
+              {devError}
+            </FormHelperText>
+          )}
+        </Stack>
       </Stack>
 
       <Stack direction='row' spacing={24} width='100%'>
@@ -162,9 +179,16 @@ export const PipelineUI: FC = () => {
         >
           {qa_res}
         </Stack>
+        <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
         <IconButton onClick={() => setRefresh((prev) => !prev)}>
           <RefreshIcon sx={{ width: '75px', height: '75px' }} />
         </IconButton>
+        {QAError.length > 0 && (
+            <FormHelperText data-testid="error-msg">
+              {QAError}
+            </FormHelperText>
+          )}
+        </Stack>
       </Stack>
 
       <Stack direction='row' spacing={24} width='100%'>
@@ -178,10 +202,18 @@ export const PipelineUI: FC = () => {
         >
           {prod_res}
         </Stack>
+        <Stack sx={{justifyContent: 'center', alignItems: 'center'}}>
         <IconButton onClick={() => setRefresh((prev) => !prev)}>
           <RefreshIcon sx={{ width: '75px', height: '75px' }} />
         </IconButton>
+        {prodError.length > 0 && (
+            <FormHelperText data-testid="error-msg">
+              {prodError}
+            </FormHelperText>
+          )}
+        </Stack>
       </Stack>
+      <Button style={{width: '100px'}} text="HOME" onClick={() => navigate("/")}/>
     </Stack>
   )
 }
