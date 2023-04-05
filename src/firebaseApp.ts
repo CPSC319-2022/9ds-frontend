@@ -30,6 +30,7 @@ switch (process.env.REACT_APP_ENV) {
     }
     break
 
+  case 'DEV':
   default:
     firebaseConfig = {
       apiKey: 'AIzaSyCHfU9yLnEnLeKKokIQ9sUGI8Cr9mLYXgE',
@@ -48,11 +49,10 @@ const db = getFirestore(app)
 const auth = getAuth(app)
 const storage = getStorage(app)
 
-
-// if (!process.env.REACT_APP_ENV) {
-//   connectFirestoreEmulator(db, 'localhost', 8080)
-//   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
-//   connectStorageEmulator(storage, 'localhost', 9199)
-// }
+if (!process.env.REACT_APP_ENV) {
+  connectFirestoreEmulator(db, 'localhost', 8080)
+  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
+  connectStorageEmulator(storage, 'localhost', 9199)
+}
 
 export { db, auth, storage }
