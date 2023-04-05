@@ -66,6 +66,14 @@ export const SignUpForm = () => {
     }
   }, [emailAccountCreate.user])
 
+ const navigate = useNavigate()
+  useEffect(() => {
+    if (emailAccountCreate.user) {
+        navigate('/')
+        window.location.reload()
+    }
+  }, [emailAccountCreate.user])
+
   // signUp Error
   // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword
   useEffect(() => {
