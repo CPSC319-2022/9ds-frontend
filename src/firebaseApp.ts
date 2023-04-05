@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
-import {connectStorageEmulator, getStorage} from "@firebase/storage";
+import { connectStorageEmulator, getStorage } from '@firebase/storage'
 
 let firebaseConfig
 
