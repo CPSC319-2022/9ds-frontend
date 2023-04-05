@@ -20,6 +20,7 @@ import {
 } from '../../hooks/firebase/useAuth'
 import { FileUploader } from '../../components/FileUploader/FileUploader'
 import { NotificationContext } from '../../context/NotificationContext'
+import { useNavigate } from 'react-router-dom'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const uuid = require('uuid')
 
@@ -51,6 +52,14 @@ export const SignUpForm = () => {
 
   const emailAccountCreate = useCreateUserEmailPassword()
   const signInWithGoogle = useSignInWithGoogle()
+
+ const navigate = useNavigate()
+  useEffect(() => {
+    if (emailAccountCreate.user) {
+        navigate('/')
+        window.location.reload()
+    }
+  }, [emailAccountCreate.user])
 
   // signUp Error
   // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword

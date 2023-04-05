@@ -70,7 +70,6 @@ export const useCreateUserEmailPassword = () => {
                     uid: newUser.uid,
                   })
                   setLoading(false)
-                  navigate('/')
                 })
               })
             })
@@ -88,7 +87,6 @@ export const useCreateUserEmailPassword = () => {
                 uid: newUser.uid,
               })
               setLoading(false)
-              navigate('/')
             })
             .catch((err) => {
               setError(err.code)
