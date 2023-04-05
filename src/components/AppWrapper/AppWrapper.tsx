@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react'
+import React, { FC, ReactNode, useCallback } from 'react'
 import { Header, UserRole } from '../Header'
 import { Footer } from '../Footer'
 import Stack from '@mui/material/Stack'
@@ -13,8 +13,7 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
   const space = !spacing ? 32 : spacing
   const user = useUser().queriedUser
 
-
-  const HeaderComponent: FC = () => {
+  const HeaderComponent = useCallback(() => {
     if (user.role === 'reader') {
       return <Header role={UserRole.READER} />
     }
@@ -25,9 +24,9 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
       return <Header role={UserRole.ADMIN} />
     }
     return <Header role={UserRole.VISITOR} />
-  }
+  }, [user])
 
-  const FooterComponent: FC = () => {
+  const FooterComponent = useCallback(() => {
     if (user.role === 'reader') {
       return <Footer role={UserRole.READER} />
     }
@@ -38,7 +37,7 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
       return <Footer role={UserRole.ADMIN} />
     }
     return <Footer role={UserRole.VISITOR} />
-  }
+  }, [user])
 
   return (
     <Stack
@@ -49,9 +48,9 @@ export const AppWrapper: FC<IProps> = ({ children, spacing }) => {
       boxSizing='border-box'
       p='24px'
     >
-      <HeaderComponent />
+      {HeaderComponent()}
       {children}
-      <FooterComponent />
+      {FooterComponent()}
     </Stack>
   )
 }
