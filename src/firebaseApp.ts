@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
-import {connectStorageEmulator, getStorage} from "@firebase/storage";
+import { connectStorageEmulator, getStorage } from '@firebase/storage'
 
 let firebaseConfig
 
@@ -30,7 +30,6 @@ switch (process.env.REACT_APP_ENV) {
     }
     break
 
-  case 'DEV':
   default:
     firebaseConfig = {
       apiKey: 'AIzaSyCHfU9yLnEnLeKKokIQ9sUGI8Cr9mLYXgE',
