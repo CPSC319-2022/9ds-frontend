@@ -1,5 +1,8 @@
 # Setup
 
+## Manual
+https://docs.google.com/document/d/1Gs24XTqONks8DP6Mf7h71holqbeg6_2CaLNxvO8nHJk/edit
+
 ## Install NVM to manage Node
 
 ### For Mac
@@ -66,3 +69,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## User Guide
+https://docs.google.com/document/d/1ajeM6j9pmzlqF-T1lLSZ_mQZB01nY0ZOR7qA_QZyrSI/edit#heading=h.c7qpwm1kfyvc
