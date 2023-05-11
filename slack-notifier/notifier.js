@@ -7,7 +7,7 @@ const { IncomingWebhook } = require('@slack/webhook');
 const {Storage} = require('@google-cloud/storage');
 
 // variables for cloud stuff
-const SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
+const SLACK_WEBHOOK_URL = 'YOUR_OWN_SLACK_WEBHOOK_URL_GOES_HERE';
 const webhook = new IncomingWebhook(SLACK_WEBHOOK_URL);
 const storage = new Storage();
 
